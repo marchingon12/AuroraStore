@@ -19,16 +19,12 @@
 
 package com.aurora.store.view.ui.account
 
-import android.app.Activity.RESULT_CANCELED
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.aurora.extensions.browse
-import com.aurora.extensions.getEmptyActivityAnimation
 import com.aurora.extensions.load
 import com.aurora.gplayapi.data.models.AuthData
 import com.aurora.store.R
@@ -60,15 +56,6 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     private val URL_LICENSE = "https://gitlab.com/AuroraOSS/AuroraStore/blob/master/LICENSE"
     private val URL_DISCLAIMER =
         "https://gitlab.com/AuroraOSS/AuroraStore/blob/master/DISCLAIMER.md"
-
-    private val startForResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == RESULT_CANCELED) {
-                resetActions()
-            } else {
-                binding.btnGoogle.updateProgress(true)
-            }
-        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -138,25 +125,6 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        EventBus.getDefault().unregister(this)
-    }
-
-    @Subscribe()
-    fun onEventReceived(event: BusEvent) {
-        when (event) {
-            is BusEvent.GoogleAAS -> {
-                if (event.success) {
-                    updateStatus(getString(R.string.session_verifying_google))
-                    VM.buildGoogleAuthData(event.email, event.aasToken)
-                } else {
-                    updateStatus(getString(R.string.session_login_failed_google))
-                }
-            }
-
-            else -> {
-
-            }
-        }
     }
 
     private fun updateContents() {
@@ -201,8 +169,11 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         binding.btnGoogle.addOnClickListener {
             if (VM.liveData.value != AuthState.Fetching) {
                 binding.btnGoogle.updateProgress(true)
-                val intent = Intent(requireContext(), GoogleFragment::class.java)
-                startForResult.launch(intent, requireContext().getEmptyActivityAnimation())
+                findNavController().navigate(
+                    AccountFragmentDirections.actionAccountFragmentToGoogleFragment(
+                        R.id.accountFragment
+                    )
+                )
             }
         }
 
