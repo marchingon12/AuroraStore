@@ -44,6 +44,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import coil.load
 import coil.transform.RoundedCornersTransformation
 import com.airbnb.epoxy.EpoxyRecyclerView
@@ -74,6 +76,7 @@ import com.aurora.store.data.installer.RootInstaller
 import com.aurora.store.data.providers.AuthProvider
 import com.aurora.store.data.service.AppMetadataStatusListener
 import com.aurora.store.data.service.UpdateService
+import com.aurora.store.data.work.DownloadWorker
 import com.aurora.store.databinding.FragmentDetailsBinding
 import com.aurora.store.databinding.LayoutDetailsBetaBinding
 import com.aurora.store.databinding.LayoutDetailsDescriptionBinding
@@ -279,6 +282,39 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                 }
             }
         }
+
+        // Downloads
+        WorkManager.getInstance(view.context)
+            .getWorkInfosForUniqueWorkLiveData(DownloadWorker.DOWNLOAD_WORKER)
+            .observe(viewLifecycleOwner) { workList ->
+                workList.getOrNull(0)?.let {
+                    if (it.tags.containsAll(listOf(app.packageName, app.versionCode.toString()))) {
+                        when (it.state) {
+                            WorkInfo.State.FAILED,
+                            WorkInfo.State.CANCELLED -> flip(0)
+
+                            WorkInfo.State.ENQUEUED,
+                            WorkInfo.State.RUNNING -> {
+                                flip(1)
+                                updateProgress(
+                                    it.progress.getInt(DownloadWorker.DOWNLOAD_PROGRESS, 0),
+                                    it.progress.getLong(DownloadWorker.DOWNLOAD_SPEED, -1),
+                                    it.progress.getLong(DownloadWorker.DOWNLOAD_TIME, -1)
+                                )
+                            }
+
+                            WorkInfo.State.SUCCEEDED -> {
+                                flip(0)
+                                updateProgress(100)
+                            }
+
+                            else -> {}
+                        }
+
+                    }
+
+                }
+            }
 
         // Reviews
         viewLifecycleOwner.lifecycleScope.launch {
@@ -637,7 +673,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                 }
             }
         } else {
-            updateApp(app)
+            DownloadWorker.enqueueApp(app)
         }
     }
 
@@ -685,6 +721,28 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                         requireContext(),
                         downloadedBytesPerSecond
                     )
+            }
+        }
+    }
+
+    private fun updateProgress(progress: Int, speed: Long = -1, timeRemaining: Long = -1) {
+        runOnUiThread {
+            if (progress == 100) {
+                binding.layoutDetailsInstall.btnDownload.setText(getString(R.string.action_installing))
+                return@runOnUiThread
+            }
+
+            binding.layoutDetailsInstall.apply {
+                txtProgressPercent.text = ("${progress}%")
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    progressDownload.setProgress(progress, true)
+                } else {
+                    progressDownload.progress = progress
+                }
+
+                txtEta.text = CommonUtil.getETAString(requireContext(), timeRemaining)
+                txtSpeed.text = CommonUtil.getDownloadSpeedString(requireContext(), speed)
             }
         }
     }
@@ -900,10 +958,9 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
         getUpdateServiceInstance()
 
         binding.layoutDetailsInstall.imgCancel.setOnClickListener {
-            fetch?.cancelGroup(
-                app.getGroupId(requireContext())
-            )
+            WorkManager.getInstance(it.context).cancelAllWorkByTag(app.packageName)
         }
+
         if (updateService != null) {
             pendingAddListeners = false
             updateService!!.registerFetchListener(fetchGroupListener)
