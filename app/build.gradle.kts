@@ -51,6 +51,15 @@ android {
     }
 
     signingConfigs {
+        create("aosp") {
+            // Generated from the AOSP testkey:
+            // https://android.googlesource.com/platform/build/+/refs/tags/android-14.0.0_r1/target/product/security/testkey.pk8
+            keyAlias = "testkey"
+            keyPassword = "testkey"
+            storeFile = file("testkey.jks")
+            storePassword = "testkey"
+        }
+
         if (File("signing.properties").exists()) {
             create("release") {
                 val properties = Properties().apply {
@@ -85,6 +94,7 @@ android {
 
         debug {
             applicationIdSuffix = ".debug"
+            signingConfig = signingConfigs.getByName("aosp")
         }
     }
 
