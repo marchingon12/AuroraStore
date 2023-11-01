@@ -49,6 +49,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import coil.load
 import coil.transform.RoundedCornersTransformation
 import com.aurora.Constants
@@ -59,6 +61,8 @@ import com.aurora.extensions.toast
 import com.aurora.store.data.model.NetworkStatus
 import com.aurora.store.data.model.SelfUpdate
 import com.aurora.store.data.providers.NetworkProvider
+import com.aurora.store.data.work.DownloadWorker
+import com.aurora.store.data.work.DownloadWorker.Companion.DOWNLOAD_WORKER
 import com.aurora.store.databinding.ActivityMainBinding
 import com.aurora.store.util.Log
 import com.aurora.store.util.Preferences
@@ -67,6 +71,13 @@ import com.aurora.store.view.ui.sheets.NetworkDialogSheet
 import com.aurora.store.view.ui.sheets.SelfUpdateSheet
 import com.aurora.store.viewmodel.MainViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 
@@ -90,6 +101,7 @@ class MainActivity : AppCompatActivity() {
         R.id.updatesFragment
     )
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         applyThemeAccent()
         super.onCreate(savedInstanceState)
@@ -206,6 +218,22 @@ class MainActivity : AppCompatActivity() {
                     else -> {
                         hideTopLevelOnlyViews()
                     }
+                }
+            }
+        }
+
+        // Handle enqueued downloads
+        GlobalScope.launch {
+            AuroraApplication.enqueuedDownloads.collect { enqueuedDownloads ->
+                try {
+                    if (enqueuedDownloads.isNotEmpty()) {
+                        // Let any existing work related to download/install get finished
+                        delay(3000)
+                        Log.i("Downloading ${enqueuedDownloads.first().packageName}")
+                        DownloadWorker.downloadApp(applicationContext, enqueuedDownloads.first())
+                    }
+                } catch (exception: Exception) {
+                    Log.i("Failed to download enqueued apps", exception)
                 }
             }
         }
