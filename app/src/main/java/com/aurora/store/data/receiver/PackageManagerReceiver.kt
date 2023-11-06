@@ -23,6 +23,11 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.aurora.store.BuildConfig
 import com.aurora.store.data.downloader.RequestGroupIdBuilder
 import com.aurora.store.data.event.BusEvent.InstallEvent
@@ -35,6 +40,8 @@ import java.io.File
 
 open class PackageManagerReceiver : BroadcastReceiver() {
 
+    private val TAG = PackageManagerReceiver::class.java.simpleName
+
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != null && intent.data != null) {
             val packageName = intent.data!!.encodedSchemeSpecificPart
@@ -42,6 +49,15 @@ open class PackageManagerReceiver : BroadcastReceiver() {
             when (intent.action) {
                 Intent.ACTION_PACKAGE_ADDED -> {
                     EventBus.getDefault().post(InstallEvent(packageName, ""))
+
+                    // Create app icon if user requests it
+                    if (Preferences.getBoolean(context, Preferences.PREFERENCE_AUTO_INSTALL_ICON)) {
+                        if (ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
+                            requestShortcutCreation(context, packageName)
+                        } else {
+                            Log.i(TAG, "Launcher doesn't supports pinned shortcuts")
+                        }
+                    }
                 }
 
                 Intent.ACTION_PACKAGE_REMOVED -> {
@@ -87,6 +103,24 @@ open class PackageManagerReceiver : BroadcastReceiver() {
                 rootDir.deleteRecursively()
         } catch (e: Exception) {
 
+        }
+    }
+
+    private fun requestShortcutCreation(context: Context, packageName: String) {
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName) ?: return
+        try {
+            val appInfo = context.packageManager.getApplicationInfo(packageName, 0)
+            val shortcutInfo = ShortcutInfoCompat.Builder(context, packageName)
+                .setShortLabel(appInfo.loadLabel(context.packageManager))
+                .setIcon(
+                    IconCompat.createWithBitmap(appInfo.loadIcon(context.packageManager).toBitmap())
+                )
+                .setIntent(launchIntent)
+                .build()
+
+            ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, null)
+        } catch (exception: Exception) {
+            Log.e(TAG, "Failed to request shortcut pin!", exception)
         }
     }
 }
