@@ -232,7 +232,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
 
         // Downloads
         binding.layoutDetailsInstall.imgCancel.setOnClickListener {
-            WorkManager.getInstance(it.context).cancelAllWorkByTag(app.packageName)
+            DownloadWorker.cancelDownload(it.context, app.packageName)
         }
 
         WorkManager.getInstance(view.context)

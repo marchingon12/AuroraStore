@@ -48,12 +48,27 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
 
     companion object {
         const val DOWNLOAD_WORKER = "DOWNLOAD_WORKER"
+
         const val DOWNLOAD_PROGRESS = "DOWNLOAD_PROGRESS"
         const val DOWNLOAD_TIME = "DOWNLOAD_TIME"
         const val DOWNLOAD_SPEED = "DOWNLOAD_SPEED"
 
+        private const val DOWNLOAD_APP = "DOWNLOAD_APP"
+        private const val DOWNLOAD_UPDATE = "DOWNLOAD_UPDATE"
+
         fun enqueueApp(app: App) {
             AuroraApplication.enqueuedDownloads.update { it.copyAndAdd(app) }
+        }
+
+        fun cancelDownload(context: Context, packageName: String) {
+            WorkManager.getInstance(context).cancelAllWorkByTag(packageName)
+        }
+
+        fun cancelAll(context: Context, downloads: Boolean, updates: Boolean) {
+            val workManager = WorkManager.getInstance(context)
+
+            if (downloads) workManager.cancelAllWorkByTag(DOWNLOAD_APP)
+            if (updates) workManager.cancelAllWorkByTag(DOWNLOAD_UPDATE)
         }
 
         /**
@@ -66,6 +81,7 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
             val work = OneTimeWorkRequestBuilder<DownloadWorker>()
                 .addTag(app.packageName)
                 .addTag(app.versionCode.toString())
+                .addTag(if (app.isInstalled) DOWNLOAD_UPDATE else DOWNLOAD_APP)
                 .setExpedited(OutOfQuotaPolicy.DROP_WORK_REQUEST)
                 .build()
 
