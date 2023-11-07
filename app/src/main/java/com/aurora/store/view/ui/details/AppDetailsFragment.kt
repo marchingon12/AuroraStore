@@ -22,15 +22,12 @@ package com.aurora.store.view.ui.details
 
 import android.Manifest
 import android.content.ActivityNotFoundException
-import android.content.ComponentName
 import android.content.Intent
-import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.IBinder
 import android.provider.Settings
 import android.view.View
 import android.widget.LinearLayout
@@ -67,16 +64,12 @@ import com.aurora.gplayapi.data.models.StreamCluster
 import com.aurora.store.R
 import com.aurora.store.State
 import com.aurora.store.data.ViewState
-import com.aurora.store.data.downloader.DownloadManager
-import com.aurora.store.data.downloader.getGroupId
 import com.aurora.store.data.event.BusEvent
 import com.aurora.store.data.event.InstallerEvent
 import com.aurora.store.data.installer.AppInstaller
 import com.aurora.store.data.installer.RootInstaller
 import com.aurora.store.data.model.DownloadStatus
 import com.aurora.store.data.providers.AuthProvider
-import com.aurora.store.data.service.AppMetadataStatusListener
-import com.aurora.store.data.service.UpdateService
 import com.aurora.store.data.work.DownloadWorker
 import com.aurora.store.databinding.FragmentDetailsBinding
 import com.aurora.store.databinding.LayoutDetailsBetaBinding
@@ -85,7 +78,6 @@ import com.aurora.store.databinding.LayoutDetailsDevBinding
 import com.aurora.store.databinding.LayoutDetailsPermissionsBinding
 import com.aurora.store.databinding.LayoutDetailsReviewBinding
 import com.aurora.store.util.CommonUtil
-import com.aurora.store.util.Log
 import com.aurora.store.util.PackageUtil
 import com.aurora.store.util.PathUtil
 import com.aurora.store.util.Preferences
@@ -102,14 +94,6 @@ import com.aurora.store.viewmodel.details.DetailsClusterViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.tonyodev.fetch2.AbstractFetchGroupListener
-import com.tonyodev.fetch2.Download
-import com.tonyodev.fetch2.Error
-import com.tonyodev.fetch2.Fetch
-import com.tonyodev.fetch2.FetchGroup
-import com.tonyodev.fetch2.FetchGroupListener
-import com.tonyodev.fetch2.Status
-import com.tonyodev.fetch2core.DownloadBlock
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -146,53 +130,13 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
 
     private lateinit var authData: AuthData
     private lateinit var app: App
-    private var fetch: Fetch? = null
-    private var downloadManager: DownloadManager? = null
-
-    private var attachToServiceCalled = false
-    private var updateService: UpdateService? = null
-    private var pendingAddListeners = true
-    private var serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-            updateService = (binder as UpdateService.UpdateServiceBinder).getUpdateService()
-            if (::fetchGroupListener.isInitialized && ::appMetadataListener.isInitialized && pendingAddListeners) {
-                updateService!!.registerFetchListener(fetchGroupListener)
-                // appMetadataListener needs to be initialized after the fetchGroupListener
-                updateService!!.registerAppMetadataListener(appMetadataListener)
-                pendingAddListeners = false
-            }
-            if (listOfActionsWhenServiceAttaches.isNotEmpty()) {
-                val iterator = listOfActionsWhenServiceAttaches.iterator()
-                while (iterator.hasNext()) {
-                    val next = iterator.next()
-                    next.run()
-                    iterator.remove()
-                }
-            }
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            updateService = null
-            attachToServiceCalled = false
-            pendingAddListeners = true
-        }
-    }
-    private lateinit var fetchGroupListener: FetchGroupListener
-    private lateinit var appMetadataListener: AppMetadataStatusListener
-    private lateinit var completionMarker: File
-    private lateinit var inProgressMarker: File
 
     private var isExternal = false
-    private var isNone = false
-    private var status = Status.NONE
     private var downloadStatus = DownloadStatus.UNAVAILABLE
     private var isInstalled: Boolean = false
     private var isUpdatable: Boolean = false
     private var autoDownload: Boolean = false
-    private var downloadOnly: Boolean = false
     private var uninstallActionEnabled = false
-
-    val listOfActionsWhenServiceAttaches = ArrayList<Runnable>()
 
     override fun onStart() {
         super.onStart()
@@ -287,6 +231,10 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
         }
 
         // Downloads
+        binding.layoutDetailsInstall.imgCancel.setOnClickListener {
+            WorkManager.getInstance(it.context).cancelAllWorkByTag(app.packageName)
+        }
+
         WorkManager.getInstance(view.context)
             .getWorkInfosForUniqueWorkLiveData(DownloadWorker.DOWNLOAD_WORKER)
             .observe(viewLifecycleOwner) { workList ->
@@ -475,7 +423,6 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
     }
 
     override fun onResume() {
-        getUpdateServiceInstance()
         checkAndSetupInstall()
         super.onResume()
     }
@@ -546,16 +493,10 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
         }
     }
 
-    private fun attachWhiteListStatus() {
-
-    }
-
     private fun inflatePartialApp() {
         if (::app.isInitialized) {
-            attachWhiteListStatus()
             attachHeader()
             attachBottomSheet()
-            attachFetch()
             attachActions()
 
             if (autoDownload) {
@@ -670,54 +611,6 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
         }
     }
 
-    private fun updateApp(app: App) {
-        if (updateService == null) {
-            listOfActionsWhenServiceAttaches.add {
-                updateService?.updateApp(app, true)
-            }
-            getUpdateServiceInstance()
-        } else {
-            updateService?.updateApp(app, true)
-        }
-    }
-
-    private fun updateProgress(
-        fetchGroup: FetchGroup,
-        etaInMilliSeconds: Long,
-        downloadedBytesPerSecond: Long
-    ) {
-        runOnUiThread {
-            val progress = if (fetchGroup.groupDownloadProgress > 0)
-                fetchGroup.groupDownloadProgress
-            else
-                0
-
-            if (progress == 100) {
-                binding.layoutDetailsInstall.btnDownload.setText(getString(R.string.action_installing))
-                return@runOnUiThread
-            }
-            binding.layoutDetailsInstall.apply {
-                txtProgressPercent.text = ("${progress}%")
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    progressDownload.setProgress(progress, true)
-                } else {
-                    progressDownload.progress = progress
-                }
-
-                txtEta.text = CommonUtil.getETAString(
-                    requireContext(),
-                    etaInMilliSeconds
-                )
-                txtSpeed.text =
-                    CommonUtil.getDownloadSpeedString(
-                        requireContext(),
-                        downloadedBytesPerSecond
-                    )
-            }
-        }
-    }
-
     private fun updateProgress(progress: Int, speed: Long = -1, timeRemaining: Long = -1) {
         runOnUiThread {
             if (progress == 100) {
@@ -736,22 +629,6 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
 
                 txtEta.text = CommonUtil.getETAString(requireContext(), timeRemaining)
                 txtSpeed.text = CommonUtil.getDownloadSpeedString(requireContext(), speed)
-            }
-        }
-    }
-
-    private fun expandBottomSheet(message: String?) {
-        runOnUiThread {
-            bottomSheetBehavior.isHideable = false
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-
-            with(binding.layoutDetailsInstall) {
-                txtPurchaseError.text = message
-                btnDownload.updateState(State.IDLE)
-                if (app.isFree)
-                    btnDownload.setText(R.string.action_install)
-                else
-                    btnDownload.setText(app.price)
             }
         }
     }
@@ -815,185 +692,6 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                 binding.layoutDetailsInstall.viewFlipper.displayedChild = nextView
                 if (nextView == 0) checkAndSetupInstall()
             }
-        }
-    }
-
-    private fun attachFetch() {
-        if (fetch == null) {
-            downloadManager = DownloadManager.with(requireContext())
-            fetch = downloadManager!!.fetch
-        }
-        fetch?.getFetchGroup(app.getGroupId(requireContext())) { fetchGroup: FetchGroup ->
-            if (fetchGroup.groupDownloadProgress == 100 && fetchGroup.completedDownloads.isNotEmpty()) {
-                status = Status.COMPLETED
-            } else if (downloadManager?.isDownloading(fetchGroup) == true) {
-                status = Status.DOWNLOADING
-                flip(1)
-            } else if (downloadManager?.isCanceled(fetchGroup) == true) {
-                status = Status.CANCELLED
-            } else if (fetchGroup.pausedDownloads.isNotEmpty()) {
-                status = Status.PAUSED
-            } else {
-                status = Status.NONE
-            }
-        }
-
-        fetchGroupListener = object : AbstractFetchGroupListener() {
-
-            override fun onAdded(groupId: Int, download: Download, fetchGroup: FetchGroup) {
-                if (groupId == app.getGroupId(requireContext())) {
-                    status = download.status
-                }
-            }
-
-            override fun onStarted(
-                groupId: Int,
-                download: Download,
-                downloadBlocks: List<DownloadBlock>,
-                totalBlocks: Int,
-                fetchGroup: FetchGroup
-            ) {
-                if (groupId == app.getGroupId(requireContext())) {
-                    status = download.status
-                    flip(1)
-
-                    val pkgDir = PathUtil.getPackageDirectory(requireContext(), app.packageName)
-                    completionMarker =
-                        File("$pkgDir/.${app.versionCode}.download-complete")
-                    inProgressMarker =
-                        File("$pkgDir/.${app.versionCode}.download-in-progress")
-
-                    if (completionMarker.exists())
-                        completionMarker.delete()
-
-                    inProgressMarker.createNewFile()
-                }
-            }
-
-            override fun onResumed(groupId: Int, download: Download, fetchGroup: FetchGroup) {
-                if (groupId == app.getGroupId(requireContext())) {
-                    status = download.status
-                    flip(1)
-                    inProgressMarker.parentFile?.mkdirs()
-                    inProgressMarker.createNewFile()
-                }
-            }
-
-            override fun onPaused(groupId: Int, download: Download, fetchGroup: FetchGroup) {
-                if (groupId == app.getGroupId(requireContext())) {
-                    status = download.status
-                    flip(0)
-                }
-            }
-
-            override fun onProgress(
-                groupId: Int,
-                download: Download,
-                etaInMilliSeconds: Long,
-                downloadedBytesPerSecond: Long,
-                fetchGroup: FetchGroup
-            ) {
-                if (groupId == app.getGroupId(requireContext())) {
-                    updateProgress(fetchGroup, etaInMilliSeconds, downloadedBytesPerSecond)
-                    Log.i(
-                        "${app.displayName} : ${download.file} -> Progress : %d",
-                        fetchGroup.groupDownloadProgress
-                    )
-                }
-            }
-
-            override fun onCompleted(groupId: Int, download: Download, fetchGroup: FetchGroup) {
-                if (groupId == app.getGroupId(requireContext()) && fetchGroup.groupDownloadProgress == 100) {
-                    status = download.status
-                    flip(0)
-                    updateProgress(fetchGroup, -1, -1)
-                    try {
-                        inProgressMarker.delete()
-                        completionMarker.createNewFile()
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
-                    }
-                }
-            }
-
-            override fun onCancelled(groupId: Int, download: Download, fetchGroup: FetchGroup) {
-                if (groupId == app.getGroupId(requireContext())) {
-                    status = download.status
-                    flip(0)
-                    inProgressMarker.delete()
-                }
-            }
-
-            override fun onError(
-                groupId: Int,
-                download: Download,
-                error: Error,
-                throwable: Throwable?,
-                fetchGroup: FetchGroup
-            ) {
-                if (groupId == app.getGroupId(requireContext())) {
-                    status = download.status
-                    flip(0)
-                    inProgressMarker.delete()
-                }
-            }
-        }
-
-        appMetadataListener = object : AppMetadataStatusListener {
-            override fun onAppMetadataStatusError(reason: String, app: App) {
-                if (app.packageName == this@AppDetailsFragment.app.packageName) {
-                    updateActionState(State.IDLE)
-                    expandBottomSheet(reason)
-                }
-            }
-        }
-
-        getUpdateServiceInstance()
-
-        binding.layoutDetailsInstall.imgCancel.setOnClickListener {
-            WorkManager.getInstance(it.context).cancelAllWorkByTag(app.packageName)
-        }
-
-        if (updateService != null) {
-            pendingAddListeners = false
-            updateService!!.registerFetchListener(fetchGroupListener)
-            // appMetadataListener needs to be initialized after the fetchGroupListener
-            updateService!!.registerAppMetadataListener(appMetadataListener)
-        } else {
-            pendingAddListeners = true
-        }
-    }
-
-    private fun getUpdateServiceInstance() {
-        if (updateService == null && !attachToServiceCalled) {
-            attachToServiceCalled = true
-            val intent = Intent(requireContext(), UpdateService::class.java)
-            activity?.startService(intent)
-            activity?.bindService(
-                intent,
-                serviceConnection,
-                0
-            )
-        }
-    }
-
-    override fun onPause() {
-        if (updateService != null) {
-            updateService = null
-            attachToServiceCalled = false
-            pendingAddListeners = true
-            activity?.unbindService(serviceConnection)
-        }
-        super.onPause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (updateService != null) {
-            updateService = null
-            attachToServiceCalled = false
-            pendingAddListeners = true
-            activity?.unbindService(serviceConnection)
         }
     }
 
