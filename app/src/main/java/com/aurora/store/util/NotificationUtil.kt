@@ -261,6 +261,8 @@ object NotificationUtil {
                     ).build()
                 )
             }
+
+            else -> {}
         }
         return builder.build()
     }

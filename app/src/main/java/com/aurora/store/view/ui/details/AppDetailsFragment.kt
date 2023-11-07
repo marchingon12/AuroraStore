@@ -73,6 +73,7 @@ import com.aurora.store.data.event.BusEvent
 import com.aurora.store.data.event.InstallerEvent
 import com.aurora.store.data.installer.AppInstaller
 import com.aurora.store.data.installer.RootInstaller
+import com.aurora.store.data.model.DownloadStatus
 import com.aurora.store.data.providers.AuthProvider
 import com.aurora.store.data.service.AppMetadataStatusListener
 import com.aurora.store.data.service.UpdateService
@@ -115,6 +116,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.util.Locale
+import kotlin.io.path.pathString
 
 
 class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
@@ -183,6 +185,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
     private var isExternal = false
     private var isNone = false
     private var status = Status.NONE
+    private var downloadStatus = DownloadStatus.UNAVAILABLE
     private var isInstalled: Boolean = false
     private var isUpdatable: Boolean = false
     private var autoDownload: Boolean = false
@@ -295,6 +298,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
 
                             WorkInfo.State.ENQUEUED,
                             WorkInfo.State.RUNNING -> {
+                                downloadStatus = DownloadStatus.DOWNLOADING
                                 flip(1)
                                 updateProgress(
                                     it.progress.getInt(DownloadWorker.DOWNLOAD_PROGRESS, 0),
@@ -304,8 +308,13 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                             }
 
                             WorkInfo.State.SUCCEEDED -> {
-                                flip(0)
-                                updateProgress(100)
+                                try {
+                                    view.context.packageManager.getPackageInfo(app.packageName, 0)
+                                } catch (exception: Exception) {
+                                    downloadStatus = DownloadStatus.COMPLETED
+                                    flip(0)
+                                    updateProgress(100)
+                                }
                             }
 
                             else -> {}
@@ -491,34 +500,24 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
         }
     }
 
-    private fun verifyAndInstall(files: List<Download>) {
-        if (downloadOnly)
-            return
-
-        var filesExist = true
-
-        files.forEach { download ->
-            filesExist = filesExist && File(download.file).exists()
-        }
-
-        if (filesExist)
-            install(files)
-        else
-            purchase()
-    }
-
     @Synchronized
-    private fun install(files: List<Download>) {
-        updateActionState(State.IDLE)
+    private fun install() {
+        val files = File(
+            PathUtil.getAppDownloadDir(
+                requireContext(),
+                app.packageName,
+                app.versionCode
+            ).pathString
+        ).listFiles() ?: return
 
-        val apkFiles = files.filter { it.file.endsWith(".apk") }
+        val apkFiles = files.filter { it.path.endsWith(".apk") }
         val preferredInstaller =
             Preferences.getInteger(requireContext(), Preferences.PREFERENCE_INSTALLER_ID)
 
         if (apkFiles.size > 1 && preferredInstaller == 1) {
             showDialog(R.string.title_installer, R.string.dialog_desc_native_split)
         } else {
-            viewModel.install(requireContext(), app.packageName, apkFiles.map { it.file })
+            viewModel.install(requireContext(), app.packageName, apkFiles)
 
             runOnUiThread {
                 binding.layoutDetailsInstall.btnDownload.setText(getString(R.string.action_installing))
@@ -625,20 +624,14 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
 
     @Synchronized
     private fun startDownload() {
-        when (status) {
-            Status.PAUSED -> {
-                fetch?.resumeGroup(app.getGroupId(requireContext()))
-            }
-
-            Status.DOWNLOADING -> {
+        when (downloadStatus) {
+            DownloadStatus.DOWNLOADING -> {
                 flip(1)
                 toast("Already downloading")
             }
 
-            Status.COMPLETED -> {
-                fetch?.getFetchGroup(app.getGroupId(requireContext())) {
-                    verifyAndInstall(it.downloads)
-                }
+            DownloadStatus.COMPLETED -> {
+                install()
             }
 
             else -> {
