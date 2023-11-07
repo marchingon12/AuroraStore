@@ -48,12 +48,36 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
 
     companion object {
         const val DOWNLOAD_WORKER = "DOWNLOAD_WORKER"
+
         const val DOWNLOAD_PROGRESS = "DOWNLOAD_PROGRESS"
         const val DOWNLOAD_TIME = "DOWNLOAD_TIME"
         const val DOWNLOAD_SPEED = "DOWNLOAD_SPEED"
 
+        private const val DOWNLOAD_APP = "DOWNLOAD_APP"
+        private const val DOWNLOAD_UPDATE = "DOWNLOAD_UPDATE"
+
+        fun isEnqueued(packageName: String): Boolean {
+            return AuroraApplication.enqueuedDownloads.value.any { it.packageName == packageName }
+        }
+
         fun enqueueApp(app: App) {
             AuroraApplication.enqueuedDownloads.update { it.copyAndAdd(app) }
+        }
+
+        fun cancelDownload(context: Context, app: App) {
+            try {
+                AuroraApplication.enqueuedDownloads.update {it.copyAndRemove(app) }
+                WorkManager.getInstance(context).cancelAllWorkByTag(app.packageName)
+            } catch (exception: Exception) {
+                Log.e("DownloadWorker", "Failed to cancel download", exception)
+            }
+        }
+
+        fun cancelAll(context: Context, downloads: Boolean = true, updates: Boolean = true) {
+            val workManager = WorkManager.getInstance(context)
+
+            if (downloads) workManager.cancelAllWorkByTag(DOWNLOAD_APP)
+            if (updates) workManager.cancelAllWorkByTag(DOWNLOAD_UPDATE)
         }
 
         /**
@@ -64,8 +88,10 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
          */
         fun downloadApp(context: Context, app: App) {
             val work = OneTimeWorkRequestBuilder<DownloadWorker>()
+                .addTag(DOWNLOAD_WORKER)
                 .addTag(app.packageName)
                 .addTag(app.versionCode.toString())
+                .addTag(if (app.isInstalled) DOWNLOAD_UPDATE else DOWNLOAD_APP)
                 .setExpedited(OutOfQuotaPolicy.DROP_WORK_REQUEST)
                 .build()
 
