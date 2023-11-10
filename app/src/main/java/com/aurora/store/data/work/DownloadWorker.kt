@@ -36,11 +36,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URL
+import java.time.Duration
 import kotlinx.coroutines.flow.update
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteRecursively
 import kotlin.properties.Delegates
+import kotlin.time.Duration.Companion.days
+import kotlin.time.toJavaDuration
 import com.aurora.gplayapi.data.models.File as GPlayFile
 
 class DownloadWorker(private val appContext: Context, workerParams: WorkerParameters) :
@@ -83,9 +86,10 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
                 .addTag(app.versionCode.toString())
                 .addTag(if (app.isInstalled) DOWNLOAD_UPDATE else DOWNLOAD_APP)
                 .setExpedited(OutOfQuotaPolicy.DROP_WORK_REQUEST)
+                .keepResultsForAtLeast(7.days.toJavaDuration())
                 .build()
 
-            WorkManager.getInstance(context).enqueueUniqueWork(DOWNLOAD_WORKER, KEEP, work)
+            WorkManager.getInstance(context).enqueue(work)
         }
     }
 

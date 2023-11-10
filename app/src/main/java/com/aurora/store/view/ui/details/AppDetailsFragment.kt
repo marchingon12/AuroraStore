@@ -43,6 +43,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.WorkQuery
 import coil.load
 import coil.transform.RoundedCornersTransformation
 import com.airbnb.epoxy.EpoxyRecyclerView
@@ -235,41 +236,35 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
             DownloadWorker.cancelDownload(it.context, app.packageName)
         }
 
+        val workQuery = WorkQuery.fromTags(
+            listOf(
+                DownloadWorker::class.simpleName,
+                app.packageName,
+                app.versionCode.toString()
+            )
+        )
         WorkManager.getInstance(view.context)
-            .getWorkInfosForUniqueWorkLiveData(DownloadWorker.DOWNLOAD_WORKER)
+            .getWorkInfosLiveData(workQuery)
             .observe(viewLifecycleOwner) { workList ->
                 workList.getOrNull(0)?.let {
-                    if (it.tags.containsAll(listOf(app.packageName, app.versionCode.toString()))) {
-                        when (it.state) {
-                            WorkInfo.State.FAILED,
-                            WorkInfo.State.CANCELLED -> flip(0)
-
-                            WorkInfo.State.ENQUEUED,
-                            WorkInfo.State.RUNNING -> {
-                                downloadStatus = DownloadStatus.DOWNLOADING
-                                flip(1)
-                                updateProgress(
-                                    it.progress.getInt(DownloadWorker.DOWNLOAD_PROGRESS, 0),
-                                    it.progress.getLong(DownloadWorker.DOWNLOAD_SPEED, -1),
-                                    it.progress.getLong(DownloadWorker.DOWNLOAD_TIME, -1)
-                                )
-                            }
-
-                            WorkInfo.State.SUCCEEDED -> {
-                                try {
-                                    view.context.packageManager.getPackageInfo(app.packageName, 0)
-                                } catch (exception: Exception) {
-                                    downloadStatus = DownloadStatus.COMPLETED
-                                    flip(0)
-                                    updateProgress(100)
-                                }
-                            }
-
-                            else -> {}
+                    if (it.state.isFinished) flip(0) else flip(1)
+                    when (it.state) {
+                        WorkInfo.State.ENQUEUED,
+                        WorkInfo.State.RUNNING -> {
+                            downloadStatus = DownloadStatus.DOWNLOADING
+                            updateProgress(
+                                it.progress.getInt(DownloadWorker.DOWNLOAD_PROGRESS, 0),
+                                it.progress.getLong(DownloadWorker.DOWNLOAD_SPEED, -1),
+                                it.progress.getLong(DownloadWorker.DOWNLOAD_TIME, -1)
+                            )
                         }
 
-                    }
+                        WorkInfo.State.SUCCEEDED -> {
+                            downloadStatus = DownloadStatus.COMPLETED
+                        }
 
+                        else -> {}
+                    }
                 }
             }
 
@@ -414,6 +409,8 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
             }
 
             if (::app.isInitialized) {
+                app.isInstalled = PackageUtil.isInstalled(requireContext(), app.packageName)
+
                 menu?.findItem(R.id.action_uninstall)?.isVisible = app.isInstalled
                 menu?.findItem(R.id.menu_app_settings)?.isVisible = app.isInstalled
                 uninstallActionEnabled = app.isInstalled
@@ -563,7 +560,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
     }
 
     @Synchronized
-    private fun startDownload() {
+    private fun startDownload(forceDownload: Boolean = false) {
         when (downloadStatus) {
             DownloadStatus.DOWNLOADING -> {
                 flip(1)
@@ -571,7 +568,21 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
             }
 
             DownloadStatus.COMPLETED -> {
-                install()
+                if (forceDownload) {
+                    purchase()
+                    return
+                }
+
+                // Check if files are still present, else proceed to re-download the app
+                val files = File(
+                    PathUtil.getAppDownloadDir(
+                        requireContext(),
+                        app.packageName,
+                        app.versionCode
+                    ).pathString
+                ).listFiles()
+
+                if (files?.isNotEmpty() == true) install() else purchase()
             }
 
             else -> {
@@ -634,6 +645,8 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
 
     private fun checkAndSetupInstall() {
         runOnUiThread {
+            app.isInstalled = PackageUtil.isInstalled(requireContext(), app.packageName)
+
             binding.layoutDetailsInstall.btnDownload.let { btn ->
                 if (app.isInstalled) {
                     isUpdatable = PackageUtil.isUpdatable(
@@ -650,6 +663,10 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                             ("$installedVersion ➔ ${app.versionName} (${app.versionCode})")
                         btn.setText(R.string.action_update)
                         btn.addOnClickListener { startDownload() }
+                        btn.addOnLongClickListener {
+                            startDownload(true)
+                            true
+                        }
                     } else {
                         binding.layoutDetailsApp.txtLine3.text = installedVersion
                         btn.setText(R.string.action_open)
@@ -672,6 +689,15 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                             btn.setText(R.string.download_metadata)
                             startDownload()
                         }
+                    }
+                    btn.addOnLongClickListener {
+                        if (authData.isAnonymous && !app.isFree) {
+                            toast(R.string.toast_purchase_blocked)
+                        } else {
+                            btn.setText(R.string.download_metadata)
+                            startDownload(true)
+                        }
+                        true
                     }
                     if (uninstallActionEnabled) {
                         binding.layoutDetailsToolbar.toolbar.invalidateMenu()
