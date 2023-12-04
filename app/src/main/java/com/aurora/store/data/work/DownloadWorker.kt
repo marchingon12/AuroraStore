@@ -8,142 +8,41 @@ import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.Data
-import androidx.work.ExistingWorkPolicy.KEEP
 import androidx.work.ForegroundInfo
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.aurora.Constants
 import com.aurora.extensions.copyTo
 import com.aurora.extensions.isQAndAbove
-import com.aurora.gplayapi.data.models.App
 import com.aurora.gplayapi.helpers.PurchaseHelper
-import com.aurora.store.AuroraApplication
 import com.aurora.store.data.model.DownloadInfo
 import com.aurora.store.data.model.DownloadStatus
 import com.aurora.store.data.model.Request
 import com.aurora.store.data.network.HttpClient
 import com.aurora.store.data.providers.AuthProvider
 import com.aurora.store.data.receiver.InstallReceiver
+import com.aurora.store.data.room.download.Download
+import com.aurora.store.util.DownloadWorkerUtil
+import com.aurora.store.util.DownloadWorkerUtil.Companion.DOWNLOAD_PROGRESS
+import com.aurora.store.util.DownloadWorkerUtil.Companion.DOWNLOAD_SPEED
+import com.aurora.store.util.DownloadWorkerUtil.Companion.DOWNLOAD_TIME
+import com.aurora.store.util.DownloadWorkerUtil.Companion.NOTIFICATION_ID
 import com.aurora.store.util.NotificationUtil
 import com.aurora.store.util.PathUtil
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URL
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createDirectories
-import kotlin.io.path.deleteRecursively
 import kotlin.properties.Delegates
-import kotlin.time.Duration.Companion.days
-import kotlin.time.toJavaDuration
 import com.aurora.gplayapi.data.models.File as GPlayFile
 
 class DownloadWorker(private val appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
 
-    companion object {
-        const val DOWNLOAD_WORKER = "DOWNLOAD_WORKER"
-
-        const val DOWNLOAD_PROGRESS = "DOWNLOAD_PROGRESS"
-        const val DOWNLOAD_TIME = "DOWNLOAD_TIME"
-        const val DOWNLOAD_SPEED = "DOWNLOAD_SPEED"
-
-        private const val DOWNLOAD_APP = "DOWNLOAD_APP"
-        private const val DOWNLOAD_UPDATE = "DOWNLOAD_UPDATE"
-
-        private const val notificationID = 200
-        private val cleanupStates = listOf(
-            WorkInfo.State.CANCELLED,
-            WorkInfo.State.FAILED
-        )
-
-        fun initDownloadWorker(applicationContext: Context) {
-            GlobalScope.launch {
-                WorkManager.getInstance(applicationContext)
-                    .getWorkInfosByTagFlow(DOWNLOAD_WORKER)
-                    .collectLatest { downloadsList ->
-                        try {
-                            if (downloadsList.all { it.state.isFinished }) {
-                                // Do cleanup for last download if required
-                                downloadsList.getOrNull(0)?.let { workInfo ->
-                                    if (workInfo.state in cleanupStates) {
-                                        onFailure(
-                                            applicationContext,
-                                            AuroraApplication.enqueuedDownloads.first()
-                                        )
-                                    }
-                                }
-
-                                // Check and trigger download if enqueue list is not empty
-                                if (AuroraApplication.enqueuedDownloads.isNotEmpty()) {
-                                    val app = AuroraApplication.enqueuedDownloads.first()
-                                    Log.i(DOWNLOAD_WORKER, "Downloading ${app.packageName}")
-                                    downloadApp(applicationContext, app)
-                                }
-                            }
-                        } catch (exception: Exception) {
-                            Log.i(DOWNLOAD_WORKER, "Failed to download enqueued apps", exception)
-                        }
-                    }
-
-            }
-        }
-
-        fun isEnqueued(packageName: String): Boolean {
-            return AuroraApplication.enqueuedDownloads.any { it.packageName == packageName }
-        }
-
-        fun enqueueApp(context: Context, app: App) {
-            if (AuroraApplication.enqueuedDownloads.isEmpty()) downloadApp(context, app)
-            AuroraApplication.enqueuedDownloads.add(app)
-        }
-
-        fun cancelDownload(context: Context, app: App) {
-            WorkManager.getInstance(context).cancelAllWorkByTag(app.packageName)
-        }
-
-        fun cancelAll(context: Context, downloads: Boolean = true, updates: Boolean = true) {
-            val workManager = WorkManager.getInstance(context)
-
-            if (downloads) workManager.cancelAllWorkByTag(DOWNLOAD_APP)
-            if (updates) workManager.cancelAllWorkByTag(DOWNLOAD_UPDATE)
-        }
-
-        private fun downloadApp(context: Context, app: App) {
-            val work = OneTimeWorkRequestBuilder<DownloadWorker>()
-                .addTag(DOWNLOAD_WORKER)
-                .addTag(app.packageName)
-                .addTag(app.versionCode.toString())
-                .addTag(if (app.isInstalled) DOWNLOAD_UPDATE else DOWNLOAD_APP)
-                .setExpedited(OutOfQuotaPolicy.DROP_WORK_REQUEST)
-                .keepResultsForAtLeast(7.days.toJavaDuration())
-                .build()
-
-            // Ensure all app downloads are unique to preserve individual records
-            WorkManager.getInstance(context)
-                .enqueueUniqueWork("${DOWNLOAD_WORKER}/${app.packageName}", KEEP, work)
-        }
-
-        @OptIn(ExperimentalPathApi::class)
-        private fun onFailure(context: Context, app: App) {
-            Log.i(DOWNLOAD_WORKER, "Cleaning up!")
-            PathUtil.getAppDownloadDir(context, app.packageName, app.versionCode)
-                .deleteRecursively()
-            with (context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager) {
-                cancel(notificationID)
-            }
-            AuroraApplication.enqueuedDownloads.remove(app)
-        }
-    }
-
-    private lateinit var app: App
+    private lateinit var download: Download
     private lateinit var notificationManager: NotificationManager
     private var downloading = false
 
@@ -164,9 +63,10 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
 
         // Try to parse input data into a valid app
         try {
-            app = AuroraApplication.enqueuedDownloads.first()
+            val downloadData = inputData.getString(DownloadWorkerUtil.DOWNLOAD_DATA)
+            download = Gson().fromJson(downloadData, Download::class.java)
         } catch (exception: Exception) {
-            Log.e(TAG, "No apps enqueued for downloads", exception)
+            Log.e(TAG, "Failed to parse download data", exception)
             return Result.failure()
         }
 
@@ -174,7 +74,8 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
         setForeground(getForegroundInfo())
 
         // Bail out if file list is empty
-        val files = purchaseHelper.purchase(app.packageName, app.versionCode, app.offerType)
+        val files =
+            purchaseHelper.purchase(download.packageName, download.versionCode, download.offerType)
         if (files.isEmpty()) {
             Log.i(TAG, "Nothing to download!")
             notifyStatus(DownloadStatus.COMPLETED)
@@ -184,9 +85,10 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
         // Download and verify all files exists
         totalBytes = files.sumOf { it.size }
 
-        PathUtil.getAppDownloadDir(appContext, app.packageName, app.versionCode).createDirectories()
+        PathUtil.getAppDownloadDir(appContext, download.packageName, download.versionCode)
+            .createDirectories()
         if (files.any { it.type == GPlayFile.FileType.OBB || it.type == GPlayFile.FileType.PATCH }) {
-            PathUtil.getObbDownloadDir(app.packageName).createDirectories()
+            PathUtil.getObbDownloadDir(download.packageName).createDirectories()
         }
 
         val requestList = getDownloadRequest(files)
@@ -195,7 +97,7 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
             runCatching { downloadFile(request) }
                 .onSuccess { downloading = false }
                 .onFailure {
-                    Log.e(TAG, "Failed to download ${app.packageName}", it)
+                    Log.e(TAG, "Failed to download ${download.packageName}", it)
                     downloading = false
                     return Result.failure()
                 }
@@ -211,18 +113,15 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
 
         // Mark download as completed
         notifyStatus(DownloadStatus.COMPLETED)
-        Log.i(TAG, "Finished downloading ${app.packageName}")
+        Log.i(TAG, "Finished downloading ${download.packageName}")
 
         // Notify for installation
         Intent(appContext, InstallReceiver::class.java).also {
             it.action = InstallReceiver.ACTION_INSTALL_APP
-            it.putExtra(Constants.STRING_APP, app.packageName)
-            it.putExtra(Constants.STRING_VERSION, app.versionCode)
+            it.putExtra(Constants.STRING_APP, download.packageName)
+            it.putExtra(Constants.STRING_VERSION, download.versionCode)
             appContext.sendBroadcast(it)
         }
-
-        // Remove the app from the list
-        AuroraApplication.enqueuedDownloads.remove(app)
         return Result.success()
     }
 
@@ -230,11 +129,15 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
         val downloadList = mutableListOf<Request>()
         files.filter { it.url.isNotBlank() }.forEach {
             val filePath = when (it.type) {
-                GPlayFile.FileType.BASE,
-                GPlayFile.FileType.SPLIT -> PathUtil.getApkDownloadFile(appContext, app, it)
+                GPlayFile.FileType.BASE, GPlayFile.FileType.SPLIT -> {
+                    PathUtil.getApkDownloadFile(
+                        appContext, download.packageName, download.versionCode, it
+                    )
+                }
 
-                GPlayFile.FileType.OBB,
-                GPlayFile.FileType.PATCH -> PathUtil.getObbDownloadFile(app, it)
+                GPlayFile.FileType.OBB, GPlayFile.FileType.PATCH -> {
+                    PathUtil.getObbDownloadFile(download.packageName, it)
+                }
             }
             downloadList.add(Request(it.url, filePath, it.size))
         }
@@ -288,7 +191,7 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
                     .build()
 
                 setProgress(data)
-                notifyStatus(DownloadStatus.DOWNLOADING, progress, notificationID)
+                notifyStatus(DownloadStatus.DOWNLOADING, progress, NOTIFICATION_ID)
                 totalProgress = progress
             }
         }
@@ -297,21 +200,21 @@ class DownloadWorker(private val appContext: Context, workerParams: WorkerParame
     override suspend fun getForegroundInfo(): ForegroundInfo {
         val notification = NotificationUtil.getDownloadNotification(
             appContext,
-            app,
+            download,
             DownloadStatus.QUEUED,
             0,
             id
         )
         return if (isQAndAbove()) {
-            ForegroundInfo(notificationID, notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+            ForegroundInfo(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
         } else {
-            ForegroundInfo(notificationID, notification)
+            ForegroundInfo(NOTIFICATION_ID, notification)
         }
     }
 
     private fun notifyStatus(status: DownloadStatus, progress: Int = 100, dID: Int = -1) {
         val notification =
-            NotificationUtil.getDownloadNotification(appContext, app, status, progress, id)
-        notificationManager.notify(if (dID != -1) dID else app.packageName.hashCode(), notification)
+            NotificationUtil.getDownloadNotification(appContext, download, status, progress, id)
+        notificationManager.notify(if (dID != -1) dID else download.packageName.hashCode(), notification)
     }
 }

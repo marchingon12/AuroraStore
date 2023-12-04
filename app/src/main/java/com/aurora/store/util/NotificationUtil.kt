@@ -19,6 +19,7 @@ import com.aurora.extensions.getStyledAttributeColor
 import com.aurora.extensions.isMAndAbove
 import com.aurora.gplayapi.data.models.App
 import com.aurora.store.MainActivity
+import com.aurora.store.data.room.download.Download as AuroraDownload
 import com.aurora.store.R
 import com.aurora.store.data.activity.InstallActivity
 import com.aurora.store.data.model.DownloadStatus
@@ -180,7 +181,7 @@ object NotificationUtil {
 
             Status.COMPLETED -> if (fetchGroup.groupDownloadProgress == 100) {
                 builder.setAutoCancel(true)
-                builder.setContentIntent(getContentIntentForDetails(context, app))
+                builder.setContentIntent(getContentIntentForDetails(context, app.packageName))
                 builder.setStyle(progressBigText)
             }
 
@@ -200,13 +201,13 @@ object NotificationUtil {
 
     fun getDownloadNotification(
         context: Context,
-        app: App,
+        download: AuroraDownload,
         status: DownloadStatus,
         progress: Int,
         workID: UUID
     ): Notification {
         val builder = NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_GENERAL)
-        builder.setContentTitle(app.displayName)
+        builder.setContentTitle(download.displayName)
         builder.color = ContextCompat.getColor(context, R.color.colorAccent)
         builder.setContentIntent(getContentIntentForDownloads(context))
 
@@ -230,12 +231,12 @@ object NotificationUtil {
                 builder.setContentText(context.getString(R.string.download_completed))
                 builder.setAutoCancel(true)
                 builder.setCategory(Notification.CATEGORY_STATUS)
-                builder.setContentIntent(getContentIntentForDetails(context, app))
+                builder.setContentIntent(getContentIntentForDetails(context, download.packageName))
                 builder.addAction(
                     NotificationCompat.Action.Builder(
                         R.drawable.ic_install,
                         context.getString(R.string.action_install),
-                        getInstallIntent(context, app.packageName, app.versionCode)
+                        getInstallIntent(context, download.packageName, download.versionCode)
                     ).build()
                 )
             }
@@ -274,7 +275,7 @@ object NotificationUtil {
                 setSmallIcon(R.drawable.ic_install)
                 setContentTitle(app.displayName)
                 setContentText(content)
-                setContentIntent(getContentIntentForDetails(context, app))
+                setContentIntent(getContentIntentForDetails(context, app.packageName))
                 setSubText(app.packageName)
             }
         return builder.build()
@@ -307,12 +308,12 @@ object NotificationUtil {
         return PendingIntent.getBroadcast(context, groupId, intent, flags)
     }
 
-    private fun getContentIntentForDetails(context: Context, app: App?): PendingIntent {
+    private fun getContentIntentForDetails(context: Context, packageName: String): PendingIntent {
         return NavDeepLinkBuilder(context)
             .setGraph(R.navigation.mobile_navigation)
             .setDestination(R.id.appDetailsFragment)
             .setComponentName(MainActivity::class.java)
-            .setArguments(bundleOf("packageName" to app!!.packageName))
+            .setArguments(bundleOf("packageName" to packageName))
             .createPendingIntent()
     }
 

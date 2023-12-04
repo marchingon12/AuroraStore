@@ -78,6 +78,10 @@ import com.aurora.store.databinding.LayoutDetailsDevBinding
 import com.aurora.store.databinding.LayoutDetailsPermissionsBinding
 import com.aurora.store.databinding.LayoutDetailsReviewBinding
 import com.aurora.store.util.CommonUtil
+import com.aurora.store.util.DownloadWorkerUtil.Companion.DOWNLOAD_PROGRESS
+import com.aurora.store.util.DownloadWorkerUtil.Companion.DOWNLOAD_SPEED
+import com.aurora.store.util.DownloadWorkerUtil.Companion.DOWNLOAD_TIME
+import com.aurora.store.util.DownloadWorkerUtil.Companion.DOWNLOAD_WORKER
 import com.aurora.store.util.PackageUtil
 import com.aurora.store.util.PathUtil
 import com.aurora.store.util.Preferences
@@ -119,7 +123,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
     private val startForStorageManagerResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (isRAndAbove() && Environment.isExternalStorageManager()) {
-                DownloadWorker.enqueueApp(requireContext(), app)
+                viewModel.download(app)
             } else {
                 toast(R.string.permissions_denied)
             }
@@ -127,7 +131,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
     private val startForPermissions =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             if (it) {
-                DownloadWorker.enqueueApp(requireContext(), app)
+                viewModel.download(app)
             } else {
                 toast(R.string.permissions_denied)
             }
@@ -239,11 +243,11 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
 
         // Downloads
         binding.layoutDetailsInstall.imgCancel.setOnClickListener {
-            DownloadWorker.cancelDownload(it.context, app)
+            viewModel.cancelDownload(app)
             if (downloadStatus != DownloadStatus.DOWNLOADING) flip(0)
         }
 
-        val uniqueWorkName = "${DownloadWorker.DOWNLOAD_WORKER}/${app.packageName}"
+        val uniqueWorkName = "${DOWNLOAD_WORKER}/${app.packageName}"
         WorkManager.getInstance(view.context)
             .getWorkInfosForUniqueWorkLiveData(uniqueWorkName)
             .observe(viewLifecycleOwner) { workList ->
@@ -254,9 +258,9 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                         WorkInfo.State.RUNNING -> {
                             downloadStatus = DownloadStatus.DOWNLOADING
                             updateProgress(
-                                it.progress.getInt(DownloadWorker.DOWNLOAD_PROGRESS, 0),
-                                it.progress.getLong(DownloadWorker.DOWNLOAD_SPEED, -1),
-                                it.progress.getLong(DownloadWorker.DOWNLOAD_TIME, -1)
+                                it.progress.getInt(DOWNLOAD_PROGRESS, 0),
+                                it.progress.getLong(DOWNLOAD_SPEED, -1),
+                                it.progress.getLong(DOWNLOAD_TIME, -1)
                             )
                         }
 
@@ -604,7 +608,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                         Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                     )
                 } else {
-                    DownloadWorker.enqueueApp(requireContext(), app)
+                    viewModel.download(app)
                 }
             } else {
                 if (ContextCompat.checkSelfPermission(
@@ -612,13 +616,13 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
-                    DownloadWorker.enqueueApp(requireContext(), app)
+                    viewModel.download(app)
                 } else {
                     startForPermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 }
             }
         } else {
-            DownloadWorker.enqueueApp(requireContext(), app)
+            viewModel.download(app)
         }
     }
 
@@ -679,10 +683,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                         binding.layoutDetailsToolbar.toolbar.invalidateMenu()
                     }
                 } else {
-                    val downloading = downloadStatus == DownloadStatus.DOWNLOADING
-                    if (DownloadWorker.isEnqueued(app.packageName) && !downloading) {
-                        flip(1)
-                    } else if (app.isFree) {
+                    if (app.isFree) {
                         btn.setText(R.string.action_install)
                     } else {
                         btn.setText(app.price)

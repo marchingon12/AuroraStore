@@ -29,14 +29,19 @@ import com.aurora.store.data.receiver.PackageManagerReceiver
 import com.aurora.store.data.service.NotificationService
 import com.aurora.store.data.work.DownloadWorker
 import com.aurora.store.util.CommonUtil
+import com.aurora.store.util.DownloadWorkerUtil
 import com.aurora.store.util.NotificationUtil
 import com.aurora.store.util.PackageUtil
 import com.tonyodev.fetch2.Fetch
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 
 @HiltAndroidApp
 class AuroraApplication : Application() {
+
+    @Inject
+    lateinit var downloadWorkerUtil: DownloadWorkerUtil
 
     private lateinit var fetch: Fetch
 
@@ -61,7 +66,7 @@ class AuroraApplication : Application() {
         fetch = DownloadManager.with(this).fetch
 
         // Initialize DownloadWorker to observe and trigger downloads
-        DownloadWorker.initDownloadWorker(applicationContext)
+        downloadWorkerUtil.init(applicationContext)
 
         //Register broadcast receiver for package install/uninstall
         ContextCompat.registerReceiver(
