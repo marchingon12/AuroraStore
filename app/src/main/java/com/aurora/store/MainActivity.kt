@@ -60,18 +60,16 @@ import com.aurora.extensions.isMAndAbove
 import com.aurora.extensions.isRAndAbove
 import com.aurora.extensions.toast
 import com.aurora.store.data.model.NetworkStatus
-import com.aurora.store.data.model.SelfUpdate
 import com.aurora.store.data.providers.NetworkProvider
 import com.aurora.store.databinding.ActivityMainBinding
 import com.aurora.store.util.Log
 import com.aurora.store.util.Preferences
 import com.aurora.store.util.Preferences.PREFERENCE_DEFAULT_SELECTED_TAB
-import com.aurora.store.util.Preferences.PREFERENCE_SELF_UPDATE
 import com.aurora.store.view.ui.sheets.NetworkDialogSheet
-import com.aurora.store.view.ui.sheets.SelfUpdateSheet
 import com.aurora.store.viewmodel.MainViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -154,16 +152,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        /* Check self update only for stable release, skip debug & nightlies*/
-        if (Preferences.getBoolean(this, PREFERENCE_SELF_UPDATE)) {
-            if (BuildConfig.APPLICATION_ID == Constants.APP_ID) viewModel.checkSelfUpdate(this)
-            this.lifecycleScope.launch {
-                viewModel.selfUpdateAvailable.collect {
-                    if (it != null) {
-                        showUpdatesSheet(it)
-                    } else {
-                        Log.i("No Aurora Store update available")
-                    }
+        lifecycleScope.launch {
+            viewModel.selfUpdate.collect {
+                if (it.packageName.isNotBlank()) {
+                    navController.navigate(
+                        MobileNavigationDirections.actionGlobalSelfUpdateSheet(it)
+                    )
                 }
             }
         }
@@ -293,14 +287,6 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager())
                 startActivity(Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION))
-        }
-    }
-
-    private fun showUpdatesSheet(selfUpdate: SelfUpdate) {
-        if (!supportFragmentManager.isDestroyed) {
-            val sheet = SelfUpdateSheet.newInstance(selfUpdate)
-            sheet.isCancelable = false
-            sheet.show(supportFragmentManager, SelfUpdateSheet.TAG)
         }
     }
 

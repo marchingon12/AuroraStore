@@ -24,6 +24,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.aurora.Constants
 import com.aurora.store.MobileNavigationDirections
 import com.aurora.store.R
 import com.aurora.store.data.room.download.Download
@@ -78,7 +79,10 @@ class DownloadFragment : BaseFragment(R.layout.fragment_download) {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            downloadWorkerUtil.downloadsList.collectLatest { updateController(it) }
+            downloadWorkerUtil.downloadsList.collectLatest { list ->
+                // Exclude showing downloads for Aurora Store (self-update)
+                updateController(list.filterNot { it.packageName == Constants.APP_ID })
+            }
         }
     }
 
@@ -101,7 +105,7 @@ class DownloadFragment : BaseFragment(R.layout.fragment_download) {
                         DownloadViewModel_()
                             .id(it.packageName)
                             .download(it)
-                            .click { _ -> openDetailsFragment(it.packageName) }
+                            .click { _ -> openDetailsFragment(it.packageName)}
                             .longClick { _ ->
                                 openDownloadMenuSheet(it)
                                 true

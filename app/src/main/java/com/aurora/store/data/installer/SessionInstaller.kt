@@ -24,6 +24,7 @@ import android.content.Context
 import android.content.pm.PackageInstaller.PACKAGE_SOURCE_STORE
 import android.content.pm.PackageInstaller.SessionParams
 import android.content.pm.PackageManager
+import com.aurora.Constants
 import com.aurora.extensions.isNAndAbove
 import com.aurora.extensions.isOAndAbove
 import com.aurora.extensions.isSAndAbove
@@ -50,7 +51,12 @@ class SessionInstaller(context: Context) : SessionInstallerBase(context) {
                     setOriginatingUid(android.os.Process.myUid())
                 }
                 if (isSAndAbove()) {
-                    setRequireUserAction(SessionParams.USER_ACTION_NOT_REQUIRED)
+                    if (packageName == Constants.APP_ID) {
+                        // Always ask user to manually confirm self-update
+                        setRequireUserAction(SessionParams.USER_ACTION_REQUIRED)
+                    } else {
+                        setRequireUserAction(SessionParams.USER_ACTION_NOT_REQUIRED)
+                    }
                 }
                 if (isTAndAbove()) {
                     setPackageSource(PACKAGE_SOURCE_STORE)

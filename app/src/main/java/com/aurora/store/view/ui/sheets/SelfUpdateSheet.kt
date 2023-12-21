@@ -19,85 +19,76 @@
  */
 package com.aurora.store.view.ui.sheets
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.aurora.Constants
+import androidx.navigation.fragment.navArgs
 import com.aurora.store.R
-import com.aurora.store.data.model.SelfUpdate
-import com.aurora.store.data.service.SelfUpdateService
+import com.aurora.store.data.installer.SessionInstaller
 import com.aurora.store.databinding.SheetSelfUpdateBinding
+import com.aurora.store.util.DownloadWorkerUtil
+import com.aurora.store.util.PathUtil
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import javax.inject.Inject
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SelfUpdateSheet : BaseBottomSheet() {
 
-    private lateinit var B: SheetSelfUpdateBinding
-    private lateinit var selfUpdate: SelfUpdate
+    private var _binding: SheetSelfUpdateBinding? = null
+    private val binding get() = _binding!!
 
-    companion object {
+    private val args: SelfUpdateSheetArgs by navArgs()
 
-        const val TAG = "ManualDownloadSheet"
-
-        @JvmStatic
-        fun newInstance(
-            selfUpdate: SelfUpdate
-        ): SelfUpdateSheet {
-            return SelfUpdateSheet().apply {
-                arguments = Bundle().apply {
-                    putString(Constants.STRING_EXTRA, gson.toJson(selfUpdate))
-                }
-            }
-        }
-    }
+    @Inject
+    lateinit var downloadWorkerUtil: DownloadWorkerUtil
 
     override fun onCreateContentView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?
     ): View {
-        B = SheetSelfUpdateBinding.inflate(inflater)
-        return B.root
+        _binding = SheetSelfUpdateBinding.inflate(inflater)
+        return binding.root
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onContentViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val bundle = arguments
-        bundle?.let {
-            val rawUpdate = bundle.getString(Constants.STRING_EXTRA, "{}")
-            selfUpdate = gson.fromJson(rawUpdate, SelfUpdate::class.java)
-            if (selfUpdate.versionName.isNotEmpty()) {
-                inflateData()
-                attachActions()
+
+        binding.txtLine2.text = ("${args.app.versionName} (${args.app.versionCode})")
+        binding.txtChangelog.text = args.app.changes
+            .ifEmpty { getString(R.string.details_changelog_unavailable) }
+            .trim()
+
+        binding.btnPrimary.setOnClickListener {
+            // Check if files are still present, else proceed to re-download the app
+            val files = File(
+                PathUtil.getAppDownloadDir(
+                    requireContext(),
+                    args.app.packageName,
+                    args.app.versionCode
+                ).path
+            ).listFiles()
+
+            if (files?.isNotEmpty() == true) {
+                val apkFiles = files.filter { it.path.endsWith(".apk") }
+                SessionInstaller(requireContext()).install(args.app.packageName, apkFiles)
             } else {
-                dismissAllowingStateLoss()
+                GlobalScope.launch { downloadWorkerUtil.enqueueApp(args.app) }
+                binding.btnPrimary.isEnabled = false
             }
         }
-    }
 
-    private fun inflateData() {
-        B.txtLine2.text = ("${selfUpdate.versionName} (${selfUpdate.versionCode})")
-
-        val messages: String = if (selfUpdate.changelog.isEmpty())
-            getString(R.string.details_changelog_unavailable)
-        else
-            selfUpdate.changelog
-
-        B.txtChangelog.text = messages.trim()
-    }
-
-    private fun attachActions() {
-        B.btnPrimary.setOnClickListener {
-            val intent = Intent(requireContext(), SelfUpdateService::class.java)
-            intent.putExtra(Constants.STRING_EXTRA, gson.toJson(selfUpdate))
-            requireContext().startService(intent)
+        binding.btnSecondary.setOnClickListener {
             dismissAllowingStateLoss()
         }
+    }
 
-        B.btnSecondary.setOnClickListener {
-            dismissAllowingStateLoss()
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

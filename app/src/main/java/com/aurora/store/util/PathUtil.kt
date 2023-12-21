@@ -46,6 +46,10 @@ object PathUtil {
         return getDownloadDirectory(context) + "/Downloads/$packageName"
     }
 
+    fun getUpdateFile(context: Context): File {
+        return File(context.getInternalBaseDirectory(), "update.json")
+    }
+
     private fun getVersionDirectory(
         context: Context,
         packageName: String,

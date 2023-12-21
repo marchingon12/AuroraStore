@@ -14,6 +14,7 @@ import com.aurora.Constants
 import com.aurora.extensions.copyTo
 import com.aurora.extensions.isQAndAbove
 import com.aurora.gplayapi.helpers.PurchaseHelper
+import com.aurora.store.data.installer.SessionInstaller
 import com.aurora.store.data.model.DownloadInfo
 import com.aurora.store.data.model.DownloadStatus
 import com.aurora.store.data.model.Request
@@ -80,8 +81,9 @@ class DownloadWorker @AssistedInject constructor(
             appContext.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
 
         // Bail out if file list is empty
-        val files =
+        val files = download.fileList.ifEmpty {
             purchaseHelper.purchase(download.packageName, download.versionCode, download.offerType)
+        }
         if (files.isEmpty()) {
             Log.i(TAG, "Nothing to download!")
             notifyStatus(DownloadStatus.FAILED)
@@ -141,11 +143,18 @@ class DownloadWorker @AssistedInject constructor(
         Log.i(TAG, "Finished downloading ${download.packageName}")
 
         // Notify for installation
-        Intent(appContext, InstallReceiver::class.java).also {
-            it.action = InstallReceiver.ACTION_INSTALL_APP
-            it.putExtra(Constants.STRING_APP, download.packageName)
-            it.putExtra(Constants.STRING_VERSION, download.versionCode)
-            appContext.sendBroadcast(it)
+        if (download.packageName == Constants.APP_ID) {
+            SessionInstaller(appContext).install(
+                download.packageName,
+                requestList.map { File(it.filePath) }
+            )
+        } else {
+            Intent(appContext, InstallReceiver::class.java).also {
+                it.action = InstallReceiver.ACTION_INSTALL_APP
+                it.putExtra(Constants.STRING_APP, download.packageName)
+                it.putExtra(Constants.STRING_VERSION, download.versionCode)
+                appContext.sendBroadcast(it)
+            }
         }
         return Result.success()
     }
