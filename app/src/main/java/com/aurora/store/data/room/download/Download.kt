@@ -26,7 +26,8 @@ data class Download(
     var totalFiles: Int,
     var downloadedFiles: Int,
     var fileList: List<File>,
-    val sharedLibs: List<SharedLib>
+    val sharedLibs: List<SharedLib>,
+    var sessionId: Int?
 ) : Parcelable {
     val isFinished get() = downloadStatus in DownloadStatus.finished
     val isRunning get() = downloadStatus in DownloadStatus.running
@@ -49,7 +50,8 @@ data class Download(
                 0,
                 0,
                 app.fileList.filterNot { it.url.isBlank() },
-                app.dependencies.dependentLibraries.map { SharedLib.fromApp(it) }
+                app.dependencies.dependentLibraries.map { SharedLib.fromApp(it) },
+                null
             )
         }
     }

@@ -113,7 +113,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
     private val startForStorageManagerResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (isRAndAbove() && Environment.isExternalStorageManager()) {
-                viewModel.download(app)
+                viewModel.download(requireContext(), app)
             } else {
                 toast(R.string.permissions_denied)
             }
@@ -121,7 +121,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
     private val startForPermissions =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             if (it) {
-                viewModel.download(app)
+                viewModel.download(requireContext(), app)
             } else {
                 toast(R.string.permissions_denied)
             }
@@ -535,7 +535,7 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                         Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                     )
                 } else {
-                    viewModel.download(app)
+                    viewModel.download(requireContext(), app)
                 }
             } else {
                 if (ContextCompat.checkSelfPermission(
@@ -543,13 +543,13 @@ class AppDetailsFragment : BaseFragment(R.layout.fragment_details) {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
-                    viewModel.download(app)
+                    viewModel.download(requireContext(), app)
                 } else {
                     startForPermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 }
             }
         } else {
-            viewModel.download(app)
+            viewModel.download(requireContext(), app)
         }
     }
 

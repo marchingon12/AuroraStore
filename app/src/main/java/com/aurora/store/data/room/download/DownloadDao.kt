@@ -23,6 +23,9 @@ interface DownloadDao {
     @Query("UPDATE download SET sharedLibs=:sharedLibs WHERE packageName=:packageName")
     suspend fun updateSharedLibs(packageName: String, sharedLibs: List<SharedLib>)
 
+    @Query("UPDATE download SET sessionId=:sessionId WHERE packageName=:packageName")
+    suspend fun updateSessionId(packageName: String, sessionId: Int?)
+
     @Query(
         """
         UPDATE download

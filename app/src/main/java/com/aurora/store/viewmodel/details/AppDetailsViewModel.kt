@@ -4,11 +4,14 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aurora.extensions.isUAndAbove
 import com.aurora.gplayapi.data.models.App
 import com.aurora.gplayapi.data.models.Review
 import com.aurora.gplayapi.data.models.details.TestingProgramStatus
 import com.aurora.gplayapi.helpers.AppDetailsHelper
 import com.aurora.gplayapi.helpers.ReviewsHelper
+import com.aurora.store.data.installer.AppInstaller
+import com.aurora.store.data.installer.SessionInstaller
 import com.aurora.store.data.model.ExodusReport
 import com.aurora.store.data.model.Report
 import com.aurora.store.data.network.HttpClient
@@ -23,10 +26,12 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.lang.reflect.Modifier
 import javax.inject.Inject
+import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class AppDetailsViewModel @Inject constructor(
-    private val downloadWorkerUtil: DownloadWorkerUtil
+    private val downloadWorkerUtil: DownloadWorkerUtil,
+    private val appInstaller: AppInstaller
 ) : ViewModel() {
 
     private val TAG = AppDetailsViewModel::class.java.simpleName
@@ -136,8 +141,26 @@ class AppDetailsViewModel @Inject constructor(
         }
     }
 
-    fun download(app: App) {
-        viewModelScope.launch { downloadWorkerUtil.enqueueApp(app) }
+    private suspend fun requestUserPreapprovalIfSupported(context: Context, app: App) {
+        if (isUAndAbove() && appInstaller.getPreferredInstaller() is SessionInstaller) {
+            val sessionId = SessionInstaller.createSession(context, app.packageName)
+            downloadWorkerUtil.registerSessionId(app.packageName, sessionId)
+
+            SessionInstaller.requestUserPreapproval(
+                context,
+                app.packageName,
+                app.displayName,
+                app.iconArtwork.url,
+                sessionId
+            )
+        }
+    }
+
+    fun download(context: Context, app: App) {
+        viewModelScope.launch {
+            downloadWorkerUtil.enqueueApp(app)
+            withContext(Dispatchers.IO) { requestUserPreapprovalIfSupported(context, app) }
+        }
     }
 
     fun cancelDownload(app: App) {

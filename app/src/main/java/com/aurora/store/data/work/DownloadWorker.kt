@@ -167,7 +167,8 @@ class DownloadWorker @AssistedInject constructor(
     private suspend fun onSuccess() {
         withContext(NonCancellable) {
             try {
-                appInstaller.getPreferredInstaller().install(download)
+                appInstaller.getPreferredInstaller()
+                    .install(downloadDao.getDownload(download.packageName))
             } catch (exception: Exception) {
                 Log.e(TAG, "Failed to install ${download.packageName}", exception)
             }

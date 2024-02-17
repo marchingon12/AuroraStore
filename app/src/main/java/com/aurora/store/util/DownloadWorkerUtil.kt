@@ -94,6 +94,11 @@ class DownloadWorkerUtil @Inject constructor(
             ?.let { downloadDao.updateStatus(packageName, DownloadStatus.CANCELLED) }
     }
 
+    suspend fun registerSessionId(packageName: String, sessionId: Int) {
+        Log.i(TAG, "Registering pre-approved session's sessionId for $packageName")
+        downloadDao.updateSessionId(packageName, sessionId)
+    }
+
     suspend fun clearDownload(packageName: String, versionCode: Int) {
         Log.i(TAG, "Clearing downloads for $packageName ($versionCode)")
         downloadDao.delete(packageName)

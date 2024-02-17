@@ -25,21 +25,101 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageInstaller.PACKAGE_SOURCE_STORE
+import android.content.pm.PackageInstaller.PreapprovalDetails
 import android.content.pm.PackageInstaller.SessionParams
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.icu.util.ULocale
+import android.os.Build
 import android.os.Process
+import androidx.annotation.RequiresApi
 import com.aurora.extensions.isNAndAbove
 import com.aurora.extensions.isOAndAbove
 import com.aurora.extensions.isSAndAbove
 import com.aurora.extensions.isTAndAbove
 import com.aurora.extensions.isUAndAbove
 import com.aurora.store.data.receiver.InstallerStatusReceiver
+import com.aurora.store.data.receiver.InstallerStatusReceiver.Companion.ACTION_INSTALL_STATUS
+import com.aurora.store.data.receiver.InstallerStatusReceiver.Companion.ACTION_PREAPPROVAL_STATUS
 import com.aurora.store.data.room.download.Download
 import com.aurora.store.util.Log
 import com.aurora.store.util.PackageUtil.isSharedLibraryInstalled
+import java.net.URL
 import kotlin.properties.Delegates
 
 class SessionInstaller(context: Context) : InstallerBase(context) {
+
+    companion object {
+
+        fun createSession(context: Context, packageName: String): Int {
+            val sessionParams = getSessionParams(context, packageName)
+            return context.packageManager.packageInstaller.createSession(sessionParams)
+        }
+
+        @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        fun requestUserPreapproval(
+            context: Context,
+            packageName: String,
+            displayName: String,
+            iconURL: String,
+            sessionId: Int
+        ) {
+            val packageInstaller = context.packageManager.packageInstaller.openSession(sessionId)
+            val preapprovalDetails = PreapprovalDetails.Builder()
+                .setIcon(BitmapFactory.decodeStream(URL(iconURL).openStream()))
+                .setLabel(displayName)
+                .setLocale(ULocale.getDefault())
+                .setPackageName(packageName)
+                .build()
+            packageInstaller.requestUserPreapproval(
+                preapprovalDetails,
+                getCallBackIntent(context, packageName, ACTION_PREAPPROVAL_STATUS).intentSender
+            )
+        }
+
+        private fun getSessionParams(context: Context, packageName: String): SessionParams {
+            return SessionParams(SessionParams.MODE_FULL_INSTALL).apply {
+                setAppPackageName(packageName)
+                if (isOAndAbove()) {
+                    setInstallReason(PackageManager.INSTALL_REASON_USER)
+                }
+                if (isNAndAbove()) {
+                    setOriginatingUid(Process.myUid())
+                }
+                if (isSAndAbove()) {
+                    setRequireUserAction(SessionParams.USER_ACTION_NOT_REQUIRED)
+                }
+                if (isTAndAbove()) {
+                    setPackageSource(PACKAGE_SOURCE_STORE)
+                }
+                if (isUAndAbove()) {
+                    setInstallerPackageName(context.packageName)
+                    setRequestUpdateOwnership(true)
+                }
+            }
+        }
+
+        private fun getCallBackIntent(
+            context: Context,
+            packageName: String,
+            installAction: String,
+            parentSessionId: Int = -1
+        ): PendingIntent {
+            val callBackIntent = Intent(context, InstallerStatusReceiver::class.java).apply {
+                action = installAction
+                setPackage(context.packageName)
+                putExtra(PackageInstaller.EXTRA_PACKAGE_NAME, packageName)
+                addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+            }
+            val flags = if (isSAndAbove()) {
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+
+            return PendingIntent.getBroadcast(context, parentSessionId, callBackIntent, flags)
+        }
+    }
 
     var parentSessionId by Delegates.notNull<Int>()
 
@@ -77,10 +157,15 @@ class SessionInstaller(context: Context) : InstallerBase(context) {
             download.sharedLibs.forEach {
                 // Shared library packages cannot be updated
                 if (!isSharedLibraryInstalled(context, it.packageName, it.versionCode)) {
-                    stageInstall(download.packageName, download.versionCode, it.packageName)
+                    stageInstall(
+                        download.packageName,
+                        download.versionCode,
+                        it.sessionId,
+                        it.packageName
+                    )
                 }
             }
-            stageInstall(download.packageName, download.versionCode)
+            stageInstall(download.packageName, download.versionCode, download.sessionId)
 
             if (sessionIdMap.size > 1) packageInstaller.registerSessionCallback(callback)
             commitInstall(
@@ -90,29 +175,22 @@ class SessionInstaller(context: Context) : InstallerBase(context) {
         }
     }
 
-    private fun stageInstall(packageName: String, versionCode: Int, sharedLibPkgName: String = "") {
+    private fun stageInstall(
+        packageName: String,
+        versionCode: Int,
+        existingSessionId: Int?,
+        sharedLibPkgName: String = "",
+    ) {
         val packageInstaller = context.packageManager.packageInstaller
 
-        val sessionParams = SessionParams(SessionParams.MODE_FULL_INSTALL).apply {
-            setAppPackageName(sharedLibPkgName.ifBlank { packageName })
-            if (isOAndAbove()) {
-                setInstallReason(PackageManager.INSTALL_REASON_USER)
-            }
-            if (isNAndAbove()) {
-                setOriginatingUid(Process.myUid())
-            }
-            if (isSAndAbove()) {
-                setRequireUserAction(SessionParams.USER_ACTION_NOT_REQUIRED)
-            }
-            if (isTAndAbove()) {
-                setPackageSource(PACKAGE_SOURCE_STORE)
-            }
-            if (isUAndAbove()) {
-                setInstallerPackageName(context.packageName)
-                setRequestUpdateOwnership(true)
-            }
+        // Verify if there is already an existing session for the package
+        val sessionId = if (existingSessionId != null && packageInstaller.getSessionInfo(existingSessionId) != null) {
+            existingSessionId
+        } else {
+            packageInstaller.createSession(
+                getSessionParams(context, sharedLibPkgName.ifBlank { packageName })
+            )
         }
-        val sessionId = packageInstaller.createSession(sessionParams)
         val session = packageInstaller.openSession(sessionId)
 
         try {
@@ -139,23 +217,14 @@ class SessionInstaller(context: Context) : InstallerBase(context) {
     private fun commitInstall(packageName: String, sessionId: Int) {
         Log.i("Starting install session for $packageName")
         val session = packageInstaller.openSession(sessionId)
-        session.commit(getCallBackIntent(packageName).intentSender)
+        session.commit(
+            getCallBackIntent(
+                context,
+                packageName,
+                ACTION_INSTALL_STATUS,
+                parentSessionId
+            ).intentSender
+        )
         session.close()
-    }
-
-    private fun getCallBackIntent(packageName: String): PendingIntent {
-        val callBackIntent = Intent(context, InstallerStatusReceiver::class.java).apply {
-            action = InstallerStatusReceiver.ACTION_INSTALL_STATUS
-            setPackage(context.packageName)
-            putExtra(PackageInstaller.EXTRA_PACKAGE_NAME, packageName)
-            addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
-        }
-        val flags = if (isSAndAbove()) {
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-        } else {
-            PendingIntent.FLAG_UPDATE_CURRENT
-        }
-
-        return PendingIntent.getBroadcast(context, parentSessionId, callBackIntent, flags)
     }
 }
