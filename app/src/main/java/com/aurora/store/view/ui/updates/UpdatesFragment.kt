@@ -35,11 +35,9 @@ import com.aurora.extensions.toast
 import com.aurora.gplayapi.data.models.App
 import com.aurora.store.R
 import com.aurora.store.data.event.BusEvent
-import com.aurora.store.data.model.DownloadStatus
 import com.aurora.store.data.room.download.Download
 import com.aurora.store.databinding.FragmentUpdatesBinding
 import com.aurora.store.util.PathUtil
-import com.aurora.store.util.isExternalStorageEnable
 import com.aurora.store.view.epoxy.views.UpdateHeaderViewModel_
 import com.aurora.store.view.epoxy.views.app.AppUpdateViewModel_
 import com.aurora.store.view.epoxy.views.app.NoAppViewModel_
@@ -196,9 +194,7 @@ class UpdatesFragment : BaseFragment(R.layout.fragment_updates) {
         this.app = app
         viewModel.updateAllEnqueued = updateAll
 
-        if (PathUtil.needsStorageManagerPerm(app.fileList) ||
-            requireContext().isExternalStorageEnable()
-        ) {
+        if (PathUtil.needsStorageManagerPerm(app.fileList)) {
             if (isRAndAbove()) {
                 if (!Environment.isExternalStorageManager()) {
                     startForStorageManagerResult.launch(
