@@ -31,17 +31,15 @@ import androidx.navigation.FloatingWindow
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.aurora.Constants
 import com.aurora.extensions.accentColor
 import com.aurora.extensions.applyThemeAccent
 import com.aurora.store.data.model.NetworkStatus
 import com.aurora.store.data.providers.NetworkProvider
 import com.aurora.store.databinding.ActivityMainBinding
-import com.aurora.store.util.Log
 import com.aurora.store.util.Preferences
 import com.aurora.store.util.Preferences.PREFERENCE_DEFAULT_SELECTED_TAB
 import com.aurora.store.view.ui.sheets.NetworkDialogSheet
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationBarView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -119,12 +117,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Handle intents
-        when (intent?.action) {
-            Constants.NAVIGATION_UPDATES -> B.navView.selectedItemId = R.id.updatesFragment
-            else -> Log.i("Unhandled intent action: ${intent.action}")
-        }
-
         // Handle views on fragments
         navController.addOnDestinationChangedListener { _, navDestination, _ ->
             if (navDestination !is FloatingWindow) {
@@ -142,7 +134,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun attachNavigation() {
-        val bottomNavigationView: BottomNavigationView = B.navView
+        val bottomNavigationView = B.navView as NavigationBarView
         bottomNavigationView.setupWithNavController(navController)
 
         bottomNavigationView.apply {
