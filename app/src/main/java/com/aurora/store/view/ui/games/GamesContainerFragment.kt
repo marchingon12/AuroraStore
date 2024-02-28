@@ -19,13 +19,16 @@
 
 package com.aurora.store.view.ui.games
 
+import android.content.Context
 import android.os.Bundle
+import android.os.PowerManager
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.aurora.extensions.isMAndAbove
 import com.aurora.store.R
 import com.aurora.store.data.providers.AuthProvider
 import com.aurora.store.databinding.FragmentAppsGamesBinding
@@ -47,6 +50,29 @@ class GamesContainerFragment : Fragment(R.layout.fragment_apps_games) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAppsGamesBinding.bind(view)
+
+        binding.toolbar.apply {
+            title = getString(R.string.title_games)
+
+            // Show warning if battery optimizations is enabled
+            val packageName = context.packageName
+            val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (isMAndAbove() && !powerManager.isIgnoringBatteryOptimizations(packageName)) {
+                menu.findItem(R.id.menu_doze_info)?.isVisible = true
+            }
+
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_download_manager -> {
+                        findNavController().navigate(R.id.downloadFragment)
+                    }
+                    R.id.menu_doze_info -> {
+                        findNavController().navigate(R.id.dozeWarningSheet)
+                    }
+                }
+                true
+            }
+        }
 
         // ViewPager
         val isForYouEnabled = Preferences.getBoolean(

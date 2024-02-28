@@ -1,0 +1,41 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        app:icon="@drawable/ic_blacklist"
+        app:key="blacklistFragment"
+        app:summary="@string/desc_blacklist_manager"
+        app:title="@string/title_blacklist_manager" />
+
+    <Preference
+        app:icon="@drawable/ic_spoof"
+        app:key="spoofFragment"
+        app:summary="@string/desc_spoof_manager"
+        app:title="@string/title_spoof_manager" />
+
+    <Preference
+        app:allowDividerAbove="true"
+        app:icon="@drawable/ic_apps"
+        app:key="appsGamesFragment"
+        app:summary="@string/desc_apps_games"
+        app:title="@string/title_apps_games" />
+
+    <Preference
+        app:icon="@drawable/ic_sale"
+        app:key="appSalesFragment"
+        app:summary="@string/desc_apps_sale"
+        app:title="@string/title_apps_sale" />
+
+    <Preference
+        app:icon="@drawable/ic_download_manager"
+        app:key="downloadFragment"
+        app:summary="@string/desc_download_manager"
+        app:title="@string/title_download_manager" />
+
+    <Preference
+        app:allowDividerAbove="true"
+        app:icon="@drawable/ic_menu_about"
+        app:key="aboutFragment"
+        app:summary="@string/desc_about"
+        app:title="@string/title_about" />
+
+</PreferenceScreen>

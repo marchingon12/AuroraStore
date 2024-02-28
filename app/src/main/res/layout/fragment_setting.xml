@@ -32,6 +32,27 @@
         android:layout_height="wrap_content"
         app:navigationIcon="@drawable/ic_arrow_back" />
 
+    <LinearLayout
+        android:id="@+id/appLogoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/appLogo"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@mipmap/ic_launcher" />
+
+        <com.aurora.store.view.epoxy.views.HorizontalDividerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <!--
         Required ViewGroup for PreferenceFragmentCompat
         False positive for id not in API < 24

@@ -20,10 +20,12 @@
 package com.aurora.store.view.ui.updates
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
+import android.os.PowerManager
 import android.provider.Settings
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,6 +35,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.aurora.Constants
 import com.aurora.extensions.browse
+import com.aurora.extensions.isMAndAbove
 import com.aurora.extensions.isRAndAbove
 import com.aurora.extensions.toast
 import com.aurora.gplayapi.data.models.App
@@ -86,6 +89,27 @@ class UpdatesFragment : BaseFragment(R.layout.fragment_updates) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentUpdatesBinding.bind(view)
+
+        binding.toolbar.apply {
+            // Show warning if battery optimizations is enabled
+            val packageName = context.packageName
+            val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (isMAndAbove() && !powerManager.isIgnoringBatteryOptimizations(packageName)) {
+                menu.findItem(R.id.menu_doze_info)?.isVisible = true
+            }
+
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_download_manager -> {
+                        findNavController().navigate(R.id.downloadFragment)
+                    }
+                    R.id.menu_doze_info -> {
+                        findNavController().navigate(R.id.dozeWarningSheet)
+                    }
+                }
+                true
+            }
+        }
 
         viewModel.observe()
         viewLifecycleOwner.lifecycleScope.launch {

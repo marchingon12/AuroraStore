@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Aurora Store
   ~  Copyright (C) 2021, Rahul Kumar Patel <whyorean@gmail.com>
   ~  Copyright (C) 2022, The Calyx Institute
@@ -18,7 +17,8 @@
   ~  You should have received a copy of the GNU General Public License
   ~  along with Aurora Store.  If not, see <http://www.gnu.org/licenses/>.
   ~
-  --><resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  -->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="about_bhim">"BHIM - UPI"</string>
     <string name="about_bhim_summary">"Donate via UPI"</string>
     <string name="about_bitcoin_bch">"Bitcoin Cash"</string>
@@ -403,4 +403,13 @@
     <string name="device_doze_extra">Optionally you can choose to keep the optimizations enabled, but then you won\'t be able to take benefit of background downloads and automated updates, so choice is yours.</string>
     <string name="failed_apk_export">Failed to export APKs</string>
     <string name="action_manage">Manage</string>
+
+    <!-- MoreFragment -->
+    <string name="title_more">More</string>
+    <string name="desc_blacklist_manager">Exclude apps &amp; games from updates</string>
+    <string name="desc_spoof_manager">Mock device and language</string>
+    <string name="desc_apps_sale">Apps &amp; games currently on sale</string>
+    <string name="desc_download_manager">Manage downloads</string>
+    <string name="desc_apps_games">Installed apps and more</string>
+    <string name="desc_about">About Aurora Store</string>
 </resources>

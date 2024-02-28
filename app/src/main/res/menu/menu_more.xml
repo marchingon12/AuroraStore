@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Aurora Store
   ~  Copyright (C) 2021, Rahul Kumar Patel <whyorean@gmail.com>
   ~
@@ -21,15 +22,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_download_manager"
-        android:icon="@drawable/ic_download_manager"
-        android:title="@string/title_download_manager"
+        android:id="@id/accountFragment"
+        android:icon="@drawable/ic_account_manager"
+        android:title="@string/title_account_manager"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/menu_doze_info"
-        android:icon="@drawable/ic_disclaimer"
-        android:title="@string/device_doze_title"
-        android:visible="false"
+        android:id="@id/settingsFragment"
+        android:icon="@drawable/ic_menu_settings"
+        android:title="@string/title_settings"
         app:showAsAction="ifRoom" />
+
 </menu>

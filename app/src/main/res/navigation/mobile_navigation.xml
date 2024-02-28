@@ -393,6 +393,10 @@
             android:id="@+id/action_onboardingFragment_to_deviceMiuiSheet"
             app:destination="@id/deviceMiuiSheet" />
     </fragment>
+    <fragment
+        android:id="@+id/moreFragment"
+        android:name="com.aurora.store.view.ui.preferences.MoreFragment"
+        android:label="@string/title_more" />
     <dialog
         android:id="@+id/appMenuSheet"
         android:name="com.aurora.store.view.ui.sheets.AppMenuSheet"

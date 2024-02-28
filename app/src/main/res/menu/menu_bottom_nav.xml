@@ -34,4 +34,8 @@
         android:icon="@drawable/ic_updates"
         android:title="@string/title_updates" />
 
+    <item
+        android:id="@id/moreFragment"
+        android:icon="@drawable/ic_more"
+        android:title="@string/title_more" />
 </menu>
