@@ -159,7 +159,7 @@ dependencies {
     implementation("com.github.topjohnwu.libsu:core:5.0.5")
 
     //Love <3
-    implementation("com.gitlab.AuroraOSS:gplayapi:3.2.10")
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 
     //Browser
     implementation("androidx.browser:browser:1.7.0")
@@ -197,5 +197,5 @@ dependencies {
     implementation("androidx.room:room-runtime:$roomVersion")
 
     // LeakCanary
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.13")
+//    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.13")
 }
