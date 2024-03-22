@@ -219,8 +219,6 @@
     <string name="pref_install_mode_services">Aurora-palvelut</string>
     <string name="pref_install_mode_root">Root-asentaja</string>
     <string name="pref_install_mode_native">Natiiviasentaja</string>
-    <string name="pref_install_delete_title">Poista APK:t asennuksen jälkeen</string>
-    <string name="pref_install_delete_summary">APK:t poistetaan oletuksena</string>
     <string name="pref_install_auto_title">Asenna APK:t automaattisesti latauksen jälkeen</string>
     <string name="pref_install_auto_summary">Sovellusket asennetaan välittömästi latauksen valmistuttua</string>
     <string name="pref_insecure_anonymous_title">Turvaton anonyymi sessio</string>

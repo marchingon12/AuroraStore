@@ -202,8 +202,6 @@
     <string name="pref_filter_search_title">நிலையான தேடல் வடிப்பானைப் பயன்படுத்தவும்</string>
     <string name="pref_insecure_anonymous_summary">சாதனத்தில் உள்ளூரில் GSF ஐடியை உருவாக்கவும்</string>
     <string name="pref_install_auto_summary">பதிவிறக்கம் முடிந்ததும் பயன்பாடுகள் உடனடியாக நிறுவப்படும்</string>
-    <string name="pref_install_delete_summary">APKகள் இயல்பாகவே அழிக்கப்படும்</string>
-    <string name="pref_install_delete_title">APK நிறுவலுக்குப் பின் அழி</string>
     <string name="pref_install_mode_native">சாதன நிறுவி</string>
     <string name="pref_install_mode_root">ரூட் நிறுவி</string>
     <string name="pref_install_mode_session">அமர்வு நிறுவி</string>

@@ -17,13 +17,18 @@
   ~
   -->
 
-<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <SwitchPreferenceCompat
-        app:defaultValue="true"
+    <SeekBarPreference
+        android:defaultValue="12"
+        android:key="PREFERENCE_DOWNLOADS_CACHE_TIME"
+        android:max="24"
+        android:summary="@string/pref_download_cache_summary"
+        android:title="@string/pref_download_cache_title"
+        app:adjustable="true"
         app:iconSpaceReserved="false"
-        app:key="PREFERENCE_AUTO_DELETE"
-        app:summary="@string/pref_install_delete_summary"
-        app:title="@string/pref_install_delete_title" />
+        app:min="1"
+        app:showSeekBarValue="true" />
 
 </androidx.preference.PreferenceScreen>

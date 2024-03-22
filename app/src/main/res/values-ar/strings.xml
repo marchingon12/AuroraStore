@@ -59,7 +59,6 @@
     <string name="pref_install_mode_services">خدمات Aurora(مهمل)</string>
     <string name="pref_install_mode_root">مثبت الجذر</string>
     <string name="pref_install_mode_native">المثبت الأصلي(مهمل)</string>
-    <string name="pref_install_delete_title">حذف APK بعد التثبيت</string>
     <string name="pref_filter_google_title">تصفية تطبيقات قوقل</string>
     <string name="pref_filter_fdroid_title">تصفية تطبيقات F-Droid</string>
     <string name="pref_app_download">التنزيلات</string>
@@ -164,7 +163,6 @@
     <string name="pref_install_mode_summary">حدد وضع تثبيت حزمة التطبيقات APK</string>
     <string name="pref_install_auto_title">تثبيت تلقائي APKs بعد التنزيل</string>
     <string name="onboarding_permission_select">متجر Aurora يتطلب الأذونات التالية</string>
-    <string name="pref_install_delete_summary">سيتم حذف APK بشكل افتراضي</string>
     <string name="pref_filter_fdroid_summary">تجاهل تطبيقات F-Droid من التحديثات والتطبيقات المثبتة</string>
     <string name="pref_abandon_session_desc">مسح جلسات التثبيت المعلقة أو التي تم التخلي عنها</string>
     <string name="onboarding_permission_installer_desc">السماح بتثبيت التطبيقات من متجر Aurora</string>

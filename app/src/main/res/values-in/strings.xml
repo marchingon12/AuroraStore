@@ -236,8 +236,6 @@
     <string name="pref_install_mode_services">Layanan Aurora (Tidak digunakan lagi)</string>
     <string name="pref_install_mode_root">Pemasang root</string>
     <string name="pref_install_mode_native">Pemasang native (Tidak digunakan lagi)</string>
-    <string name="pref_install_delete_title">Hapus APK setelah pemasangan</string>
-    <string name="pref_install_delete_summary">APK akan dihapus secara default</string>
     <string name="pref_install_auto_title">Pasang APK secara otomatis setelah pengunduhan</string>
     <string name="pref_install_auto_summary">Aplikasi dipasang langsung setelah unduhan selesai</string>
     <string name="pref_insecure_anonymous_title">Sesi anonim tidak aman</string>

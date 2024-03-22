@@ -165,7 +165,6 @@
     <string name="installer_status_failure">ההתקנה נכשלה</string>
     <string name="exodus_substring">עוקבנים ידועים נמצאו</string>
     <string name="download_queued">מחכה בתור</string>
-    <string name="pref_install_delete_title">מחיקת קובצי ה־APK לאחר ההתקנה</string>
     <string name="pref_install_mode_services">שירותי Aurora (לא עדכני)</string>
     <string name="pref_network_title">תעבורת רשת</string>
     <string name="title_manual_download">הורדה ידנית</string>
@@ -185,7 +184,6 @@
     <string name="exodus_progress">מתבצעת בדיקת עוקבנים…</string>
     <string name="onboarding_permission_esa">גישה לאחסון חיצוני</string>
     <string name="pref_filter_google_title">סינון יישומי Google</string>
-    <string name="pref_install_delete_summary">קובצי ה־APK יימחקו כברירת מחדל</string>
     <string name="title_download_playstore">חנות Play</string>
     <string name="pref_insecure_anonymous_title">הפעלה לא מאובטחת בעילום שם</string>
     <string name="pref_ui_title">התאמה אישית</string>

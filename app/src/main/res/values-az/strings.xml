@@ -191,8 +191,6 @@
     <string name="pref_insecure_anonymous_title">Təhlükəli anonim hesab</string>
     <string name="pref_install_auto_summary">Tətbiqlər yükləmə tamamlandıqdan dərhal sonra quraşdırılır</string>
     <string name="pref_install_auto_title">Yüklədikdən sonra APK-ları avtomatik quraşdırın</string>
-    <string name="pref_install_delete_summary">APK-lar defolt olaraq silinəcək</string>
-    <string name="pref_install_delete_title">Quraşdırıldıqdan sonra APK-ni silin</string>
     <string name="pref_install_mode_am">AM quraşdırıcısı.</string>
     <string name="pref_install_mode_native">Yerli quraşdırıcı</string>
     <string name="pref_install_mode_root">Root(kök) quraşdırıcı</string>

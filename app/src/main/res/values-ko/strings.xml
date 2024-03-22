@@ -191,10 +191,8 @@
     <string name="pref_download_directory_error">선택한 경로에 쓸 수 없습니다</string>
     <string name="action_uninstall_confirmation">이 앱을 제거하시겠습니까?</string>
     <string name="details_ratings_title_hint">리뷰 제목</string>
-    <string name="pref_install_delete_title">설치 후 APK 삭제</string>
     <string name="onboarding_permission_doze">백그라운드 다운로드</string>
     <string name="onboarding_permission_doze_desc">Aurora Store가 백그라운드에서 앱을 다운로드하고 업데이트하도록 허용</string>
-    <string name="pref_install_delete_summary">APK는 기본적으로 삭제됩니다.</string>
     <string name="pref_install_mode_shizuku">Shizuku 설치기</string>
     <string name="pref_install_mode_native">네이티브 설치기 (지원 중단)</string>
     <string name="pref_install_mode_root">루트 설치기</string>

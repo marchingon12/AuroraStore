@@ -41,8 +41,6 @@
     <string name="pref_install_mode_services">Servizos Aurora</string>
     <string name="pref_install_mode_root">Instalador root</string>
     <string name="pref_install_mode_native">Instalador nativo</string>
-    <string name="pref_install_delete_title">Eliminar APK unha vez instalado</string>
-    <string name="pref_install_delete_summary">As APKs serán eliminadas por defecto</string>
     <string name="pref_install_auto_title">Instalar APKs automaticamente despois da descarga</string>
     <string name="pref_install_auto_summary">As aplicacións son instaladas após a descarga é completada</string>
     <string name="pref_insecure_anonymous_title">Sesión anónima insergura</string>

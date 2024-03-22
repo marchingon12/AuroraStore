@@ -98,8 +98,6 @@
     <string name="pref_install_mode_services">Aurora Diensten</string>
     <string name="pref_install_mode_root">Root installateur</string>
     <string name="pref_install_mode_native">Native installateur</string>
-    <string name="pref_install_delete_title">Verwijder APK na installatie</string>
-    <string name="pref_install_delete_summary">APKs worden standaard verwijderd</string>
     <string name="pref_install_auto_title">Auto-installeer APKs na download</string>
     <string name="pref_install_auto_summary">Apps worden meteen geïnstalleerd nadat de download wordt voltooid</string>
     <string name="pref_insecure_anonymous_title">Onveilige anonieme sessie</string>

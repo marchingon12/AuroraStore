@@ -29,10 +29,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.aurora.extensions.isIgnoringBatteryOptimizations
 import com.aurora.store.R
+import com.aurora.store.data.work.CleanCacheWorker
 import com.aurora.store.data.work.UpdateWorker
 import com.aurora.store.databinding.FragmentOnboardingBinding
 import com.aurora.store.util.Preferences
-import com.aurora.store.util.Preferences.PREFERENCE_AUTO_DELETE
 import com.aurora.store.util.Preferences.PREFERENCE_DEFAULT
 import com.aurora.store.util.Preferences.PREFERENCE_DEFAULT_SELECTED_TAB
 import com.aurora.store.util.Preferences.PREFERENCE_FILTER_AURORA_ONLY
@@ -129,6 +129,7 @@ class OnboardingFragment : Fragment(R.layout.fragment_onboarding) {
             binding.btnForward.isEnabled = true
             binding.btnForward.setOnClickListener {
                 setupAutoUpdates()
+                CleanCacheWorker.scheduleAutomatedCacheCleanup(requireContext())
                 save(PREFERENCE_INTRO, true)
                 findNavController().navigate(
                     OnboardingFragmentDirections.actionOnboardingFragmentToSplashFragment()
@@ -161,7 +162,6 @@ class OnboardingFragment : Fragment(R.layout.fragment_onboarding) {
         save(PREFERENCE_SIMILAR, true)
 
         /*Installer*/
-        save(PREFERENCE_AUTO_DELETE, true)
         save(PREFERENCE_INSTALLER_ID, 0)
 
         /*Updates*/

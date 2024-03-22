@@ -218,8 +218,6 @@
     <string name="pref_install_mode_services">Aurora Services (非推奨)</string>
     <string name="pref_install_mode_root">Root インストーラー</string>
     <string name="pref_install_mode_native">ネイティブインストーラー (非推奨)</string>
-    <string name="pref_install_delete_title">インストール後に APK を削除</string>
-    <string name="pref_install_delete_summary">APK はデフォルトで削除されます</string>
     <string name="pref_install_auto_title">APK ダウンロード後自動インストール</string>
     <string name="pref_install_auto_summary">アプリはダウンロード完了後すぐにインストールされます</string>
     <string name="pref_filter_google_title">Google アプリを除外</string>

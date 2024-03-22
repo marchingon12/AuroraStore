@@ -61,7 +61,6 @@
     <string name="toast_apk_whitelisted">Whitelisted</string>
     <string name="pref_ui_no_for_you">Páxines «Pa ti»</string>
     <string name="filter_review_one">Una estrella</string>
-    <string name="pref_install_delete_title">Desaniciar les APKs dempués d\'instalales</string>
     <string name="action_ok">D\'acuerdu</string>
     <string name="toast_purchase_blocked">La compra d\'aplicaciones nun ta disponible nes cuentes anónimes.</string>
     <string name="title_apps_sale">Aplicaciones en venta</string>
@@ -207,7 +206,6 @@
     <string name="exodus_substring">ye\'l númberu de rastrexadores atopaos</string>
     <string name="filter_review_critical">Reseña crítica</string>
     <string name="pref_filter_search_summary">Search filters are reset on each search. Turn off to save search filters</string>
-    <string name="pref_install_delete_summary">Les APKs desaníciense por defeutu</string>
     <string name="pref_install_mode_am">AM installer.</string>
     <string name="pref_install_profile_summary">Seleiciona\'l perfil de destín nel qu\'instalar les aplicaciones. Namás funciona col métodu d\'instalación root</string>
     <string name="pref_install_mode_summary">Seleiciona\'l métodu d\'instalación de los ficheros APK</string>

@@ -152,8 +152,6 @@
     <string name="pref_install_mode_services">Aurora usluge (Zastarjelo)</string>
     <string name="pref_install_mode_root">Administratorska instalacija</string>
     <string name="pref_install_mode_native">Izvorna instalacija (Zastarjelo)</string>
-    <string name="pref_install_delete_title">Izbriši APK datoteke nakon instaliranja</string>
-    <string name="pref_install_delete_summary">APK datoteke će se standardno izbrisati</string>
     <string name="pref_install_auto_title">Automatski instaliraj APK datoteke nakon preuzimanja</string>
     <string name="pref_install_auto_summary">Programi se instaliraju izravno nakon preuzimanja</string>
     <string name="pref_insecure_anonymous_title">Nesigurna anonimna sesija</string>

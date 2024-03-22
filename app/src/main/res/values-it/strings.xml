@@ -187,8 +187,6 @@
     <string name="pref_install_mode_services">Servizi Aurora (Deprecato)</string>
     <string name="pref_install_mode_root">Installatore Root</string>
     <string name="pref_install_mode_native">Installatore nativo (Deprecato)</string>
-    <string name="pref_install_delete_title">Elimina gli APK dopo l’installazione</string>
-    <string name="pref_install_delete_summary">Gli APK verranno eliminati per impostazione predefinita</string>
     <string name="pref_abandon_session_desc">Cancellare le sessioni di installazione in sospeso o abbandonate</string>
     <string name="pref_abandon_session">Cancella sessioni di installazione forzatamente</string>
     <string name="onboarding_permission_installer">Autorizzazione installatore</string>

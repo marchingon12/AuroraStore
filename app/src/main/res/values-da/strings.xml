@@ -191,8 +191,6 @@
     <string name="pref_insecure_anonymous_title">Usikker anonym session</string>
     <string name="pref_install_auto_summary">Apps bliver installeret ummidelbart efter downloads er færdiggjorte</string>
     <string name="pref_install_auto_title">Auto-installer APK-er efter downloads</string>
-    <string name="pref_install_delete_summary">APK-er bliver som udgangspunkt slettet</string>
-    <string name="pref_install_delete_title">Slet APK efter installering</string>
     <string name="pref_install_mode_native">Native installatør</string>
     <string name="pref_install_mode_root">Root installatør</string>
     <string name="pref_install_mode_services">Aurora Services</string>

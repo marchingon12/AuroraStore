@@ -155,8 +155,6 @@
     <string name="pref_install_mode_services">Dịch vụ Aurora (Không dùng nữa)</string>
     <string name="pref_install_mode_root">Trình cài đặt root</string>
     <string name="pref_install_mode_native">Trình cài đặt gốc (Không dùng nữa)</string>
-    <string name="pref_install_delete_title">Xóa APK sau khi cài đặt</string>
-    <string name="pref_install_delete_summary">APK sẽ bị xóa theo mặc định</string>
     <string name="pref_install_auto_title">Tự động cài đặt APK sau khi tải xuống</string>
     <string name="pref_install_auto_summary">Ứng dụng được cài đặt ngay sau khi tải xuống hoàn tất</string>
     <string name="pref_insecure_anonymous_title">Phiên ẩn danh không an toàn</string>

@@ -255,8 +255,6 @@
     <string name="pref_dialog_to_apply_restart">ये सेटिंग आपके ऐप रिस्टार्ट करने के बाद लागू हो जाएंगी</string>
     <string name="pref_insecure_anonymous_title">असुरक्षित अज्ञात सत्र</string>
     <string name="pref_filter_search_summary">खोज फिल्टर हर खोज पर रीसेट होते हैं। खोज फिल्टर सेव करने को बंद करें</string>
-    <string name="pref_install_delete_summary">एपीके डिफॉल्ट रूप से मिटा दिए जाएंगे</string>
-    <string name="pref_install_delete_title">इंस्टॉल के बाद एपीके मिटाएं</string>
     <string name="pref_ui_theme_system">सिस्टम अनुसार</string>
     <string name="pref_install_mode_root">रूट इंस्टॉलर</string>
     <string name="pref_install_mode_services">ऑरोरा सेवाएं (डेप्रकेटड)</string>

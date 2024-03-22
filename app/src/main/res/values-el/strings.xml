@@ -182,7 +182,6 @@
     <string name="pref_ui_layout_tab">Επιλέξτε προεπιλεγμένη καρτέλα</string>
     <string name="pref_filter_google_title">Φιλτράρετε τις εφαρμογές Google</string>
     <string name="pref_filter_search_summary">Τα φίλτρα αναζήτησης επαναφέρονται σε κάθε αναζήτηση. Απενεργοποιήστε τα για να τα αποθηκεύσετε</string>
-    <string name="pref_install_delete_summary">Τα APK θα διαγραφούν από προεπιλογή</string>
     <string name="pref_network_title">Δικτύωση</string>
     <string name="pref_install_profile_summary">Επιλέξτε το προφίλ για εγκατάσταση εφαρμογών. Λειτουργεί μόνο με τη μέθοδο εγκατάστασης Root</string>
     <string name="pref_ui_title">Προσαρμογή</string>
@@ -225,7 +224,6 @@
     <string name="title_spoof_manager">Διαχειριστής πλαστογραφίας</string>
     <string name="pref_ui_theme_dark_x">Σκοτεινό Χ</string>
     <string name="title_apps_games">Οι εφαρμογές και τα παιχνίδια μου</string>
-    <string name="pref_install_delete_title">Διαγραφή APK μετά την εγκατάσταση</string>
     <string name="pref_ui_similar_apps">Παρόμοιες και σχετικές εφαρμογές</string>
     <string name="title_blacklist_manager">Διαχειριστής μαύρης λίστας</string>
     <string name="pref_install_profile_title">Προφίλ εγκατάστασης (πειραματικό)</string>

@@ -77,8 +77,6 @@
     <string name="pref_install_mode_services">Služby Aurora (zastaralé)</string>
     <string name="pref_install_mode_root">Root instalátor</string>
     <string name="pref_install_mode_native">Nativní instalátor (zastaralý)</string>
-    <string name="pref_install_delete_title">Odstranit soubor APK po instalaci</string>
-    <string name="pref_install_delete_summary">Soubory APK budou ve výchozím nastavení odstraněny</string>
     <string name="pref_install_auto_title">Automatická instalace APK po stažení</string>
     <string name="pref_install_auto_summary">Aplikace se nainstalují okamžitě po dokončení stahování</string>
     <string name="pref_insecure_anonymous_title">Nezabezpečená anonymní relace</string>

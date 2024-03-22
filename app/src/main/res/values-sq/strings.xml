@@ -178,8 +178,6 @@
     <string name="pref_insecure_anonymous_title">Sesion anonim i pasigurt</string>
     <string name="pref_install_auto_summary">Aplikacionet instalohet menjëherë pasi të plotësohet shkarkimi</string>
     <string name="pref_install_auto_title">Vetëinstaloji APK-të pas shkarkimi</string>
-    <string name="pref_install_delete_summary">APK-të do të fshihen, si parazgjedhje</string>
-    <string name="pref_install_delete_title">Fshije APK-në pas instalimit</string>
     <string name="pref_install_mode_native">Instalues i vetë sistemit (Nxjerrë nga përdorimi)</string>
     <string name="pref_install_mode_root">Instalues rrënjë</string>
     <string name="pref_install_mode_services">Shërbime Aurora (Nxjerrë nga përdorimi)</string>

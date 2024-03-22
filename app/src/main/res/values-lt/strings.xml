@@ -218,7 +218,6 @@
     <string name="pref_insecure_anonymous_summary">Generuoti GSF ID vietiniu mastu įrenginyje</string>
     <string name="pref_install_auto_summary">Užbaigus atsisiuntimą programėlės bus įdiegiamos akimirksniu</string>
     <string name="pref_install_auto_title">Atsisiuntus, automatiškai įdiegti APK paketus</string>
-    <string name="pref_install_delete_summary">Pagal numatymą APK paketai bus ištrinami</string>
     <string name="pref_install_mode_summary">Pasirinkti APK paketų diegimo veikseną</string>
     <string name="tab_top_charts">Geriausios</string>
     <string name="tab_top_free">Top nemokamos</string>
@@ -244,7 +243,6 @@
     <string name="installer_status_failure">Diegimo programėlė patyrė nesėkmę</string>
     <string name="onboarding_permission_select">Aurora Store reikalauja šių leidimų</string>
     <string name="onboarding_permission_esa">Prieiga prie išorinės saugyklos</string>
-    <string name="pref_install_delete_title">Po įdiegimo ištrinti APK paketus</string>
     <string name="pref_ui_no_for_you_desc">Rodyti pradžios ekrane puslapius „Jums“</string>
     <string name="pref_filter_search_summary">Paieškos filtrai bus atstatomi kiekvienos paieškos metu. Išjunkite šią parinktį norėdami išsaugoti paieškos filtrus</string>
     <string name="onboarding_permission_esm">Išorinės saugyklos tvarkytuvė</string>

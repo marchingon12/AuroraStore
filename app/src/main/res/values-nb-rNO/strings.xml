@@ -164,7 +164,6 @@
     <string name="pref_network_title">Nettverk</string>
     <string name="pref_install_mode_title">Installasjonsmetode</string>
     <string name="pref_install_mode_summary">Velg modus for APK-installasjon</string>
-    <string name="pref_install_delete_summary">APK-er blir slettet som standard</string>
     <string name="pref_install_auto_title">Installer APK-er automatisk etter nedlasting</string>
     <string name="pref_install_auto_summary">Apper installeres umiddelbart etter at nedlastingen er fullført</string>
     <string name="pref_insecure_anonymous_title">Usikker anonym økt</string>
@@ -214,7 +213,6 @@
     <string name="title_spoof_manager">Lureri-håndterer</string>
     <string name="insecure_anonymous_apply">Logg inn igjen og start programmet igjen for å bruke endringene.</string>
     <string name="spoof_apply">Logg inn igjen for å anvende lureriet</string>
-    <string name="pref_install_delete_title">Slett APK etter installering</string>
     <string name="pref_insecure_anonymous_summary">Generer GSF-ID lokalt på enhet</string>
     <string name="installer_status_failure">Installereren mislyktes</string>
     <string name="installer_root_unavailable">Ingen rot-tilgang. Innvilg det eller endre installasjonsmetode.</string>

@@ -214,8 +214,6 @@
     <string name="pref_install_mode_services">Aurora Szolgáltatások (Elavult)</string>
     <string name="pref_install_mode_root">Root telepítő</string>
     <string name="pref_install_mode_native">Natív telepítő (Elavult)</string>
-    <string name="pref_install_delete_title">APK törlés telepítés után</string>
-    <string name="pref_install_delete_summary">Az APK-k törlődnek alapértelmezés szerint</string>
     <string name="pref_install_auto_title">APK-k automatikus telepítése letöltés után</string>
     <string name="pref_install_auto_summary">Az appok letöltés után azonnal telepítésre kerülnek</string>
     <string name="pref_insecure_anonymous_title">Nem biztonságos anonim munkamenet</string>

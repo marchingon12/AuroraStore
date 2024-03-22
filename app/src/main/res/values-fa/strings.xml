@@ -186,7 +186,6 @@
     <string name="exodus_substring">ردیاب(های) موجود در</string>
     <string name="filter_review_positive">مثبت</string>
     <string name="installer_status_user_action">در انتظار تایید کاربر</string>
-    <string name="pref_install_delete_summary">فایل های APKs به طور پیش فرض حذف خواهند شد</string>
     <string name="pref_ui_theme_system">پیروی از سیستم</string>
     <string name="exodus_view_report">مشاهده گزارش</string>
     <string name="dialog_title_self_update">بروزرسانی جدید در دسترس</string>
@@ -263,7 +262,6 @@
     <string name="pref_filter_google_summary">حذف همه برنامه‌های گوگل از نتایج جستجو و دسته‌بندی برنامه‌ها</string>
     <string name="pref_filter_google_title">فیلتر کردن برنامه های گوگل</string>
     <string name="pref_filter_search_title">استفاده از فیلتر جستجوی غیر دائمی</string>
-    <string name="pref_install_delete_title">حذف APK پس از نصب</string>
     <string name="pref_install_mode_am">نصب کننده AM.</string>
     <string name="pref_install_profile_title">پروفایل های نصب (آزمایشی)</string>
     <string name="pref_ui_theme_dark_x">دارک ایکس</string>

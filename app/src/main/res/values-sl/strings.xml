@@ -155,8 +155,6 @@
     <string name="pref_install_auto_title">Samodejna namestitev APK-jev po prenosu</string>
     <string name="pref_install_mode_shizuku">Shizuku namestitveni program</string>
     <string name="pref_install_mode_am">AM namestitveni program.</string>
-    <string name="pref_install_delete_summary">APK-ji bodo privzeto izbrisani</string>
-    <string name="pref_install_delete_title">Izbriši APK po namestitvi</string>
     <string name="pref_install_mode_native">Izvorni namestitveni program</string>
     <string name="pref_install_mode_root">Korenski namestitveni program</string>
     <string name="pref_install_mode_services">Aurora storitve</string>

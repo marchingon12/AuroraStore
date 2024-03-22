@@ -153,8 +153,6 @@
     <string name="pref_install_mode_services">Usługi Aurora (przestarzały)</string>
     <string name="pref_install_mode_root">Instalator root</string>
     <string name="pref_install_mode_native">Instalator natywny (przestarzały)</string>
-    <string name="pref_install_delete_title">Usuń APK po zainstalowaniu</string>
-    <string name="pref_install_delete_summary">Pliki APK będą domyślnie usuwane</string>
     <string name="pref_install_auto_title">Automatyczna instalacja plików APK po pobraniu</string>
     <string name="pref_install_auto_summary">Aplikacje będą instalowane natychmiast po zakończeniu pobierania</string>
     <string name="pref_filter_google_title">Filtruj aplikacje Google</string>

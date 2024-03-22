@@ -146,8 +146,6 @@
     <string name="pref_install_mode_services">Aurora 服務（已棄用）</string>
     <string name="pref_install_mode_root">Root 安裝方式</string>
     <string name="pref_install_mode_native">原生安裝器（已棄用）</string>
-    <string name="pref_install_delete_title">安裝後刪除 APK</string>
-    <string name="pref_install_delete_summary">預設情況下 APK 將會被刪除</string>
     <string name="pref_install_auto_title">下載完自動安裝 APK</string>
     <string name="pref_install_auto_summary">應用程式將會在下載完即時安裝</string>
     <string name="pref_insecure_anonymous_title">不安全的匿名階段</string>
