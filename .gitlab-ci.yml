@@ -5,27 +5,35 @@ variables:
   PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/nightly/${PACKAGE_VERSION}"
 
 stages:
-- build
+#- build
 - upload
-- release
+#- release
 
-assembleNightly:
-  stage: build
+#assembleNightly:
+#  stage: build
+#  image: theimpulson/gitlab-ci-android:android-34
+#  cache:
+#    key: ${CI_PROJECT_ID}
+#    paths:
+#      - .gradle/
+#  script:
+#    - './gradlew assembleNightly'
+#  artifacts:
+#    paths:
+#    - $NIGHTLY_BINARY_PATH
+#
+#uploadToPackageRegistry:
+#  stage: upload
+#  image: curlimages/curl:latest
+#  rules:
+#    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+#  script:
+#    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${NIGHTLY_BINARY_PATH} ${PACKAGE_REGISTRY_URL}/${NIGHTLY_BINARY}'
+
+uploadToFDroidRepo:
+  stage: upload
   image: theimpulson/gitlab-ci-android:android-34
-  cache:
-    key: ${CI_PROJECT_ID}
-    paths:
-      - .gradle/
   script:
     - './gradlew assembleNightly'
-  artifacts:
-    paths:
-    - $NIGHTLY_BINARY_PATH
-
-uploadNightly:
-  stage: upload
-  image: curlimages/curl:latest
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  script:
-    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${NIGHTLY_BINARY_PATH} ${PACKAGE_REGISTRY_URL}/${NIGHTLY_BINARY}'
+    - 'apt-get update && apt-get install -y --no-install-recommends fdroidserver openssh-client rsync'
+    - 'fdroid nightly -v --no-deploy'
