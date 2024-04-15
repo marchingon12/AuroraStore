@@ -41,6 +41,7 @@ import com.aurora.store.util.Log
 import com.aurora.store.util.Preferences
 import com.aurora.store.util.Preferences.PREFERENCE_DEFAULT_SELECTED_TAB
 import com.aurora.store.view.ui.sheets.NetworkDialogSheet
+import com.google.android.material.navigation.NavigationBarView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -94,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        B.navView.apply {
+        (B.navView as NavigationBarView).apply {
             val alphaColor = ColorUtils.setAlphaComponent(this@MainActivity.accentColor(), 100)
             setupWithNavController(navController)
             itemActiveIndicatorColor = ColorStateList.valueOf(alphaColor)
@@ -119,12 +120,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 navController.navigateUp()
             }
-        }
-
-        // Handle intents
-        when (intent?.action) {
-            Constants.NAVIGATION_UPDATES -> B.navView.selectedItemId = R.id.updatesFragment
-            else -> Log.i("Unhandled intent action: ${intent.action}")
         }
 
         // Handle views on fragments
