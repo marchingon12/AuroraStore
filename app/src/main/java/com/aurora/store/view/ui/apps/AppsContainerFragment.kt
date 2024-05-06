@@ -50,8 +50,9 @@ class AppsContainerFragment : Fragment(R.layout.fragment_apps_games) {
         _binding = FragmentAppsGamesBinding.bind(view)
 
         // Toolbar
-        binding.toolbar.apply {
+        binding.searchBar.apply {
             title = getString(R.string.title_apps)
+            setOnClickListener { findNavController().navigate(R.id.searchSuggestionFragment) }
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.menu_download_manager -> {
@@ -105,10 +106,6 @@ class AppsContainerFragment : Fragment(R.layout.fragment_apps_games) {
         ) { tab: TabLayout.Tab, position: Int ->
             tab.text = tabTitles[position]
         }.attach()
-
-        binding.searchFab.setOnClickListener {
-            findNavController().navigate(R.id.searchSuggestionFragment)
-        }
     }
 
     override fun onDestroyView() {

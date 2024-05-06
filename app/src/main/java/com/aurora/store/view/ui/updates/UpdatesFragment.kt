@@ -89,18 +89,22 @@ class UpdatesFragment : BaseFragment(R.layout.fragment_updates) {
         _binding = FragmentUpdatesBinding.bind(view)
 
         // Toolbar
-        binding.toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.menu_download_manager -> {
-                    findNavController().navigate(R.id.downloadFragment)
+        binding.searchBar.apply {
+            setOnClickListener { findNavController().navigate(R.id.searchSuggestionFragment) }
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_download_manager -> {
+                        findNavController().navigate(R.id.downloadFragment)
+                    }
+
+                    R.id.menu_more -> {
+                        findNavController().navigate(
+                            MobileNavigationDirections.actionGlobalMoreDialogFragment()
+                        )
+                    }
                 }
-                R.id.menu_more -> {
-                    findNavController().navigate(
-                        MobileNavigationDirections.actionGlobalMoreDialogFragment()
-                    )
-                }
+                true
             }
-            true
         }
 
         viewModel.observe()
