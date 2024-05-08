@@ -115,8 +115,9 @@ class SpoofFragment : Fragment(R.layout.activity_generic_pager) {
     private fun importDeviceConfig(uri: Uri) {
         try {
             context?.contentResolver?.openInputStream(uri)?.use { input ->
-                PathUtil.getNewEmptySpoofConfig(requireContext()).outputStream().use {
-                    input.copyTo(it)
+                val file = PathUtil.getNewEmptySpoofConfig(requireContext())
+                requireContext().contentResolver.openOutputStream(file!!.uri).use {
+                    input.copyTo(it!!)
                 }
             }
             toast(R.string.toast_import_success)

@@ -20,13 +20,13 @@
 package com.aurora.store.data.providers
 
 import android.content.Context
+import androidx.documentfile.provider.DocumentFile
 import com.aurora.store.BuildConfig
 import com.aurora.store.data.SingletonHolder
 import com.aurora.store.util.Log
 import com.aurora.store.util.PathUtil
 import java.io.BufferedInputStream
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 import java.util.Properties
 import java.util.jar.JarEntry
@@ -37,8 +37,8 @@ class SpoofDeviceProvider private constructor(var context: Context) {
     companion object : SingletonHolder<SpoofDeviceProvider, Context>(::SpoofDeviceProvider) {
         private const val SUFFIX = ".properties"
 
-        fun filenameValid(filename: String): Boolean {
-            return filename.endsWith(SUFFIX)
+        fun filenameValid(filename: String?): Boolean {
+            return !filename.isNullOrBlank() && filename.endsWith(SUFFIX)
         }
     }
 
@@ -75,13 +75,9 @@ class SpoofDeviceProvider private constructor(var context: Context) {
         get() {
             val deviceNames: MutableList<Properties> = ArrayList()
             val defaultDir = PathUtil.getSpoofDirectory(context)
-            val files = defaultDir.listFiles()
-            if (defaultDir.exists() && files != null) {
-                for (file in files) {
-                    if (!file.isFile || !filenameValid(file.name)) {
-                        continue
-                    }
-                    deviceNames.add(getProperties(file))
+            if (defaultDir.exists()) {
+                defaultDir.listFiles().filter { it.isFile }.forEach {
+                    deviceNames.add(getProperties(it))
                 }
             }
             return deviceNames
@@ -98,10 +94,10 @@ class SpoofDeviceProvider private constructor(var context: Context) {
         return properties
     }
 
-    private fun getProperties(file: File): Properties {
+    private fun getProperties(file: DocumentFile): Properties {
         val properties = Properties()
         try {
-            properties.load(BufferedInputStream(FileInputStream(file)))
+            properties.load(BufferedInputStream(context.contentResolver.openInputStream(file.uri)))
             properties.setProperty("CONFIG_NAME", file.name)
         } catch (e: IOException) {
             Log.e("Could not read %s", file.name)

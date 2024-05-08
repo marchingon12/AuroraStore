@@ -21,6 +21,7 @@ package com.aurora.store.util
 
 import android.content.Context
 import android.os.Environment
+import androidx.documentfile.provider.DocumentFile
 import java.io.File
 import java.util.UUID
 import com.aurora.gplayapi.data.models.File as GPlayFile
@@ -99,15 +100,15 @@ object PathUtil {
         return fileList.any { it.type == GPlayFile.FileType.OBB || it.type == GPlayFile.FileType.PATCH }
     }
 
-    fun getSpoofDirectory(context: Context): File {
-        return File(context.filesDir, SPOOF)
+    fun getSpoofDirectory(context: Context): DocumentFile {
+        val spoofDir = File(context.filesDir, SPOOF)
+        spoofDir.mkdir()
+        return DocumentFile.fromFile(spoofDir)
     }
 
-    fun getNewEmptySpoofConfig(context: Context): File {
-        val file = File(getSpoofDirectory(context), "${UUID.randomUUID()}.properties")
-        file.parentFile?.mkdirs()
-        file.createNewFile()
-        return file
+    fun getNewEmptySpoofConfig(context: Context): DocumentFile? {
+        val parentDoc = getSpoofDirectory(context)
+        return parentDoc.createFile("text/x-java-properties", UUID.randomUUID().toString())
     }
 }
 
