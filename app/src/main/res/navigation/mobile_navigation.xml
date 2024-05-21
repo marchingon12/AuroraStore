@@ -394,6 +394,15 @@
         android:name="com.aurora.store.view.ui.preferences.InstallerFragment"
         android:label="InstallerFragment"
         tools:layout="@layout/fragment_installer"/>
+    <fragment
+        android:id="@+id/dispenserFragment"
+        android:name="com.aurora.store.view.ui.dispenser.DispenserFragment"
+        android:label="DispenserFragment"
+        tools:layout="@layout/fragment_dispenser" >
+        <action
+            android:id="@+id/action_dispenserFragment_to_dialogDispenserRemove"
+            app:destination="@id/dialogDispenserRemove" />
+    </fragment>
     <dialog
         android:id="@+id/appMenuSheet"
         android:name="com.aurora.store.view.ui.sheets.AppMenuSheet"
@@ -479,4 +488,15 @@
         android:id="@+id/moreDialogFragment"
         android:name="com.aurora.store.view.ui.commons.MoreDialogFragment"
         android:label="MoreDialogFragment" />
+    <dialog
+        android:id="@+id/dialogDispenserInput"
+        android:name="com.aurora.store.view.ui.dispenser.DialogDispenserInput"
+        android:label="DialogDispenserInput" />
+    <dialog
+        android:id="@+id/dialogDispenserRemove"
+        android:name="com.aurora.store.view.ui.dispenser.DialogDispenserRemove"
+        android:label="DialogDispenserRemove" >
+        <argument android:name="url"
+            app:argType="string" />
+    </dialog>
 </navigation>
