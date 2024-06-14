@@ -37,6 +37,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 
@@ -52,59 +54,52 @@ class SearchResultViewModel @Inject constructor(
         .with(context)
         .getAuthData()
 
-    private val webSearchHelper: WebSearchHelper = WebSearchHelper(authData)
-    private val searchHelper: SearchHelper = SearchHelper(authData)
-        .using(HttpClient.getPreferredClient(context))
+    private val _searchBundle: MutableStateFlow<SearchBundle?> = MutableStateFlow(null)
+    val searchBundle = _searchBundle.asStateFlow()
 
     val liveData: MutableLiveData<SearchBundle> = MutableLiveData()
 
-    private var searchBundle: SearchBundle = SearchBundle()
-
-    fun helper(): SearchHelper {
-        return if (authData.isAnonymous) {
-            webSearchHelper
+    private val helper: SearchHelper
+        get() = if (authData.isAnonymous) {
+            WebSearchHelper(authData)
         } else {
-            searchHelper
+            SearchHelper(authData).using(HttpClient.getPreferredClient(context))
         }
-    }
 
-    fun observeSearchResults(query: String) {
-        //Clear old results
-        searchBundle.subBundles.clear()
-        searchBundle.appList.clear()
-        //Fetch new results
+    fun observeSearchResults(query: String, force: Boolean = false) {
+        // Nothing to do if query and filters are same
+        if (_searchBundle.value?.query == query && !force) return
+
         viewModelScope.launch(Dispatchers.IO) {
             supervisorScope {
                 try {
-                    searchBundle = search(query)
-                    liveData.postValue(searchBundle)
-                } catch (e: Exception) {
-
+                    _searchBundle.value = search(query)
+                } catch (exception: Exception) {
+                    Log.e(TAG, "Failed to search", exception)
+                    _searchBundle.value = SearchBundle()
                 }
             }
         }
     }
 
-    private fun search(
-        query: String
-    ): SearchBundle {
-        return helper().searchResults(query)
+    private fun search(query: String): SearchBundle {
+        return helper.searchResults(query)
     }
 
     @Synchronized
-    fun next(nextSubBundleSet: MutableSet<SearchBundle.SubBundle>) {
+    fun next() {
         viewModelScope.launch(Dispatchers.IO) {
             supervisorScope {
                 try {
-                    if (nextSubBundleSet.isNotEmpty()) {
-                        val newSearchBundle = helper().next(nextSubBundleSet)
-                        if (newSearchBundle.appList.isNotEmpty()) {
-                            searchBundle.apply {
-                                subBundles.flushAndAdd(newSearchBundle.subBundles)
-                                appList.addAll(newSearchBundle.appList)
+                    val nextSubBundleSet = _searchBundle.value?.subBundles
+                    if (!nextSubBundleSet.isNullOrEmpty()) {
+                        val nextSearchBundle = helper.next(nextSubBundleSet)
+                        if (nextSearchBundle.appList.isNotEmpty()) {
+                            val newSearchBundle = _searchBundle.value?.apply {
+                                subBundles.flushAndAdd(nextSearchBundle.subBundles)
+                                appList.addAll(nextSearchBundle.appList)
                             }
-
-                            liveData.postValue(searchBundle)
+                            _searchBundle.value = newSearchBundle
                         }
                     }
                 } catch (e: Exception) {

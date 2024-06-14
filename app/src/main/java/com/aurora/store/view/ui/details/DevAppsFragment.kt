@@ -63,7 +63,7 @@ class DevAppsFragment : BaseFragment(R.layout.activity_generic_recycler) {
         // Recycler View
         val endlessRecyclerOnScrollListener = object : EndlessRecyclerOnScrollListener() {
             override fun onLoadMore(currentPage: Int) {
-                viewModel.liveData.value?.let { viewModel.next(it.subBundles) }
+                viewModel.liveData.value?.let { viewModel.next() }
             }
         }
         binding.recycler.addOnScrollListener(endlessRecyclerOnScrollListener)
