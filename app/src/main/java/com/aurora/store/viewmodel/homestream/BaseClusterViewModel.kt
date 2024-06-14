@@ -21,9 +21,9 @@ package com.aurora.store.viewmodel.homestream
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aurora.extensions.clone
 import com.aurora.gplayapi.data.models.AuthData
 import com.aurora.gplayapi.data.models.StreamBundle
 import com.aurora.gplayapi.data.models.StreamCluster
@@ -36,6 +36,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 
@@ -50,7 +52,9 @@ class BaseClusterViewModel @Inject constructor(
     var streamHelper: StreamHelper =
         StreamHelper(authData).using(HttpClient.getPreferredClient(context))
 
-    val liveData: MutableLiveData<ViewState> = MutableLiveData()
+    private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Empty)
+    val viewState = _viewState.asStateFlow()
+
     var streamBundle: StreamBundle = StreamBundle()
 
     lateinit var type: StreamHelper.Type
@@ -59,7 +63,7 @@ class BaseClusterViewModel @Inject constructor(
     fun getStreamBundle(category: StreamHelper.Category, type: StreamHelper.Type) {
         this.type = type
         this.category = category
-        liveData.postValue(ViewState.Loading)
+        _viewState.value = ViewState.Loading
         observe()
     }
 
@@ -83,12 +87,12 @@ class BaseClusterViewModel @Inject constructor(
                         }
 
                         //Post updated to UI
-                        liveData.postValue(ViewState.Success(streamBundle))
+                        _viewState.value = ViewState.Success(streamBundle.clone())
                     } else {
                         Log.i("End of Bundle")
                     }
                 } catch (e: Exception) {
-                    liveData.postValue(ViewState.Error(e.message))
+                    _viewState.value = ViewState.Error(e.message)
                 }
             }
         }
@@ -102,13 +106,13 @@ class BaseClusterViewModel @Inject constructor(
                         val newCluster =
                             streamHelper.getNextStreamCluster(streamCluster.clusterNextPageUrl)
                         updateCluster(streamCluster.id, newCluster)
-                        liveData.postValue(ViewState.Success(streamBundle))
+                        _viewState.value = ViewState.Success(streamBundle.clone())
                     } else {
                         Log.i("End of cluster")
                         streamCluster.clusterNextPageUrl = String()
                     }
                 } catch (e: Exception) {
-                    liveData.postValue(ViewState.Error(e.message))
+                    _viewState.value = ViewState.Error(e.message)
                 }
             }
         }

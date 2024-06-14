@@ -22,6 +22,7 @@ package com.aurora.store.view.ui.commons
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.aurora.Constants
 import com.aurora.gplayapi.data.models.App
 import com.aurora.gplayapi.data.models.StreamBundle
@@ -35,6 +36,7 @@ import com.aurora.store.view.custom.recycler.EndlessRecyclerOnScrollListener
 import com.aurora.store.view.epoxy.controller.GenericCarouselController
 import com.aurora.store.viewmodel.homestream.BaseClusterViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ForYouFragment : BaseFragment(R.layout.fragment_for_you),
@@ -70,43 +72,44 @@ class ForYouFragment : BaseFragment(R.layout.fragment_for_you),
             pageType = bundle.getInt(Constants.PAGE_TYPE, 0)
         }
 
-        when (pageType) {
-            0 -> viewModel.getStreamBundle(Category.APPLICATION, Type.HOME)
-            1 -> viewModel.getStreamBundle(Category.GAME, Type.HOME)
-        }
-
         binding.recycler.setController(genericCarouselController)
 
-        viewModel.liveData.observe(viewLifecycleOwner) {
-            when (it) {
-                is ViewState.Empty -> {
-                }
-
-                is ViewState.Loading -> {
-                    genericCarouselController.setData(null)
-                }
-
-                is ViewState.Error -> {
-
-                }
-
-                is ViewState.Status -> {
-
-                }
-
-                is ViewState.Success<*> -> {
-                    if (!::streamBundle.isInitialized) {
-                        binding.recycler.addOnScrollListener(
-                            object : EndlessRecyclerOnScrollListener() {
-                                override fun onLoadMore(currentPage: Int) {
-                                    viewModel.observe()
-                                }
-                            }
-                        )
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.viewState.collect {
+                when (it) {
+                    is ViewState.Empty -> {
+                        when (pageType) {
+                            0 -> viewModel.getStreamBundle(Category.APPLICATION, Type.HOME)
+                            1 -> viewModel.getStreamBundle(Category.GAME, Type.HOME)
+                        }
                     }
 
-                    streamBundle = it.data as StreamBundle
-                    genericCarouselController.setData(streamBundle)
+                    is ViewState.Loading -> {
+                        genericCarouselController.setData(null)
+                    }
+
+                    is ViewState.Error -> {
+
+                    }
+
+                    is ViewState.Status -> {
+
+                    }
+
+                    is ViewState.Success<*> -> {
+                        if (!::streamBundle.isInitialized) {
+                            binding.recycler.addOnScrollListener(
+                                object : EndlessRecyclerOnScrollListener() {
+                                    override fun onLoadMore(currentPage: Int) {
+                                        viewModel.observe()
+                                    }
+                                }
+                            )
+                        }
+
+                        streamBundle = it.data as StreamBundle
+                        genericCarouselController.setData(streamBundle)
+                    }
                 }
             }
         }
