@@ -26,7 +26,7 @@ import android.os.Environment
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.aurora.Constants
@@ -63,7 +63,7 @@ class UpdatesFragment : BaseFragment(R.layout.fragment_updates) {
     private var _binding: FragmentUpdatesBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: UpdatesViewModel by viewModels()
+    private val viewModel: UpdatesViewModel by activityViewModels()
 
     private val startForStorageManagerResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -73,6 +73,7 @@ class UpdatesFragment : BaseFragment(R.layout.fragment_updates) {
                 toast(R.string.permissions_denied)
             }
         }
+
     private val startForPermissions =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { perm ->
             if (perm) viewModel.download(app) else toast(R.string.permissions_denied)
@@ -93,6 +94,7 @@ class UpdatesFragment : BaseFragment(R.layout.fragment_updates) {
                 R.id.menu_download_manager -> {
                     findNavController().navigate(R.id.downloadFragment)
                 }
+
                 R.id.menu_more -> {
                     findNavController().navigate(
                         MobileNavigationDirections.actionGlobalMoreDialogFragment()
@@ -147,10 +149,8 @@ class UpdatesFragment : BaseFragment(R.layout.fragment_updates) {
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.observe()
+            viewModel.observe(true)
         }
-
-        updateController(null)
     }
 
     override fun onDestroyView() {
@@ -167,7 +167,7 @@ class UpdatesFragment : BaseFragment(R.layout.fragment_updates) {
     fun onEventMainThread(event: Any) {
         when (event) {
             is BusEvent.InstallEvent, is BusEvent.UninstallEvent -> {
-                viewModel.observe()
+                viewModel.observe(true)
             }
 
             else -> {}
