@@ -41,5 +41,6 @@ class AccountProvider private constructor(var context: Context) {
         Preferences.putBoolean(context, Constants.ACCOUNT_SIGNED_IN, false)
         Preferences.putString(context, Constants.ACCOUNT_EMAIL_PLAIN, "")
         Preferences.putString(context, Constants.ACCOUNT_AAS_PLAIN, "")
+        Preferences.putString(context, Constants.ACCOUNT_AUTH_PLAIN, "")
     }
 }

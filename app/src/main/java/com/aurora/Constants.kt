@@ -49,6 +49,7 @@ object Constants {
     const val ACCOUNT_TYPE = "ACCOUNT_TYPE"
     const val ACCOUNT_EMAIL_PLAIN = "ACCOUNT_EMAIL_PLAIN"
     const val ACCOUNT_AAS_PLAIN = "ACCOUNT_AAS_PLAIN"
+    const val ACCOUNT_AUTH_PLAIN = "ACCOUNT_AUTH_PLAIN"
 
     const val PAGE_TYPE = "PAGE_TYPE"
     const val TOP_CHART_TYPE = "TOP_CHART_TYPE"

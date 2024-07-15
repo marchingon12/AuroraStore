@@ -99,14 +99,14 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun buildGoogleAuthData(email: String, aasToken: String) {
+    fun buildGoogleAuthData(email: String, token: String, tokenType: AuthHelper.Token) {
         liveData.postValue(AuthState.Fetching)
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val authData = AuthHelper.build(
                     email = email,
-                    token = aasToken,
-                    tokenType = AuthHelper.Token.AAS,
+                    token = token,
+                    tokenType = tokenType,
                     properties = properties,
                     locale = locale
                 )
@@ -197,7 +197,15 @@ class AuthViewModel @Inject constructor(
                                     context,
                                     Constants.ACCOUNT_AAS_PLAIN
                                 )
-                                buildGoogleAuthData(email, aasToken)
+                                val authToken = Preferences.getString(
+                                    context,
+                                    Constants.ACCOUNT_AUTH_PLAIN
+                                )
+                                buildGoogleAuthData(
+                                    email,
+                                    aasToken.ifBlank { authToken },
+                                    if (aasToken.isBlank()) AuthHelper.Token.AUTH else AuthHelper.Token.AAS
+                                )
                             }
 
                             AccountType.ANONYMOUS -> {
