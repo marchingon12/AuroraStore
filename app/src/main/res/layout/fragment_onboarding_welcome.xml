@@ -36,7 +36,7 @@
         android:paddingEnd="@dimen/padding_normal"
         android:text="@string/onboarding_title_welcome"
         android:textAlignment="textStart"
-        android:textColor="?colorAccent"
+        android:textColor="?colorPrimary"
         android:textSize="42sp" />
 
     <androidx.appcompat.widget.AppCompatTextView

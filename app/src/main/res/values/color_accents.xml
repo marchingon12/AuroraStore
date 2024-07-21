@@ -16,15 +16,18 @@
   ~  along with Aurora Store.  If not, see <http://www.gnu.org/licenses/>.
   ~
   -->
-
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <corners android:radius="8dp" />
-    <solid android:color="@color/colorScrim" />
-    <padding
-        android:bottom="@dimen/margin_medium"
-        android:left="@dimen/margin_medium"
-        android:right="@dimen/margin_medium"
-        android:top="@dimen/margin_medium" />
-</shape>
-
+<resources>
+    <color name="colorAccent01">#6C63FF</color>
+    <color name="colorAccent02">#FF00FF</color>
+    <color name="colorAccent03">#E4002B</color>
+    <color name="colorAccent04">#F9A826</color>
+    <color name="colorAccent05">#49A942</color>
+    <color name="colorAccent06">#6633cc</color>
+    <color name="colorAccent07">#52565e</color>
+    <color name="colorAccent08">#ee70a6</color>
+    <color name="colorAccent09">#b5c327</color>
+    <color name="colorAccent10">#f38654</color>
+    <color name="colorAccent11">#59A8E2</color>
+    <color name="colorAccent12">#7289da</color>
+    <color name="colorAccent13">#0078D7</color>
+</resources>

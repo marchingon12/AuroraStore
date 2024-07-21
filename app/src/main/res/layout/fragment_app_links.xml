@@ -76,13 +76,12 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playStoreButton"
-                    style="@style/Widget.Material3.Button"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:insetTop="@dimen/margin_small"
+                    android:insetTop="@dimen/margin_xsmall"
                     android:insetBottom="@dimen/margin_xsmall"
                     android:text="@string/action_enable"
-                    android:textColorHighlight="?colorOnPrimary"
                     app:cornerRadius="@dimen/margin_small" />
             </LinearLayout>
 
@@ -113,13 +112,12 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/marketButton"
-                    style="@style/Widget.Material3.Button"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:insetTop="@dimen/margin_small"
+                    android:insetTop="@dimen/margin_xsmall"
                     android:insetBottom="@dimen/margin_xsmall"
                     android:text="@string/action_enable"
-                    android:textColorHighlight="?colorOnPrimary"
                     app:cornerRadius="@dimen/margin_small" />
             </LinearLayout>
         </LinearLayout>

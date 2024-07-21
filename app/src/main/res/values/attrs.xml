@@ -19,11 +19,6 @@
 
 <resources>
     <declare-styleable name="AuroraTheme">
-        <attr name="scrim" format="color" />
-        <attr name="scrimAccent" format="color" />
-        <attr name="scrimAlt" format="color" />
-        <attr name="scrimBlack" format="color" />
-        <attr name="colorStroke" format="color" />
         <attr name="colorShimmer" format="color" />
     </declare-styleable>
 
@@ -41,13 +36,6 @@
         <attr name="btnActionText" format="string" />
         <attr name="btnActionTextColor" format="string" />
         <attr name="btnActionIcon" format="string" />
-        <attr name="btnActionBackground" format="enum">
-            <enum name="outlined" value="0" />
-            <enum name="roundedOutlined" value="1" />
-            <enum name="flat" value="2" />
-            <enum name="roundedFlat" value="3" />
-            <enum name="none" value="4" />
-        </attr>
     </declare-styleable>
 
     <declare-styleable name="AuroraProgressView">

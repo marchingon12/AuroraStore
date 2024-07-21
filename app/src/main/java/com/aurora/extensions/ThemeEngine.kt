@@ -21,6 +21,7 @@ package com.aurora.extensions
 
 import android.app.UiModeManager
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -43,6 +44,7 @@ fun AppCompatActivity.applyThemeAccent() {
 
     when (themeId) {
         0 -> {
+            if (!isVAndAbove()) setSystemBarConfiguration(isLightTheme())
             if (isSAndAbove()) {
                 uiModeManager.setApplicationNightMode(UiModeManager.MODE_NIGHT_CUSTOM)
             } else {
@@ -76,14 +78,22 @@ private fun AppCompatActivity.setSystemBarConfiguration(light: Boolean) {
         // Status bar color
         if (isMAndAbove()) {
             isAppearanceLightStatusBars = light
+            window.statusBarColor = getStyledAttributeColor(android.R.attr.colorBackground)
         } else {
-            window.statusBarColor = ColorUtils.setAlphaComponent(Color.BLACK, 120)
+            window.statusBarColor = ColorUtils.setAlphaComponent(Color.BLACK, 200)
         }
 
         // Navigation bar color
         if (isOMR1AndAbove()) {
             isAppearanceLightNavigationBars = light
             window.navigationBarColor = getStyledAttributeColor(android.R.attr.colorBackground)
+        } else {
+            window.navigationBarColor = ColorUtils.setAlphaComponent(Color.BLACK, 200)
         }
     }
+}
+
+private fun AppCompatActivity.isLightTheme(): Boolean {
+    val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    return currentNightMode == Configuration.UI_MODE_NIGHT_NO
 }

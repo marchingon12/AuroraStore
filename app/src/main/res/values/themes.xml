@@ -20,21 +20,18 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="BaseTheme" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorPrimary">@color/colorAccent</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="scrim">@color/colorScrim</item>
-        <item name="scrimAccent">@color/colorScrimAccent</item>
-        <item name="scrimAlt">@color/colorScrimAlt</item>
-        <item name="scrimBlack">@color/colorScrimBlack</item>
+    <style name="BaseTheme" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
         <item name="colorShimmer">@color/colorShimmer</item>
-        <item name="colorStroke">@color/colorStroke</item>
         <item name="chipStyle">@style/Widget.Material3.Chip.Filter</item>
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
     </style>
 
-    <style name="AppTheme" parent="BaseTheme" />
+    <style name="AppTheme" parent="BaseTheme">
+        <item name="chipStyle">@style/Widget.Material3.Chip.Filter</item>
+        <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+    </style>
 
     <style name="AppTheme.Translucent" parent="BaseTheme">
         <item name="android:windowNoTitle">true</item>
@@ -47,69 +44,42 @@
     </style>
 
     <!-- Custom Themes -->
-    <style name="AppTheme.Light" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorPrimary">@color/colorAccent</item>
-        <item name="colorPrimaryDark">@color/colorWhite</item>
-        <item name="android:windowBackground">@color/colorWhite</item>
-        <item name="android:colorBackground">@color/colorWhite</item>
-        <item name="android:navigationBarColor">@color/colorWhite</item>
-        <item name="scrim">@color/colorScrim</item>
-        <item name="scrimAccent">@color/colorScrimAccent</item>
-        <item name="scrimAlt">@color/colorScrimAlt</item>
-        <item name="scrimBlack">@color/colorScrimBlack</item>
+    <style name="AppTheme.Light" parent="Theme.Material3.DynamicColors.Light.NoActionBar">
         <item name="colorShimmer">@color/colorShimmer</item>
-        <item name="colorStroke">@color/colorStroke</item>
-        <item name="chipStyle">@style/Widget.Material3.Chip.Filter</item>
-        <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
     </style>
 
-    <style name="AppTheme.Dark" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorPrimary">@color/colorAccent</item>
-        <item name="colorPrimaryDark">@color/colorDarkPrimaryDark</item>
-        <item name="colorBackgroundFloating">@color/colorDarkBackground</item>
-        <item name="android:windowBackground">@color/colorDarkWindowBackground</item>
-        <item name="android:colorBackground">@color/colorDarkBackground</item>
-        <item name="android:navigationBarColor">@color/colorDarkPrimaryDark</item>
-        <item name="scrim">@color/colorScrim</item>
-        <item name="scrimAccent">@color/colorScrimAccent</item>
-        <item name="scrimAlt">@color/colorScrimAlt</item>
-        <item name="scrimBlack">@color/colorScrimBlack</item>
-        <item name="colorShimmer">@color/colorShimmerDark</item>
-        <item name="colorStroke">@color/colorStrokeDark</item>
-        <item name="chipStyle">@style/Widget.Material3.Chip.Filter</item>
-        <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
+    <style name="AppTheme.Dark" parent="Theme.Material3.DynamicColors.Dark.NoActionBar">
+        <item name="colorShimmer">@color/colorDarkShimmer</item>
     </style>
 
     <style name="AppTheme.DarkX" parent="AppTheme.Dark">
-        <item name="colorPrimaryDark">@color/colorDarkXPrimaryDark</item>
-        <item name="colorBackgroundFloating">@color/colorDarkXBackground</item>
+        <item name="colorSurface">@color/colorDarkXPrimary</item>
+        <item name="colorSurfaceContainer">@color/colorDarkXBackground</item>
         <item name="android:windowBackground">@color/colorDarkXWindowBackground</item>
         <item name="android:colorBackground">@color/colorDarkXBackground</item>
-        <item name="android:navigationBarColor">@color/colorDarkXPrimaryDark</item>
-        <item name="colorShimmer">@color/colorShimmerDarkX</item>
-        <item name="colorStroke">@color/colorStrokeDarkX</item>
+        <item name="colorBackgroundFloating">@color/colorDarkXBackground</item>
+        <item name="android:navigationBarColor">@color/colorDarkXPrimary</item>
+        <item name="colorShimmer">@color/colorDarkXShimmer</item>
     </style>
 
     <style name="AppTheme.Darkord" parent="AppTheme.Dark">
-        <item name="colorPrimaryDark">@color/colorDarkordPrimaryDark</item>
-        <item name="colorBackgroundFloating">@color/colorDarkordBackground</item>
+        <item name="colorSurface">@color/colorDarkordPrimary</item>
+        <item name="colorSurfaceContainer">@color/colorDarkordBackground</item>
         <item name="android:windowBackground">@color/colorDarkordWindowBackground</item>
         <item name="android:colorBackground">@color/colorDarkordBackground</item>
-        <item name="android:navigationBarColor">@color/colorDarkordPrimaryDark</item>
-        <item name="colorShimmer">@color/colorShimmerDarkord</item>
-        <item name="colorStroke">@color/colorStrokeDarkord</item>
+        <item name="colorBackgroundFloating">@color/colorDarkordBackground</item>
+        <item name="android:navigationBarColor">@color/colorDarkordPrimary</item>
+        <item name="colorShimmer">@color/colorDarkordShimmer</item>
     </style>
 
     <style name="AppTheme.Black" parent="AppTheme.Dark">
-        <item name="colorPrimaryDark">@color/colorBlack</item>
+        <item name="colorSurface">@color/colorBlack</item>
+        <item name="colorSurfaceContainer">@color/colorBlack</item>
         <item name="android:windowBackground">@color/colorBlack</item>
         <item name="android:colorBackground">@color/colorBlack</item>
         <item name="colorBackgroundFloating">@color/colorBlack</item>
         <item name="android:navigationBarColor">@color/colorBlack</item>
         <item name="colorShimmer">@color/colorShimmerBlack</item>
-        <item name="colorStroke">@color/colorStrokeBlack</item>
     </style>
 
     <style name="AppTheme.PreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay">

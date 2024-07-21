@@ -49,8 +49,8 @@
         android:layout_below="@id/txt_line1"
         android:layout_alignStart="@id/txt_line1"
         android:layout_alignEnd="@id/txt_line1"
-        android:textAppearance="@style/TextAppearance.Aurora.Line1"
-        android:textColor="?colorAccent"
+        android:textAppearance="@style/TextAppearance.Aurora.Line2"
+        android:textColor="?colorPrimary"
         tools:text="Company Name" />
 
     <TextView

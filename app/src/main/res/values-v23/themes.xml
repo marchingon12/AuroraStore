@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="AppTheme" parent="BaseTheme">
-        <item name="android:statusBarColor">?android:colorBackground</item>
+    <style name="AppTheme.Light" parent="Theme.Material3.DynamicColors.Light.NoActionBar">
         <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

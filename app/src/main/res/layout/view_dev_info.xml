@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:tint="?colorAccent"
-        tools:src="@drawable/ic_download" />
+        tools:src="@drawable/ic_account" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/txt_title"

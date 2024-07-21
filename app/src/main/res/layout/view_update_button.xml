@@ -36,11 +36,10 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPositive"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/action_update"
-                android:textAppearance="@style/TextAppearance.Aurora.Line1" />
+                android:text="@string/action_update" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -49,12 +48,11 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnQueued"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="false"
-                android:text="@string/download_queued"
-                android:textAppearance="@style/TextAppearance.Aurora.Line1" />
+                android:text="@string/download_queued" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -63,13 +61,11 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnNegative"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/action_cancel"
-                android:textAppearance="@style/TextAppearance.Aurora.Line1" />
+                android:text="@string/action_cancel" />
         </RelativeLayout>
-
     </ViewFlipper>
 </RelativeLayout>
 

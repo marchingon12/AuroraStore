@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/bg_outlined_padded"
+    android:padding="@dimen/padding_small"
     android:orientation="horizontal">
 
     <androidx.appcompat.widget.AppCompatTextView

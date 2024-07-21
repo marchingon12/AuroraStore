@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Aurora Store
+  ~  Copyright (C) 2021, Rahul Kumar Patel <whyorean@gmail.com>
+  ~
+  ~  Aurora Store is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 2 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  Aurora Store is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with Aurora Store.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  -->
+<resources>
+    <!--Light Theme-->
+    <color name="colorPrimary">@color/colorAccent</color>
+    <color name="colorShimmer">#ABABAB</color>
+    <color name="colorStroke">#D6D6D6</color>
+
+    <!--Dark Theme-->
+    <color name="colorDarkPrimary">#202124</color>
+    <color name="colorDarkBackground">#2d2e31</color>
+    <color name="colorDarkWindowBackground">#202124</color>
+    <color name="colorDarkShimmer">#373a40</color>
+    <color name="colorDarkStroke">#373a40</color>
+
+    <!--DarkX Theme-->
+    <color name="colorDarkXPrimary">#1C2733</color>
+    <color name="colorDarkXBackground">#222E3C</color>
+    <color name="colorDarkXWindowBackground">#1C2733</color>
+    <color name="colorDarkXShimmer">#425a75</color>
+    <color name="colorDarkXStroke">#425a75</color>
+
+    <!--Darkord Theme-->
+    <color name="colorDarkordPrimary">#23272a</color>
+    <color name="colorDarkordBackground">#2c2f33</color>
+    <color name="colorDarkordWindowBackground">#23272a</color>
+    <color name="colorDarkordShimmer">#99aab5</color>
+    <color name="colorDarkordStroke">#99aab5</color>
+
+    <!--Black Theme-->
+    <color name="colorBlack">#000000</color>
+    <color name="colorShimmerBlack">#646464</color>
+    <color name="colorStrokeBlack">#343434</color>
+</resources>

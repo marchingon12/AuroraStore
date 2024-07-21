@@ -40,12 +40,12 @@
             android:scrollbars="none">
 
             <LinearLayout
-                android:padding="@dimen/padding_small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:divider="@drawable/divider_line"
                 android:dividerPadding="@dimen/padding_xsmall"
                 android:orientation="horizontal"
+                android:padding="@dimen/padding_small"
                 android:showDividers="middle">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -130,12 +130,18 @@
                 android:textIsSelectable="true"
                 app:headerTitle="@string/details_changelog" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txt_changelog"
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_changelog"
-                android:textIsSelectable="true" />
+                app:contentPadding="@dimen/padding_small">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txt_changelog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textIsSelectable="true" />
+            </com.google.android.material.card.MaterialCardView>
 
             <com.aurora.store.view.custom.layouts.ActionHeaderLayout
                 android:id="@+id/header_description"

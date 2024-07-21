@@ -21,71 +21,188 @@
 
     <style name="Accent00">
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="colorPrimary" type="color">@color/colorAccent</item>
     </style>
 
     <style name="Accent01">
         <item name="colorAccent">@color/colorAccent01</item>
-        <item name="colorPrimary">@color/colorAccent01</item>
+
+        <item name="colorPrimary" type="color">#6C63FF</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#9F9DFF</item>
+        <item name="colorOnPrimaryContainer" type="color">#3E3B8F</item>
+
+        <item name="colorSecondary" type="color">#5A54E0</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#C5C3FF</item>
+        <item name="colorOnSecondaryContainer" type="color">#3B3B8E</item>
     </style>
 
     <style name="Accent02">
         <item name="colorAccent">@color/colorAccent02</item>
-        <item name="colorPrimary">@color/colorAccent02</item>
+
+        <item name="colorPrimary" type="color">#FF00FF</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#FF66FF</item>
+        <item name="colorOnPrimaryContainer" type="color">#8C0070</item>
+
+        <item name="colorSecondary" type="color">#CC00CC</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#FF99FF</item>
+        <item name="colorOnSecondaryContainer" type="color">#8C0070</item>
     </style>
 
     <style name="Accent03">
         <item name="colorAccent">@color/colorAccent03</item>
-        <item name="colorPrimary">@color/colorAccent03</item>
+
+        <item name="colorPrimary" type="color">#E4002B</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#FF8090</item>
+        <item name="colorOnPrimaryContainer" type="color">#7A0020</item>
+
+        <item name="colorSecondary" type="color">#C20025</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#FFCCD4</item>
+        <item name="colorOnSecondaryContainer" type="color">#A6001F</item>
     </style>
 
     <style name="Accent04">
         <item name="colorAccent">@color/colorAccent04</item>
-        <item name="colorPrimary">@color/colorAccent04</item>
+
+        <item name="colorPrimary" type="color">#F9A826</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#FBC971</item>
+        <item name="colorOnPrimaryContainer" type="color">#6C3D00</item>
+
+        <item name="colorSecondary" type="color">#D6891F</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#FCE4A6</item>
+        <item name="colorOnSecondaryContainer" type="color">#6C3D00</item>
     </style>
 
     <style name="Accent05">
         <item name="colorAccent">@color/colorAccent05</item>
-        <item name="colorPrimary">@color/colorAccent05</item>
+
+        <item name="colorPrimary" type="color">#49A942</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#8CCF8C</item>
+        <item name="colorOnPrimaryContainer" type="color">#003600</item>
+
+        <item name="colorSecondary" type="color">#2A6A2A</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#D1F2D1</item>
+        <item name="colorOnSecondaryContainer" type="color">#004800</item>
     </style>
 
     <style name="Accent06">
         <item name="colorAccent">@color/colorAccent06</item>
-        <item name="colorPrimary">@color/colorAccent06</item>
+
+        <item name="colorPrimary" type="color">#6633CC</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#9B8FFF</item>
+        <item name="colorOnPrimaryContainer" type="color">#3E1A9A</item>
+
+        <item name="colorSecondary" type="color">#4C2A9C</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#D0BFFF</item>
+        <item name="colorOnSecondaryContainer" type="color">#3B1A77</item>
     </style>
 
     <style name="Accent07">
         <item name="colorAccent">@color/colorAccent07</item>
-        <item name="colorPrimary">@color/colorAccent07</item>
+
+        <item name="colorPrimary" type="color">#52565E</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#8A8E92</item>
+        <item name="colorOnPrimaryContainer" type="color">#2A2D2F</item>
+
+        <item name="colorSecondary" type="color">#3D4045</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#B2B4B9</item>
+        <item name="colorOnSecondaryContainer" type="color">#2A2D2F</item>
     </style>
 
     <style name="Accent08">
         <item name="colorAccent">@color/colorAccent08</item>
-        <item name="colorPrimary">@color/colorAccent08</item>
+
+        <item name="colorPrimary" type="color">#EE70A6</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#F8AAB9</item>
+        <item name="colorOnPrimaryContainer" type="color">#6D2D49</item>
+
+        <item name="colorSecondary" type="color">#D55F8D</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#F5B3C1</item>
+        <item name="colorOnSecondaryContainer" type="color">#6D2D49</item>
     </style>
 
     <style name="Accent09">
         <item name="colorAccent">@color/colorAccent09</item>
-        <item name="colorPrimary">@color/colorAccent09</item>
+
+        <item name="colorPrimary" type="color">#B5C327</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#DCE09C</item>
+        <item name="colorOnPrimaryContainer" type="color">#4A4D00</item>
+
+        <item name="colorSecondary" type="color">#9EAB1F</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#E3E28A</item>
+        <item name="colorOnSecondaryContainer" type="color">#4A4D00</item>
     </style>
 
     <style name="Accent10">
         <item name="colorAccent">@color/colorAccent10</item>
-        <item name="colorPrimary">@color/colorAccent10</item>
+
+        <item name="colorPrimary" type="color">#F38654</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#F9B79D</item>
+        <item name="colorOnPrimaryContainer" type="color">#6F3F28</item>
+
+        <item name="colorSecondary" type="color">#D97441</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#FBBF9F</item>
+        <item name="colorOnSecondaryContainer" type="color">#6F3F28</item>
     </style>
 
     <style name="Accent11">
         <item name="colorAccent">@color/colorAccent11</item>
-        <item name="colorPrimary">@color/colorAccent11</item>
+
+        <item name="colorPrimary" type="color">#59A8E2</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#A6C9E5</item>
+        <item name="colorOnPrimaryContainer" type="color">#003C6C</item>
+
+        <item name="colorSecondary" type="color">#4A8CC6</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#B3D4F0</item>
+        <item name="colorOnSecondaryContainer" type="color">#003C6C</item>
     </style>
 
     <style name="Accent12">
         <item name="colorAccent">@color/colorAccent12</item>
-        <item name="colorPrimary">@color/colorAccent12</item>
+
+        <item name="colorPrimary" type="color">#7289DA</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#AEB6E4</item>
+        <item name="colorOnPrimaryContainer" type="color">#3E4C9C</item>
+
+        <item name="colorSecondary" type="color">#5F6BCC</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#D0D6F3</item>
+        <item name="colorOnSecondaryContainer" type="color">#3E4C9C</item>
     </style>
 
     <style name="Accent13">
         <item name="colorAccent">@color/colorAccent13</item>
-        <item name="colorPrimary">@color/colorAccent13</item>
+
+        <item name="colorPrimary" type="color">#0078D7</item>
+        <item name="colorOnPrimary" type="color">#FFFFFF</item>
+        <item name="colorPrimaryContainer" type="color">#3390E4</item>
+        <item name="colorOnPrimaryContainer" type="color">#003A6B</item>
+
+        <item name="colorSecondary" type="color">#006AB6</item>
+        <item name="colorOnSecondary" type="color">#FFFFFF</item>
+        <item name="colorSecondaryContainer" type="color">#66A3E4</item>
+        <item name="colorOnSecondaryContainer" type="color">#003A6B</item>
     </style>
 </resources>

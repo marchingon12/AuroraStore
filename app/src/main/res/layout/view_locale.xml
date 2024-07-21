@@ -18,6 +18,7 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -28,7 +29,8 @@
         style="@style/AuroraTextStyle.Subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/checkbox" />
+        android:layout_toStartOf="@id/checkbox"
+        tools:text="Line1" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/line2"
@@ -39,7 +41,8 @@
         android:layout_alignStart="@id/line1"
         android:layout_alignEnd="@id/line1"
         android:textAlignment="viewStart"
-        android:textDirection="locale" />
+        android:textDirection="locale"
+        tools:text="Line2" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/checkbox"

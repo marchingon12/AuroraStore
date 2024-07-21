@@ -35,7 +35,7 @@
         android:paddingEnd="@dimen/padding_normal"
         android:text="@string/onboarding_title_permissions"
         android:textAlignment="textStart"
-        android:textColor="?colorAccent"
+        android:textColor="?colorPrimary"
         android:textSize="42sp" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -56,5 +56,4 @@
         android:padding="@dimen/padding_medium"
         android:scrollbars="none"
         tools:listitem="@layout/view_permission" />
-
 </LinearLayout>

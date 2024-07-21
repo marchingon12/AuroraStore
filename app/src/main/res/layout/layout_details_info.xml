@@ -42,7 +42,6 @@
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/bg_gradient_linear"
             android:divider="@drawable/divider_alt"
             android:orientation="horizontal"
             android:showDividers="middle" />
@@ -51,8 +50,7 @@
     <RelativeLayout
         android:id="@+id/progress_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_sharp">
+        android:layout_height="match_parent">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txt_progress_percent"
@@ -72,7 +70,6 @@
             android:layout_centerInParent="true"
             android:layout_marginStart="@dimen/margin_xsmall"
             android:layout_marginTop="@dimen/margin_small"
-            android:background="@drawable/bg_sharp"
             android:backgroundTint="?android:textColorPrimary" />
 
         <LinearLayout
