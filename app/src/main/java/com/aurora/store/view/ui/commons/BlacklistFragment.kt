@@ -140,28 +140,24 @@ class BlacklistFragment : BaseFragment<FragmentGenericWithSearchBinding>() {
                     )
                 }
             } else {
-                packages
-                    .sortedByDescending { app ->
-                        viewModel.blacklistProvider.isBlacklisted(app.packageName)
-                    }
-                    .forEach {
-                        add(
-                            BlackListViewModel_()
-                                .id(it.packageName.hashCode())
-                                .packageInfo(it)
-                                .markChecked(viewModel.selected.contains(it.packageName))
-                                .checked { _, isChecked ->
-                                    if (isChecked) {
-                                        viewModel.selected.add(it.packageName)
-                                        AuroraApp.events.send(BusEvent.Blacklisted(it.packageName))
-                                    } else {
-                                        viewModel.selected.remove(it.packageName)
-                                    }
-
-                                    requestModelBuild()
+                packages.forEach {
+                    add(
+                        BlackListViewModel_()
+                            .id(it.packageName.hashCode())
+                            .packageInfo(it)
+                            .markChecked(viewModel.selected.contains(it.packageName))
+                            .checked { _, isChecked ->
+                                if (isChecked) {
+                                    viewModel.selected.add(it.packageName)
+                                    AuroraApp.events.send(BusEvent.Blacklisted(it.packageName))
+                                } else {
+                                    viewModel.selected.remove(it.packageName)
                                 }
-                        )
-                    }
+
+                                requestModelBuild()
+                            }
+                    )
+                }
             }
         }
     }

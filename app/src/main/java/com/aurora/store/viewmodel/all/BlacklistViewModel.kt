@@ -26,7 +26,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aurora.store.data.providers.BlacklistProvider
+import com.aurora.store.util.CertUtil
 import com.aurora.store.util.PackageUtil
+import com.aurora.store.util.Preferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,11 +42,18 @@ import javax.inject.Inject
 @HiltViewModel
 class BlacklistViewModel @Inject constructor(
     val blacklistProvider: BlacklistProvider,
-    val gson: Gson,
+    private val gson: Gson,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val TAG = BlacklistViewModel::class.java.simpleName
+
+    private val isAuroraOnlyFilterEnabled =
+        Preferences.getBoolean(context, Preferences.PREFERENCE_FILTER_AURORA_ONLY, false)
+    private val isFDroidFilterEnabled =
+        Preferences.getBoolean(context, Preferences.PREFERENCE_FILTER_FDROID, true)
+    private val isExtendedUpdateEnabled =
+        Preferences.getBoolean(context, Preferences.PREFERENCE_UPDATES_EXTENDED)
 
     private val _packages = MutableStateFlow<List<PackageInfo>?>(null)
     val packages = _packages.asStateFlow()
@@ -58,10 +67,25 @@ class BlacklistViewModel @Inject constructor(
     private fun fetchApps() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _packages.value = PackageUtil.getAllValidPackages(context)
+                _packages.value = PackageUtil.getAllValidPackages(context).sortedByDescending {
+                    isBlacklisted(it.packageName)
+                }
             } catch (exception: Exception) {
                 Log.e(TAG, "Failed to fetch apps", exception)
             }
+        }
+    }
+
+    fun isBlacklisted(packageName: String): Boolean {
+        return blacklistProvider.isBlacklisted(packageName)
+    }
+
+    fun isFiltered(packageInfo: PackageInfo): Boolean {
+        return when {
+            !isExtendedUpdateEnabled && !packageInfo.applicationInfo!!.enabled -> true
+            isAuroraOnlyFilterEnabled -> !CertUtil.isAuroraStoreApp(context, packageInfo.packageName)
+            isFDroidFilterEnabled -> CertUtil.isFDroidApp(context, packageInfo.packageName)
+            else -> false
         }
     }
 
