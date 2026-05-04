@@ -132,9 +132,9 @@
     <string name="details_gsf_dependent">Reikalauja GSF</string>
     <string name="details_no_updates">Nėra prieinamų atnaujinimų</string>
     <string name="details_ratings">Įvertinimai ir apžvalgos</string>
-    <string name="installer_service_unavailable">Įdiekite Aurora tarnybų 1.0.9 ar naujesnę versiją, arba pakeiskite diegimo programą.</string>
-    <string name="installer_service_misconfigured">Iš pradžių, nustatykite Aurora tarnybas ir suteikite visus leidimus.</string>
-    <string name="pref_install_mode_services">Aurora tarnybos</string>
+    <string name="installer_service_unavailable">Įdiekite Aurora tarnybų 1.0.9 ar naujesnę versiją arba pakeiskite diegimo programą.</string>
+    <string name="installer_service_misconfigured">Iš pradžių, paruoškite Aurora tarnybas ir suteikite visus leidimus.</string>
+    <string name="pref_install_mode_services">Aurora tarnybos (pasenusios)</string>
     <string name="tab_trending">Populiarėjančios</string>
     <string name="about_fdroid_summary">Gauti Aurora Store per F-Droid.</string>
     <string name="about_libera_summary">Tapti rėmėju naudojant Liberapay</string>
@@ -262,7 +262,7 @@
     <string name="item_required">Būtina</string>
     <string name="item_optional">Nebūtina</string>
     <string name="check_updates">Tikrinti, ar yra atnaujinimų</string>
-    <string name="pref_updates_incompatible">Nesuderinami atnaujinimai</string>
+    <string name="pref_updates_incompatible">Rodyti atnaujinimus, kurie gali patirti nesėkmę</string>
     <string name="pref_updates_auto">Automatiškai atnaujinti programėles</string>
     <string name="privacy_policy_title">Privatumo politika</string>
     <string name="manage_account">Tvarkyti paskyrą</string>
@@ -316,7 +316,13 @@
     <string name="pref_network_proxy_url_message">Įveskite tinkamą įgaliotojo serverio URL, kad perduotumėte visą duomenų srautą per įgaliotąjį serverį.</string>
     <string name="pref_aurora_only_desc">Rodyti tik Aurora Store įdiegtas programėles Atnaujinimuose ir Įdiegtų programėlių sąraše</string>
     <string name="pref_vending_version_device">Numatytoji (iš įrenginio konfigūracijos)</string>
-    <string name="pref_aurora_only">Tik Aurora Store programėlės</string>
+    <string name="pref_aurora_only">Filtruoti programėles iš kitų šaltinių</string>
     <string name="insecure_anonymous_apply">Nepamirškite ir naujo prisijungti ir paleisti programėlę iš naujo, kad pritaikytumėte pakeitimus.</string>
     <string name="export_app_title">Failų eksportavimo įrankis</string>
+    <string name="details_data_safety_collect">Duomenys, kuriuos ši programėlė gali rinkti</string>
+    <string name="details_data_safety_collect_none">Plėtotojas teigia, jog ši programėlė nerenka naudotojo duomenų.</string>
+    <string name="details_data_safety_shared">Duomenys, kuriuos ši programėlė gali bendrinti</string>
+    <string name="details_data_safety_share_none">Plėtotojas teigia, jog ši programėlė nebendrina naudotojo duomenų su kitomis kompanijomis ar organizacijomis.</string>
+    <string name="pref_install_mode_shizuku">Shizuku diegimo programa</string>
+    <string name="pref_install_mode_native">Sava diegimo programa (pasenusi)</string>
 </resources>
