@@ -471,4 +471,6 @@
     <string name="microg_installer_desc">Hiermee kun je de app-integriteitscontrole omzeilen (alleen voor installatieprogramma\'s)</string>
     <string name="loading">Bezig met laden</string>
     <string name="force_restart_snack">Herstarten om wijzigingen toe te passen?</string>
+    <string name="preparing_to_download">Voorbereiden om te downloaden</string>
+    <string name="verifying_downloads">Downloads verifiëren</string>
 </resources>
