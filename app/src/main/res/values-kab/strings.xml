@@ -106,4 +106,8 @@
     <string name="title_search_suggestion">Asumer n unadi</string>
     <string name="title_search_results">Igmaḍ n unadi</string>
     <string name="title_manual_download">Asader s ufus</string>
+    <string name="action_filter_downloads">Isadaren</string>
+    <string name="title_download_manager">Isadaren</string>
+    <string name="title_library">Tamkarḍit</string>
+    <string name="app_info_downloads">Isadaren</string>
 </resources>
