@@ -20,14 +20,13 @@
 package com.aurora.store.viewmodel.all
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.aurora.extensions.TAG
 import com.aurora.gplayapi.data.models.App
 import com.aurora.gplayapi.helpers.web.WebAppDetailsHelper
+import com.aurora.store.data.PageResult
 import com.aurora.store.data.paging.GenericPagingSource.Companion.manualPager
 import com.aurora.store.data.providers.BlacklistProvider
 import com.aurora.store.util.PackageUtil
@@ -63,14 +62,11 @@ class InstalledViewModel @Inject constructor(
             .chunked(20)
 
         manualPager { page ->
-            try {
-                // page is 1-indexed, but list is 0-indexed
-                val chunk = pagedPackages.getOrNull(page - 1) ?: return@manualPager emptyList()
-                webAppDetailsHelper.getAppDetails(chunk.map { it.packageName })
-            } catch (exception: Exception) {
-                Log.e(TAG, "Failed to fetch apps", exception)
-                emptyList()
-            }
+            // page is 1-indexed, but list is 0-indexed
+            val chunk = pagedPackages.getOrNull(page - 1)
+                ?: return@manualPager PageResult(emptyList<App>(), hasMore = false)
+            val items = webAppDetailsHelper.getAppDetails(chunk.map { it.packageName })
+            PageResult(items, hasMore = page < pagedPackages.size)
         }.flow.distinctUntilChanged()
             .cachedIn(viewModelScope)
             .onEach { _apps.value = it }
