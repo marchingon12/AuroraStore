@@ -471,4 +471,6 @@
     <string name="page">Sayfa <xliff:g id="number">%1$d</xliff:g></string>
     <string name="action_skip">Atla</string>
     <string name="force_restart_snack">Değişiklikleri uygulamak için yeniden başlatılsın mı?</string>
+    <string name="preparing_to_download">İndirmeye hazırlanıyor</string>
+    <string name="verifying_downloads">İndirmeler doğrulanıyor</string>
 </resources>
