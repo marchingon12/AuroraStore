@@ -229,7 +229,7 @@
     <string name="app_updater_service_notif_text">يفعِّل تنزيل التطبيق في الخلفية</string>
     <string name="installer_am_unavailable">ثبِّت مدير التطبيقات أو غيِّر المثبت.</string>
     <string name="pref_install_mode_am">مثبِّت AM</string>
-    <string name="download_paused">مُلبَث • <xliff:g id="completed_downloads"> %1$d </xliff:g> / <xliff:g id="all_downloads"> %2$d </xliff:g></string>
+    <string name="download_paused">مُلبَث • <xliff:g id="completed_downloads">%1$d</xliff:g> / <xliff:g id="all_downloads"> %2$d</xliff:g></string>
     <string name="download_eta_min">بقي %1$d دقيقة %2$d ثانية</string>
     <string name="download_eta_sec">بقي %1$d ثانية</string>
     <string name="session_login_failed_google">تعذّر تسجيل الدخول عبر Google</string>
@@ -241,7 +241,7 @@
     <string name="expand">توسع</string>
     <string name="permissions_denied">رُفض الإذن المطلوب يُرجى منحها لمواصلة العمل</string>
     <string name="search_hint">البحث عن التطبيقات والألعاب</string>
-    <string name="download_progress">جارِ تنزيل • <xliff:g id="completed_downloads"> %1$d </xliff:g> / <xliff:g id="all_downloads"> %2$d </xliff:g> • <xliff:g id="speed"> %3$s </xliff:g></string>
+    <string name="download_progress">جارِ تنزيل • <xliff:g id="completed_downloads">%1$d</xliff:g> / <xliff:g id="all_downloads"> %2$d</xliff:g> • <xliff:g id="speed"> %3$s</xliff:g></string>
     <string name="onboarding_permission_notifications">الإشعارات</string>
     <string name="onboarding_permission_notifications_desc">إرسال إشعارات بخصوص حالة التثبيت</string>
     <string name="session_enjoy">سجّل الدخول واستمتع.</string>
@@ -256,13 +256,13 @@
     <string name="server_maintenance">الخادم معطل للصيانة</string>
     <string name="action_import">استورد</string>
     <string name="toast_import_failed">تعذر استيراد تضبيط الجهاز</string>
-    <string name="downloading_dep">تنزيل ملفات إضافية لـ <xliff:g id="app"> %1$s </xliff:g></string>
+    <string name="downloading_dep">ينزل ملفات إضافية لـ <xliff:g id="app">%1$s</xliff:g></string>
     <string name="toast_import_success">استُورد تضبيط الجهاز</string>
     <string name="notification_updates_available_desc_1">يتوفر أصدار جديد من <xliff:g id="app_one_name">%1$s</xliff:g> متاح</string>
     <string name="notification_updates_available_desc_4"><xliff:g id="app_one_name">%1$s</xliff:g>, <xliff:g id="app_two_name">%2$s</xliff:g>, <xliff:g id="app_three_name">%3$s</xliff:g> والمزيد <xliff:g id="apps_count">%4$d</xliff:g></string>
     <string name="notification_channel_updates">إشعارات التحديثات</string>
-    <string name="notification_updates_available_1">تحديث <xliff:g id="apps_count"> %1$d </xliff:g> متوفر</string>
-    <string name="notification_updates_available">تحديثات <xliff:g id="apps_count"> %1$d </xliff:g> متوفرة</string>
+    <string name="notification_updates_available_1">يتوفر <xliff:g id="apps_count">%1$d</xliff:g> تحديث</string>
+    <string name="notification_updates_available">يتوفر <xliff:g id="apps_count">%1$d</xliff:g> تحديثات</string>
     <string name="notification_updates_available_desc_2"><xliff:g id="app_one_name">%1$s</xliff:g> و <xliff:g id="app_two_name">%2$s</xliff:g></string>
     <string name="notification_updates_available_desc_3"><xliff:g id="app_one_name">%1$s</xliff:g>, <xliff:g id="app_two_name">%2$s</xliff:g> و <xliff:g id="app_three_name">%3$s</xliff:g></string>
     <string name="pref_install_mode_shizuku">مثبِّت شيزوكو</string>
@@ -274,7 +274,7 @@
     <string name="failed_to_fetch_report">فشل في الحصول على تقرير الخصوصية</string>
     <string name="access_denied_using_vpn">رُفض الوصول! هل تستخدم VPN أو تور؟</string>
     <string name="server_unreachable">لا يمكن الوصول إلى الخادم</string>
-    <string name="failed_generating_session">فشل توليد جلسة عمل، رمز الخطأ: <xliff:g id="status_code"> %1$d </xliff:g></string>
+    <string name="failed_generating_session">فشل توليد جلسة عمل، رمز الخطأ: <xliff:g id="status_code">%1$d</xliff:g></string>
     <string name="app_language">لغة التطبيق</string>
     <string name="check_connectivity">التحقق من اتصال الإنترنت</string>
     <string name="failed_to_generate_session">تعذّر توليد الجلسة</string>
@@ -475,4 +475,6 @@
     <string name="page">صفحة <xliff:g id="number">%1$d</xliff:g></string>
     <string name="action_skip">تخطي</string>
     <string name="force_restart_snack">أعد التشغيل لتطبيق التغييرات؟</string>
+    <string name="preparing_to_download">يجهز التنزيل</string>
+    <string name="verifying_downloads">يتحقق من التنزيلات</string>
 </resources>
