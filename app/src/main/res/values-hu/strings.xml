@@ -471,4 +471,6 @@
     <string name="page">Oldal <xliff:g id="number">%1$d</xliff:g></string>
     <string name="action_skip">Kihagyás</string>
     <string name="force_restart_snack">Újraindítás a változtatások alkalmazásához?</string>
+    <string name="preparing_to_download">Felkészülés a letöltésre</string>
+    <string name="verifying_downloads">Letöltések ellenőrzése</string>
 </resources>
