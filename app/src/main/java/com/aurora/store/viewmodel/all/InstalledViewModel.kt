@@ -64,9 +64,9 @@ class InstalledViewModel @Inject constructor(
 
         manualPager { page ->
             try {
-                webAppDetailsHelper.getAppDetails(
-                    pagedPackages[page].map { it.packageName }
-                )
+                // page is 1-indexed, but list is 0-indexed
+                val chunk = pagedPackages.getOrNull(page - 1) ?: return@manualPager emptyList()
+                webAppDetailsHelper.getAppDetails(chunk.map { it.packageName })
             } catch (exception: Exception) {
                 Log.e(TAG, "Failed to fetch apps", exception)
                 emptyList()

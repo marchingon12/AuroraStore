@@ -8,6 +8,7 @@ package com.aurora.store.data.paging
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
+import androidx.paging.PagingSource.LoadResult.Page.Companion.COUNT_UNDEFINED
 import androidx.paging.PagingState
 import com.aurora.store.data.paging.GenericPagingSource.Companion.manualPager
 import com.aurora.store.data.paging.GenericPagingSource.Companion.pager
@@ -65,12 +66,11 @@ class GenericPagingSource<T : Any>(
         return try {
             withContext(Dispatchers.IO) {
                 val data = block(page)
-                val totalPages = if (data.isNotEmpty()) page + 1 else page
                 LoadResult.Page(
                     data = data,
                     prevKey = if (page == 1) null else page - 1,
-                    nextKey = if (page == totalPages) null else totalPages,
-                    itemsAfter = if (page == totalPages) 0 else DEFAULT_PAGE_SIZE
+                    nextKey = if (data.isEmpty()) null else page + 1,
+                    itemsAfter = if (data.isEmpty()) 0 else COUNT_UNDEFINED
                 )
             }
         } catch (exception: Exception) {
