@@ -46,7 +46,7 @@
     <string name="installer_status_failure_incompatible">היישום אינו תואם</string>
     <string name="installer_status_failure_blocked">ההתקנה נחסמה</string>
     <string name="action_uninstall">הסרת ההתקנה</string>
-    <string name="action_installing">כעת בהתקנה</string>
+    <string name="action_installing">בהתקנה</string>
     <string name="action_installations">התקנות</string>
     <string name="action_install">התקנה</string>
     <string name="details_dev_website">אתר אינטרנט</string>
@@ -186,13 +186,13 @@
     <string name="installer_root_unavailable">אין גישת רוט. אשר גישה או שנה סוג מתקין.</string>
     <string name="installer_service_unavailable">התקנת שירותי אורורה גרסה 1.0.9 ומעלה, או שינוי מתקין.</string>
     <string name="installer_service_misconfigured">הגדרת שירותי אורורה ואישור כל ההרשאות תחילה.</string>
-    <string name="spoof_apply">וודא שאתה מתחבר מחדש כדי להחיל את הזיוף</string>
+    <string name="spoof_apply">יש להתחבר מחדש בשביל שההתחזות תעבוד</string>
     <string name="onboarding_permission_installer_desc">אשר התקנת אפליקציות מחנות אורורה</string>
     <string name="pref_install_mode_summary">בחר שיטה להתקנות APK</string>
     <string name="pref_install_mode_native">מתקין Native (לא עדכני)</string>
-    <string name="device_miui_description">בבקשה, השבת את האופטימיזציה של שיאומי כדי לאשר התקנות, אחרת אתה יכול לבחור מתקין רוט, או שירותי אורורה.</string>
+    <string name="device_miui_description">נא להשבית את מיטובי הביצועים של MIUI בשביל לאפשר התקנת יישומים, לחלופין ניתן לבחור להשתמש במתקין שורש (Root) או במתקין Services.</string>
     <string name="toast_manual_unavailable">קוד הגרסה שביקשת לא זמין.</string>
-    <string name="insecure_anonymous_apply">וודא שאתה מתחבר מחדש ומפעיל מחדש את האפליקציה כדי להחיל א ת השינויים.</string>
+    <string name="insecure_anonymous_apply">יש לפתוח מחדש את היישום ולהתחבר בשביל שהשינויים יחולו.</string>
     <string name="toast_developer_setting_failed">הפעל את הגדרות מפתח דרך הגדרות המכשיר כדי לפתוח אותם.</string>
     <string name="onboarding_permission_esa_desc">כדי לשמור קבצי הרחבת APK (OBBs) עבור אפליקציות ומשחקים גדולים.</string>
     <string name="onboarding_permission_installer">הרשאות מתקין</string>
@@ -207,15 +207,15 @@
     <string name="pref_install_mode_session">מתקין מערכת</string>
     <string name="pref_ui_layout_tab">בחר עמוד ברירת מחדל</string>
     <string name="pref_ui_no_for_you_desc">הצגת עמודים בשבילך במסך הבית</string>
-    <string name="title_spoof_manager">מנהל הזיוף</string>
-    <string name="details_beta_description">אתה תראה תכונות חדשות ובאגים לפני כולם. תן משוב למפתחים כדי לעזור להם להשתפר.</string>
+    <string name="title_spoof_manager">מנהל ההתחזות</string>
+    <string name="details_beta_description">תהיה לך חשיפה ליכולות חדשות ולתקלות חדשות לפני כולם. שליחת משוב למפתחים יכולה לעזור להם לשפר את היישום.</string>
     <string name="device_miui_extra">אפשרי לבחור מתקין נתיב, אבל לא תוכל להתקין התקנות מאוחדות (מפוצלות - split), אז הבחירה בידך.</string>
-    <string name="details_beta_delay">התהליך עלול לקחת זמן, אתה יכול לבדוק את הסטטוס שלך מאוחר יותר.</string>
+    <string name="details_beta_delay">הרישום עשוי לקחת זמן, אפשר לבדוק את מצב הרישום מאוחר יותר.</string>
     <string name="installer_service_available">שירותי אורורה זמינים ומוכן להתקנה.</string>
     <string name="installer_status_failure_storage">האחסון כמעט מלא</string>
-    <string name="toast_spoof_applied">זיוף המכשיר הוחל.</string>
+    <string name="toast_spoof_applied">המכשיר החל להתחזות.</string>
     <string name="installer_shizuku_unavailable">Shizuku לא מותקן או לא הוגדר כראוי.</string>
-    <string name="login_rate_limited">אופס, אתה בעל דירוג מוגבל</string>
+    <string name="login_rate_limited">מגבלת השימוש מונעת ממך להיכנס</string>
     <string name="pref_common_extra">תוספים</string>
     <string name="toast_export_failed">לא הצליח לייצא תצורת מכשיר</string>
     <string name="spoof_property"><xliff:g id="manufacturer">%1$s</xliff:g> • API <xliff:g id="api">%2$s</xliff:g></string>
@@ -262,7 +262,7 @@
     <string name="google_play_store_desc">גוגל פליי, ידוע גם כ-Play Store של גוגל ובתור החנות האידיאלית של אנדרואיד.</string>
     <string name="session_good">וואה! הכל טוב.</string>
     <string name="failed_to_fetch_report">לא הצליח להשיג דיווח פרטיות</string>
-    <string name="action_get_local_apk">שמור חבילת אפליקציה</string>
+    <string name="action_get_local_apk">שמירת מארז יישום</string>
     <string name="verifying_new_session">מאמת כניסה חדשה</string>
     <string name="toast_import_success">ייבוא תצורת מכשיר בוצעה בהצלחה</string>
     <string name="download_eta_hrs">%1$dש %2$dדק %3$dשנ left</string>
@@ -288,7 +288,7 @@
     <string name="about_xda_summary">הצג את העמוד של Aurora Store בפורום XDA לשוחח ולהציע הצעות.</string>
     <string name="about_bhim">BHIM - UPI</string>
     <string name="permissions_denied">ההרשאות הנדרשות נדחו. אנא אשר אותן בשביל המשך הפעולה</string>
-    <string name="access_denied_using_vpn">גישה נדחתה! אתה משתמש ב-VPN או Tor?</string>
+    <string name="access_denied_using_vpn">הגישה נדחתה! האם נעשה שימוש ב־VPN או ב־Tor?</string>
     <string name="app_language">שפת היישום</string>
     <string name="notification_updates_available_desc_2"><xliff:g id="app_one_name">%1$s</xliff:g> ו <xliff:g id="app_two_name">%2$s</xliff:g></string>
     <string name="purchase_session_expired">פג תוקף ההפעלה, התחבר מחדש כדי לקבל הפעלה חדשה.</string>
@@ -340,7 +340,7 @@
     <string name="pref_dispenser_title">ניהול מתקנים</string>
     <string name="pref_dispenser_summary">הצג ונהל מכשירי אסימון לכניסות אנונימיות</string>
     <string name="add_dispenser_title">הוסף מתקן</string>
-    <string name="remove_dispenser_title">הסר את המתקן</string>
+    <string name="remove_dispenser_title">להסיר את המחלק?</string>
     <string name="no_dispensers_available">אין מתקנים זמינים</string>
     <string name="add_dispenser_hint">כתובת אתר של מתקן</string>
     <string name="add">הוסף</string>
@@ -372,7 +372,7 @@
     <string name="pref_network_proxy_url_message">הזן כתובת פרוקסי חוקית כדי להעביר את כל הנתונים דרך פרוקסי.</string>
     <string name="title_favourites_manager">יישומים מעודפים</string>
     <string name="toast_fav_import_failed">ייבוא המועדפים נכשל!</string>
-    <string name="action_logout_confirmation_message">האם אתה בטוח שאתה רוצה להתנתק?</string>
+    <string name="action_logout_confirmation_message">להתנתק?</string>
     <string name="check_updates">חפש עדכונים</string>
     <string name="status_failed">תקלה</string>
     <string name="status_completed">הושלם</string>
@@ -389,10 +389,10 @@
     <string name="app_info_downloads">הורדות</string>
     <string name="app_info_updated_on">עודכן לאחרונה</string>
     <string name="app_info_min_android">גרסת אנדרואיד מינימלית</string>
-    <string name="action_select_all">בחר הכל</string>
+    <string name="action_select_all">לבחור הכול</string>
     <string name="filter_latest">אחרון</string>
     <string name="no_apps_available">אין אפליקציות זמינות</string>
-    <string name="action_remove_all">הסר הכל</string>
+    <string name="action_remove_all">להסיר הכול</string>
     <string name="app_info_target_android">רמת יעד API</string>
     <string name="action_install_microG">התקנת חבילת microG</string>
     <string name="onboarding_title_gsf">תאימות יישום</string>
@@ -437,7 +437,7 @@
     <string name="pref_network_proxy_desc">תצוגה וניהול תצורת Proxy</string>
     <string name="pref_common_advanced">מתקדם</string>
     <string name="pref_updates_restrictions_title">הגבלות על עדכונים אוטומטיים</string>
-    <string name="pref_updates_restrictions_desc">הגדרת הגבלות התקן עבור עדכונים אוטומטיים.</string>
+    <string name="pref_updates_restrictions_desc">הגדרת מגבלות למכשיר בשביל עדכונים אוטומטיים</string>
     <string name="pref_updates_restrictions_metered">ברשתות לא מוגבלות בלבד</string>
     <string name="pref_updates_restrictions_idle">כאשר ההתקן בהמתנה</string>
     <string name="pref_updates_restrictions_battery">כאשר הסוללה אינה חלשה</string>
@@ -447,4 +447,25 @@
     <string name="details_data_safety_collect_none">המפַתח מסר שהוא לא יאסוף את הנתונים שלך ולא ישתמש בהם.</string>
     <string name="details_data_safety_shared">האפליקציה הזאת עשויה לשתף את סוגי הנתונים האלה</string>
     <string name="details_data_safety_share_none">המפַתח הזה מצהיר כי הנתונים שלך לא ישותפו עם חברות וארגונים אחרים.</string>
+    <string name="exodus_tracker_desc">גרסה זו של היישום עשויה להכיל עוד רכיבי מעקב שעדיין לא מתועדים במסד נתוני הפרטיות של Exodus.</string>
+    <string name="exodus_report_trackers">נמצאו <xliff:g id="number_of_trackers">%1$d</xliff:g> רכיבי מעקב מזוהים בתוך <xliff:g id="app_version_name">%2$s</xliff:g></string>
+    <string name="action_skip">דילוג</string>
+    <string name="force_restart_snack">לפתוח מחדש לצורך החלת השינויים?</string>
+    <string name="no_description">אין תיאור זמין</string>
+    <string name="details_more_info">מידע נוסף</string>
+    <string name="details_more_package_name">שם חבילה</string>
+    <string name="details_more_content_rating">דירוג תוכן</string>
+    <string name="preparing_to_install">בהכנות להתקנה</string>
+    <string name="preparing_to_download">בהכנות להורדה</string>
+    <string name="verifying_downloads">ההורדות עוברות אימות</string>
+    <plurals name="permissions_required">
+        <item quantity="one">נדרשת הרשאת גישה</item>
+        <item quantity="two">נדרשות הרשאות גישה</item>
+        <item quantity="other">נדרשות הרשאות גישה</item>
+    </plurals>
+    <string name="select_app_for_details">יש לבחור יישום כדי להציג פרטים נוספים</string>
+    <string name="action_filter_no_ads">ללא פרסומות</string>
+    <string name="action_filter_no_gms">ללא שירותי Google Play</string>
+    <string name="loading">הטעינה מתבצעת</string>
+    <string name="page">עמוד <xliff:g id="number">%1$d</xliff:g></string>
 </resources>
