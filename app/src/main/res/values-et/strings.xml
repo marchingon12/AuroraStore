@@ -471,4 +471,6 @@
     <string name="page">Leht <xliff:g id="number">%1$d</xliff:g></string>
     <string name="action_skip">Jäta vahele</string>
     <string name="force_restart_snack">Kas käivitad muudatuste jõustamiseks uuesti?</string>
+    <string name="preparing_to_download">Valmistun allalaadimiseks</string>
+    <string name="verifying_downloads">Kontrollin allalaaditu õigsust</string>
 </resources>
