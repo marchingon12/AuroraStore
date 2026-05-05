@@ -473,4 +473,6 @@
     <string name="microg_installer_subtitle">Wymaga zainstalowania aplikacji microG Companion</string>
     <string name="action_skip">Pomiń</string>
     <string name="force_restart_snack">Uruchomić ponownie, aby zastosować zmiany?</string>
+    <string name="preparing_to_download">Przygotowywanie do pobrania</string>
+    <string name="verifying_downloads">Weryfikowanie pobranych plików</string>
 </resources>
