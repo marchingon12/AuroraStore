@@ -56,7 +56,7 @@ fun Info(
             .fillMaxWidth()
             .clickable(onClick = { if (onClick != null) onClick() }, enabled = onClick != null)
             .padding(
-                horizontal = dimensionResource(R.dimen.padding_small),
+                horizontal = dimensionResource(R.dimen.padding_medium),
                 vertical = dimensionResource(R.dimen.padding_xxsmall)
             ),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_normal)),
@@ -75,7 +75,7 @@ fun Info(
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

@@ -8,6 +8,7 @@ package com.aurora.store.compose.ui.details.composable
 import android.text.format.Formatter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -61,6 +62,7 @@ fun Tags(app: App) {
     ).filterKeys { it != null }
 
     LazyRow(
+        contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.padding_medium)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
     ) {
         items(items = tags.keys.toList()) { label ->

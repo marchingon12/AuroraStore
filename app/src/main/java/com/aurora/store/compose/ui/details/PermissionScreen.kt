@@ -7,15 +7,19 @@ package com.aurora.store.compose.ui.details
 
 import android.content.pm.PermissionInfo
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
@@ -25,6 +29,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aurora.extensions.adaptiveNavigationIcon
@@ -32,6 +37,7 @@ import com.aurora.extensions.isWindowCompact
 import com.aurora.gplayapi.data.models.App
 import com.aurora.store.R
 import com.aurora.store.compose.composable.Info
+import com.aurora.store.compose.composable.ScrollHint
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
@@ -76,6 +82,7 @@ private fun ScreenContent(
     val packageManager = LocalContext.current.packageManager
 
     Scaffold(
+        modifier = Modifier.navigationBarsPadding(),
         topBar = {
             TopAppBar(
                 title = topAppBarTitle,
@@ -84,34 +91,43 @@ private fun ScreenContent(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .padding(horizontal = dimensionResource(R.dimen.padding_medium)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_medium))
-        ) {
-            items(items = permissionsInfo.keys.toList(), key = { it }) { permission ->
-                val permissionInfo = permissionsInfo.getValue(permission)
+        val listState = rememberLazyListState()
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .padding(horizontal = dimensionResource(R.dimen.padding_medium)),
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_medium))
+            ) {
+                items(items = permissionsInfo.keys.toList(), key = { it }) { permission ->
+                    val permissionInfo = permissionsInfo.getValue(permission)
 
-                Info(
-                    title = AnnotatedString(
-                        text = permissionInfo.loadLabel(packageManager)
-                            .toString()
-                            .replaceFirstChar {
-                                if (it.isLowerCase()) {
-                                    it.titlecase(LocalLocale.current.platformLocale)
-                                } else {
-                                    it.toString()
+                    Info(
+                        title = AnnotatedString(
+                            text = permissionInfo.loadLabel(packageManager)
+                                .toString()
+                                .replaceFirstChar {
+                                    if (it.isLowerCase()) {
+                                        it.titlecase(LocalLocale.current.platformLocale)
+                                    } else {
+                                        it.toString()
+                                    }
                                 }
-                            }
-                    ),
-                    description = AnnotatedString(
-                        text = permissionInfo.loadDescription(packageManager)?.toString()
-                            ?: stringResource(R.string.no_description)
+                        ),
+                        description = AnnotatedString(
+                            text = permissionInfo.loadDescription(packageManager)?.toString()
+                                ?: stringResource(R.string.no_description)
+                        )
                     )
-                )
+                }
             }
+            ScrollHint(
+                listState = listState,
+                bottomPadding = 5.dp,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 }

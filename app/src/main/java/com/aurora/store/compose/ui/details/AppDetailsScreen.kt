@@ -12,14 +12,15 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
@@ -49,6 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
@@ -65,6 +67,7 @@ import com.aurora.store.R
 import com.aurora.store.compose.composable.ContainedLoadingIndicator
 import com.aurora.store.compose.composable.Error
 import com.aurora.store.compose.composable.Header
+import com.aurora.store.compose.composable.ScrollHint
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.composable.app.LargeAppListItem
 import com.aurora.store.compose.navigation.Screen
@@ -163,7 +166,7 @@ fun AppDetailsScreen(
                                 PackageUtil.getLaunchIntent(context, packageName)
                             )
                         } catch (_: ActivityNotFoundException) {
-                            context.toast(context.getString(R.string.unable_to_open))
+                            context.toast(R.string.unable_to_open)
                         }
                     },
                     onTestingSubscriptionChange = { subscribe ->
@@ -390,6 +393,7 @@ private fun ScreenContentApp(
     @Composable
     fun MainPane() {
         Scaffold(
+            modifier = Modifier.navigationBarsPadding(),
             topBar = {
                 TopAppBar(
                     onNavigateUp = onNavigateUp,
@@ -397,81 +401,123 @@ private fun ScreenContentApp(
                 )
             }
         ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(dimensionResource(R.dimen.padding_medium)),
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_medium))
-            ) {
-                Details(
-                    app = app,
-                    state = state,
-                    onNavigateToDetailsDevProfile = { showExtraPane(Screen.DevProfile(it)) }
-                )
-
-                SetupActions()
-
-                Tags(app = app)
-                Changelog(changelog = app.changes)
-                Header(
-                    title = stringResource(R.string.details_more_about_app),
-                    subtitle = app.shortDescription,
-                    onClick = { showExtraPane(ExtraScreen.More) }
-                )
-
-                Screenshots(
-                    screenshots = app.screenshots,
-                    onNavigateToScreenshot = { showExtraPane(ExtraScreen.Screenshot(it)) }
-                )
-
-                RatingAndReviews(
-                    rating = app.rating,
-                    featuredReviews = featuredReviews,
-                    onNavigateToDetailsReview = { showExtraPane(ExtraScreen.Review) }
-                )
-
-                if (!isAnonymous && app.testingProgram?.isAvailable == true) {
-                    Testing(
-                        isSubscribed = app.testingProgram!!.isSubscribed,
-                        onTestingSubscriptionChange = onTestingSubscriptionChange
-                    )
-                }
-
-                Compatibility(needsGms = app.requiresGMS(), plexusScores = plexusScores)
-
-                Header(
-                    title = stringResource(R.string.details_permission),
-                    subtitle = if (app.permissions.isNotEmpty()) {
-                        stringResource(R.string.permissions_requested, app.permissions.size)
-                    } else {
-                        stringResource(R.string.details_no_permission)
-                    },
-                    onClick = if (app.permissions.isNotEmpty()) {
-                        { showExtraPane(ExtraScreen.Permission) }
-                    } else {
-                        null
+            val listState = rememberLazyListState()
+            Box(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(
+                        dimensionResource(R.dimen.margin_medium)
+                    ),
+                    state = listState
+                ) {
+                    item {
+                        Details(
+                            app = app,
+                            state = state,
+                            onNavigateToDetailsDevProfile = { showExtraPane(Screen.DevProfile(it)) }
+                        )
                     }
-                )
 
-                if (dataSafetyReport != null) {
-                    DataSafety(report = dataSafetyReport, privacyPolicyUrl = app.privacyPolicyUrl)
-                }
-
-                Privacy(
-                    report = exodusReport,
-                    onNavigateToDetailsExodus = if (exodusReport != null && exodusReport.id != -1) {
-                        { showExtraPane(ExtraScreen.Exodus) }
-                    } else {
-                        null
+                    item {
+                        SetupActions()
                     }
-                )
 
-                DeveloperDetails(
-                    address = app.developerAddress,
-                    website = app.developerWebsite,
-                    email = app.developerEmail
+                    item {
+                        Tags(app = app)
+                    }
+
+                    item {
+                        Changelog(changelog = app.changes)
+                    }
+
+                    item {
+                        Header(
+                            title = stringResource(R.string.details_more_about_app),
+                            subtitle = app.shortDescription,
+                            onClick = { showExtraPane(ExtraScreen.More) }
+                        )
+                    }
+
+                    item {
+                        Screenshots(
+                            screenshots = app.screenshots,
+                            onNavigateToScreenshot = { showExtraPane(ExtraScreen.Screenshot(it)) }
+                        )
+                    }
+
+                    item {
+                        RatingAndReviews(
+                            rating = app.rating,
+                            featuredReviews = featuredReviews,
+                            onNavigateToDetailsReview = { showExtraPane(ExtraScreen.Review) }
+                        )
+                    }
+
+                    item {
+                        if (!isAnonymous && app.testingProgram?.isAvailable == true) {
+                            Testing(
+                                isSubscribed = app.testingProgram!!.isSubscribed,
+                                onTestingSubscriptionChange = onTestingSubscriptionChange
+                            )
+                        }
+                    }
+
+                    item {
+                        Compatibility(needsGms = app.requiresGMS(), plexusScores = plexusScores)
+                    }
+
+                    item {
+                        Header(
+                            title = stringResource(R.string.details_permission),
+                            subtitle = if (app.permissions.isNotEmpty()) {
+                                stringResource(R.string.permissions_requested, app.permissions.size)
+                            } else {
+                                stringResource(R.string.details_no_permission)
+                            },
+                            onClick = if (app.permissions.isNotEmpty()) {
+                                { showExtraPane(ExtraScreen.Permission) }
+                            } else {
+                                null
+                            }
+                        )
+                    }
+
+                    item {
+                        if (dataSafetyReport != null) {
+                            DataSafety(
+                                report = dataSafetyReport,
+                                privacyPolicyUrl = app.privacyPolicyUrl
+                            )
+                        }
+                    }
+
+                    item {
+                        Privacy(
+                            report = exodusReport,
+                            onNavigateToDetailsExodus = if (exodusReport != null &&
+                                exodusReport.id != -1
+                            ) {
+                                { showExtraPane(ExtraScreen.Exodus) }
+                            } else {
+                                null
+                            }
+                        )
+                    }
+
+                    item {
+                        DeveloperDetails(
+                            address = app.developerAddress,
+                            website = app.developerWebsite,
+                            email = app.developerEmail
+                        )
+                    }
+                }
+                ScrollHint(
+                    listState = listState,
+                    bottomPadding = 5.dp,
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 )
             }
         }

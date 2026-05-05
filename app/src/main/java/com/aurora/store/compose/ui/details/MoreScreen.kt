@@ -6,14 +6,15 @@
 package com.aurora.store.compose.ui.details
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,6 +22,7 @@ import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.dimensionResource
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aurora.extensions.adaptiveNavigationIcon
@@ -38,6 +41,7 @@ import com.aurora.gplayapi.data.models.App
 import com.aurora.store.R
 import com.aurora.store.compose.composable.Header
 import com.aurora.store.compose.composable.Info
+import com.aurora.store.compose.composable.ScrollHint
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.composable.app.AppListItem
 import com.aurora.store.compose.preview.AppPreviewProvider
@@ -83,6 +87,7 @@ private fun ScreenContent(
     }
 
     Scaffold(
+        modifier = Modifier.navigationBarsPadding(),
         topBar = {
             TopAppBar(
                 title = topAppBarTitle,
@@ -91,30 +96,49 @@ private fun ScreenContent(
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_medium))
-        ) {
-            Header(title = stringResource(R.string.details_description))
-            Text(
-                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_medium)),
-                text = AnnotatedString.fromHtml(
-                    htmlString = app.description
-                ),
-                style = MaterialTheme.typography.bodyMedium
-            )
+        val listState = rememberLazyListState()
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize(),
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_medium))
+            ) {
+                item {
+                    Header(title = stringResource(R.string.details_description))
+                }
 
-            if (dependencies != null) {
-                AppDependencies(
-                    dependencies = dependencies,
-                    onNavigateToAppDetails = onNavigateToAppDetails
-                )
+                item {
+                    Text(
+                        modifier = Modifier.padding(
+                            horizontal = dimensionResource(R.dimen.padding_medium)
+                        ),
+                        text = AnnotatedString.fromHtml(
+                            htmlString = app.description
+                        ),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                item {
+                    if (dependencies != null) {
+                        AppDependencies(
+                            dependencies = dependencies,
+                            onNavigateToAppDetails = onNavigateToAppDetails
+                        )
+                    }
+                }
+
+                item {
+                    AppInfoMore(app = app)
+                }
             }
-
-            AppInfoMore(app = app)
+            ScrollHint(
+                listState = listState,
+                bottomPadding = 5.dp,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 }

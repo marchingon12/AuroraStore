@@ -41,18 +41,27 @@ fun Changelog(changelog: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_small)))
-            .background(color = MaterialTheme.colorScheme.secondaryContainer)
             .padding(dimensionResource(R.dimen.padding_medium))
     ) {
-        Text(
-            text = if (changelog.isBlank()) {
-                AnnotatedString(text = stringResource(R.string.details_changelog_unavailable))
-            } else {
-                AnnotatedString.fromHtml(htmlString = changelog)
-            },
-            style = MaterialTheme.typography.bodyMedium
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_small)))
+                .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                .padding(
+                    horizontal = dimensionResource(R.dimen.padding_medium),
+                    vertical = dimensionResource(R.dimen.padding_small)
+                )
+        ) {
+            Text(
+                text = if (changelog.isBlank()) {
+                    AnnotatedString(text = stringResource(R.string.details_changelog_unavailable))
+                } else {
+                    AnnotatedString.fromHtml(htmlString = changelog)
+                },
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 }
 

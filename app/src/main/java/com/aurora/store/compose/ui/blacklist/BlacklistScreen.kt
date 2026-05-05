@@ -10,10 +10,14 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -30,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -40,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,6 +53,7 @@ import com.aurora.Constants
 import com.aurora.extensions.toast
 import com.aurora.store.R
 import com.aurora.store.compose.composable.BlackListItem
+import com.aurora.store.compose.composable.ScrollHint
 import com.aurora.store.compose.preview.ThemePreviewProvider
 import com.aurora.store.compose.ui.blacklist.menu.BlacklistMenu
 import com.aurora.store.compose.ui.blacklist.menu.MenuItem
@@ -209,35 +216,51 @@ private fun ScreenContent(
         )
     }
 
-    Scaffold(topBar = { SearchBar() }) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_xxsmall))
-        ) {
-            items(items = packages ?: emptyList(), key = { p -> p.packageName.hashCode() }) { pkg ->
-                val isBlacklisted = isPackageBlacklisted(pkg.packageName)
-                val isFiltered = isPackageFiltered(pkg)
-                BlackListItem(
-                    icon = PackageUtil.getIconForPackage(context, pkg.packageName)!!,
-                    displayName = pkg.applicationInfo!!.loadLabel(
-                        context.packageManager
-                    ).toString(),
-                    packageName = pkg.packageName,
-                    versionName = pkg.versionName!!,
-                    versionCode = PackageInfoCompat.getLongVersionCode(pkg),
-                    isChecked = isBlacklisted || isFiltered,
-                    isEnabled = !isFiltered,
-                    onClick = {
-                        if (isBlacklisted) {
-                            onWhitelist(pkg.packageName)
-                        } else {
-                            onBlacklist(pkg.packageName)
-                        }
-                    }
+    Scaffold(
+        modifier = Modifier.navigationBarsPadding(),
+        topBar = { SearchBar() }
+    ) { paddingValues ->
+        val listState = rememberLazyListState()
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(paddingValues),
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(
+                    dimensionResource(R.dimen.margin_xxsmall)
                 )
+            ) {
+                items(items = packages ?: emptyList(), key = { p ->
+                    p.packageName.hashCode()
+                }) { pkg ->
+                    val isBlacklisted = isPackageBlacklisted(pkg.packageName)
+                    val isFiltered = isPackageFiltered(pkg)
+                    BlackListItem(
+                        icon = PackageUtil.getIconForPackage(context, pkg.packageName)!!,
+                        displayName = pkg.applicationInfo!!.loadLabel(
+                            context.packageManager
+                        ).toString(),
+                        packageName = pkg.packageName,
+                        versionName = pkg.versionName!!,
+                        versionCode = PackageInfoCompat.getLongVersionCode(pkg),
+                        isChecked = isBlacklisted || isFiltered,
+                        isEnabled = !isFiltered,
+                        onClick = {
+                            if (isBlacklisted) {
+                                onWhitelist(pkg.packageName)
+                            } else {
+                                onBlacklist(pkg.packageName)
+                            }
+                        }
+                    )
+                }
             }
+            ScrollHint(
+                listState = listState,
+                bottomPadding = 5.dp,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 }
