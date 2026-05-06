@@ -473,4 +473,6 @@
     <string name="page">Сторінка <xliff:g id="number">%1$d</xliff:g></string>
     <string name="action_skip">Пропустити</string>
     <string name="force_restart_snack">Перезапустити, щоб застосувати зміни?</string>
+    <string name="preparing_to_download">Підготовка до завантаження</string>
+    <string name="verifying_downloads">Перевірка завантажень</string>
 </resources>
