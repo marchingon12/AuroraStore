@@ -472,4 +472,5 @@
     <string name="force_restart_snack">重启应用更改吗？</string>
     <string name="preparing_to_download">正在准备下载</string>
     <string name="verifying_downloads">正在验证下载</string>
+    <string name="action_retry">重试</string>
 </resources>
