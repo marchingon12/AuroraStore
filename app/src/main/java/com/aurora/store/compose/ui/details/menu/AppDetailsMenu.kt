@@ -17,14 +17,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import com.aurora.Constants
 import com.aurora.store.R
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.preview.ThemePreviewProvider
 import com.aurora.store.data.model.AppState
+import com.aurora.store.util.PackageUtil
 
 /**
  * Menu for the app details screen
@@ -40,6 +43,7 @@ fun AppDetailsMenu(
     isExpanded: Boolean = false,
     onMenuItemClicked: (menuItem: MenuItem) -> Unit = {}
 ) {
+    val context = LocalContext.current
     var expanded by remember { mutableStateOf(isExpanded) }
     fun onClick(menuItem: MenuItem) {
         onMenuItemClicked(menuItem)
@@ -86,6 +90,11 @@ fun AppDetailsMenu(
                 text = { Text(text = stringResource(R.string.action_home_screen)) },
                 onClick = { onClick(MenuItem.ADD_TO_HOME) },
                 enabled = state is AppState.Installed || state is AppState.Updatable
+            )
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.action_view_on_play)) },
+                onClick = { onClick(MenuItem.PLAY_STORE) },
+                enabled = PackageUtil.isInstalled(context, Constants.PACKAGE_NAME_PLAY_STORE)
             )
         }
     }

@@ -51,9 +51,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import com.aurora.Constants
 import com.aurora.extensions.appInfo
 import com.aurora.extensions.requiresGMS
 import com.aurora.extensions.requiresObbDir
@@ -315,6 +317,21 @@ private fun ScreenContentApp(
 
                 MenuItem.ADD_TO_HOME -> {
                     ShortcutManagerUtil.requestPinShortcut(context, app.packageName)
+                }
+
+                MenuItem.PLAY_STORE -> {
+                    val uri = "${Constants.SHARE_URL}${app.packageName}".toUri()
+                    val intent = Intent(Intent.ACTION_VIEW).apply { data = uri }
+
+                    if (intent.resolveActivity(context.packageManager) != null) {
+                        context.startActivity(
+                            intent.apply {
+                                setPackage(Constants.PACKAGE_NAME_PLAY_STORE)
+                            }
+                        )
+                    } else {
+                        context.startActivity(intent)
+                    }
                 }
             }
         }
