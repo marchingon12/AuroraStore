@@ -475,4 +475,5 @@
     <string name="force_restart_snack">Uruchomić ponownie, aby zastosować zmiany?</string>
     <string name="preparing_to_download">Przygotowywanie do pobrania</string>
     <string name="verifying_downloads">Weryfikowanie pobranych plików</string>
+    <string name="action_retry">Ponów</string>
 </resources>
