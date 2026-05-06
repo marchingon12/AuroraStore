@@ -472,4 +472,6 @@
     <string name="page">Pagina <xliff:g id="number">%1$d</xliff:g></string>
     <string name="action_skip">Omite</string>
     <string name="force_restart_snack">Repornești pentru a aplica modificările?</string>
+    <string name="preparing_to_download">Se pregătește pentru descărcare</string>
+    <string name="verifying_downloads">Verificarea descărcărilor</string>
 </resources>
