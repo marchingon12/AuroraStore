@@ -474,4 +474,5 @@
     <string name="force_restart_snack">Redémarrer pour appliquer les changements ?</string>
     <string name="preparing_to_download">Préparation du téléchargement</string>
     <string name="verifying_downloads">Vérification des téléchargements</string>
+    <string name="action_retry">Réessayer</string>
 </resources>
