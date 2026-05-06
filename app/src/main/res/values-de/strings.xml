@@ -471,4 +471,6 @@
     <string name="page">Seite <xliff:g id="number">%1$d</xliff:g></string>
     <string name="action_skip">Überspringen</string>
     <string name="force_restart_snack">Neu starten, um Änderungen zu übernehmen?</string>
+    <string name="preparing_to_download">Vorbereiten zum Download</string>
+    <string name="verifying_downloads">Downloads werden überprüft</string>
 </resources>
