@@ -95,9 +95,14 @@ class UpdatesFragment : BaseFragment<FragmentUpdatesBinding>() {
                     }
                 }.collectLatest { map ->
                     updateController(map)
-                    viewModel.updateAllEnqueued = map?.values?.all {
-                        it?.isRunning == true
-                    } ?: false
+                    viewModel.updateAllEnqueued = map
+                        ?.filterKeys { update ->
+                            !update.isIncompatible &&
+                                !update.requiresOwnershipTransfer(requireContext())
+                        }
+                        ?.values
+                        ?.takeIf { it.isNotEmpty() }
+                        ?.all { it?.isRunning == true } ?: false
                 }
         }
 
@@ -130,6 +135,18 @@ class UpdatesFragment : BaseFragment<FragmentUpdatesBinding>() {
                     )
                 }
             } else {
+                val context = requireContext()
+                val incompatibleEntries = mutableListOf<Map.Entry<Update, Download?>>()
+                val approvalEntries = mutableListOf<Map.Entry<Update, Download?>>()
+                val mainEntries = mutableListOf<Map.Entry<Update, Download?>>()
+                appList.entries.forEach { entry ->
+                    when {
+                        entry.key.isIncompatible -> incompatibleEntries += entry
+                        entry.key.requiresOwnershipTransfer(context) -> approvalEntries += entry
+                        else -> mainEntries += entry
+                    }
+                }
+
                 if (appList.isEmpty()) {
                     add(
                         NoAppViewModel_()
@@ -141,59 +158,93 @@ class UpdatesFragment : BaseFragment<FragmentUpdatesBinding>() {
                             .actionCallback { _ -> viewModel.fetchUpdates() }
                     )
                 } else {
-                    add(
-                        UpdateHeaderViewModel_()
-                            .id("header_all")
-                            .title(
-                                "${appList.size} " +
-                                    if (appList.size == 1) {
-                                        getString(R.string.update_available)
-                                    } else {
-                                        getString(R.string.updates_available)
-                                    }
-                            )
-                            .action(
-                                if (viewModel.updateAllEnqueued) {
-                                    getString(R.string.action_cancel)
-                                } else {
-                                    getString(R.string.action_update_all)
-                                }
-                            )
-                            .click { _ ->
-                                if (viewModel.updateAllEnqueued) {
-                                    cancelAll()
-                                } else {
-                                    updateAll()
-                                }
-                                requestModelBuild()
-                            }
-                    )
-
-                    for ((update, download) in appList) {
+                    if (mainEntries.isNotEmpty()) {
                         add(
-                            AppUpdateViewModel_()
-                                .id(update.packageName)
-                                .update(update)
-                                .download(download)
-                                .click { _ ->
-                                    if (update.packageName == requireContext().packageName) {
-                                        requireContext().browse(Constants.GITLAB_URL)
+                            UpdateHeaderViewModel_()
+                                .id("header_all")
+                                .title(
+                                    "${mainEntries.size} " +
+                                        if (mainEntries.size == 1) {
+                                            getString(R.string.update_available)
+                                        } else {
+                                            getString(R.string.updates_available)
+                                        }
+                                )
+                                .action(
+                                    if (viewModel.updateAllEnqueued) {
+                                        getString(R.string.action_cancel)
                                     } else {
-                                        openDetailsFragment(update.packageName)
+                                        getString(R.string.action_update_all)
                                     }
+                                )
+                                .click { _ ->
+                                    if (viewModel.updateAllEnqueued) {
+                                        cancelAll()
+                                    } else {
+                                        updateAll()
+                                    }
+                                    requestModelBuild()
                                 }
-                                .longClick { _ ->
-                                    openAppMenuSheet(MinimalApp.fromUpdate(update))
-                                    false
-                                }
-                                .positiveAction { _ -> updateSingle(update) }
-                                .negativeAction { _ -> cancelSingle(update) }
                         )
+
+                        for ((update, download) in mainEntries) {
+                            add(buildUpdateModel(update, download))
+                        }
+                    }
+
+                    if (approvalEntries.isNotEmpty()) {
+                        add(
+                            UpdateHeaderViewModel_()
+                                .id("header_approval")
+                                .title(getString(R.string.updates_approval_header))
+                                .subtitle(getString(R.string.updates_approval_desc))
+                                .action(getString(R.string.action_update_all))
+                                .click { _ ->
+                                    updateApprovalRequiring(approvalEntries.map { it.key })
+                                }
+                        )
+
+                        for ((update, download) in approvalEntries) {
+                            add(buildUpdateModel(update, download))
+                        }
+                    }
+
+                    if (incompatibleEntries.isNotEmpty()) {
+                        add(
+                            UpdateHeaderViewModel_()
+                                .id("header_incompatible")
+                                .title(getString(R.string.updates_incompatible_header))
+                                .subtitle(getString(R.string.updates_incompatible_desc))
+                                .action(null)
+                        )
+
+                        for ((update, download) in incompatibleEntries) {
+                            add(buildUpdateModel(update, download))
+                        }
                     }
                 }
             }
         }
     }
+
+    private fun buildUpdateModel(update: Update, download: Download?): AppUpdateViewModel_ =
+        AppUpdateViewModel_()
+            .id(update.packageName)
+            .update(update)
+            .download(download)
+            .click { _ ->
+                if (update.packageName == requireContext().packageName) {
+                    requireContext().browse(Constants.GITLAB_URL)
+                } else {
+                    openDetailsFragment(update.packageName)
+                }
+            }
+            .longClick { _ ->
+                openAppMenuSheet(MinimalApp.fromUpdate(update))
+                false
+            }
+            .positiveAction { _ -> updateSingle(update) }
+            .negativeAction { _ -> cancelSingle(update) }
 
     private fun updateSingle(update: Update) {
         if (update.fileList.requiresObbDir()) {
@@ -211,16 +262,35 @@ class UpdatesFragment : BaseFragment<FragmentUpdatesBinding>() {
 
     private fun updateAll() {
         viewModel.updateAllEnqueued = true
-        if (viewModel.updates.value?.any { it.fileList.requiresObbDir() } == true) {
+        val mainList = viewModel.updates.value
+            ?.filterNot { it.isIncompatible }
+            ?.filterNot { it.requiresOwnershipTransfer(requireContext()) }
+            .orEmpty()
+
+        if (mainList.any { it.fileList.requiresObbDir() }) {
             if (isGranted(requireContext(), PermissionType.STORAGE_MANAGER)) {
-                viewModel.downloadAll()
+                viewModel.downloadAll(mainList)
             } else {
                 permissionProvider.request(PermissionType.STORAGE_MANAGER) {
-                    if (it) viewModel.downloadAll()
+                    if (it) viewModel.downloadAll(mainList)
                 }
             }
         } else {
-            viewModel.downloadAll()
+            viewModel.downloadAll(mainList)
+        }
+    }
+
+    private fun updateApprovalRequiring(updates: List<Update>) {
+        if (updates.any { it.fileList.requiresObbDir() }) {
+            if (isGranted(requireContext(), PermissionType.STORAGE_MANAGER)) {
+                viewModel.downloadAll(updates)
+            } else {
+                permissionProvider.request(PermissionType.STORAGE_MANAGER) {
+                    if (it) viewModel.downloadAll(updates)
+                }
+            }
+        } else {
+            viewModel.downloadAll(updates)
         }
     }
 

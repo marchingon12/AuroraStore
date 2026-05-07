@@ -30,6 +30,10 @@ object MigrationHelper {
         override fun migrate(db: SupportSQLiteDatabase) = migrateFrom5To6(db)
     }
 
+    val MIGRATION_6_7 = object : Migration(6, 7) {
+        override fun migrate(db: SupportSQLiteDatabase) = migrateFrom6To7(db)
+    }
+
     private const val TAG = "MigrationHelper"
 
     private fun migrateFrom1To2(database: SupportSQLiteDatabase) {
@@ -108,6 +112,24 @@ object MigrationHelper {
             database.setTransactionSuccessful()
         } catch (exception: Exception) {
             Log.e(TAG, "Failed while migrating from database version 5 to 6", exception)
+        } finally {
+            database.endTransaction()
+        }
+    }
+
+    /**
+     * Add isIncompatible column to update table for flagging updates that cannot be applied
+     * on the current OS (e.g. system app updates on HyperOS / GrapheneOS).
+     */
+    private fun migrateFrom6To7(database: SupportSQLiteDatabase) {
+        database.beginTransaction()
+        try {
+            database.execSQL(
+                "ALTER TABLE `update` ADD COLUMN isIncompatible INTEGER NOT NULL DEFAULT 0"
+            )
+            database.setTransactionSuccessful()
+        } catch (exception: Exception) {
+            Log.e(TAG, "Failed while migrating from database version 6 to 7", exception)
         } finally {
             database.endTransaction()
         }

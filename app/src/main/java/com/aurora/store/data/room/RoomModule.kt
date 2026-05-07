@@ -7,6 +7,7 @@ import com.aurora.store.data.room.MigrationHelper.MIGRATION_2_3
 import com.aurora.store.data.room.MigrationHelper.MIGRATION_3_4
 import com.aurora.store.data.room.MigrationHelper.MIGRATION_4_5
 import com.aurora.store.data.room.MigrationHelper.MIGRATION_5_6
+import com.aurora.store.data.room.MigrationHelper.MIGRATION_6_7
 import com.aurora.store.data.room.download.DownloadConverter
 import com.aurora.store.data.room.download.DownloadDao
 import com.aurora.store.data.room.favourite.FavouriteDao
@@ -35,7 +36,8 @@ object RoomModule {
             MIGRATION_2_3,
             MIGRATION_3_4,
             MIGRATION_4_5,
-            MIGRATION_5_6
+            MIGRATION_5_6,
+            MIGRATION_6_7
         )
         .addTypeConverter(downloadConverter)
         .build()
