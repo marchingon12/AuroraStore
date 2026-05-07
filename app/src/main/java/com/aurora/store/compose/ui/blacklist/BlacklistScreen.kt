@@ -5,10 +5,12 @@
 
 package com.aurora.store.compose.ui.blacklist
 
-import android.content.pm.PackageInfo
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,10 +23,13 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.AppBarWithSearch
+import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
@@ -46,20 +51,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import androidx.core.content.pm.PackageInfoCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aurora.Constants
 import com.aurora.extensions.toast
 import com.aurora.store.R
 import com.aurora.store.compose.composable.BlackListItem
+import com.aurora.store.compose.composable.ContainedLoadingIndicator
 import com.aurora.store.compose.composable.ScrollHint
+import com.aurora.store.compose.composable.TextDividerComposable
 import com.aurora.store.compose.preview.ThemePreviewProvider
 import com.aurora.store.compose.ui.blacklist.menu.BlacklistMenu
 import com.aurora.store.compose.ui.blacklist.menu.MenuItem
-import com.aurora.store.util.PackageUtil
+import com.aurora.store.data.model.BlacklistAppItem
 import com.aurora.store.viewmodel.blacklist.BlacklistViewModel
 import java.util.Calendar
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -72,7 +79,6 @@ fun BlacklistScreen(onNavigateUp: () -> Unit, viewModel: BlacklistViewModel = hi
         packages = packages,
         onNavigateUp = onNavigateUp,
         isPackageBlacklisted = { pkgName -> pkgName in viewModel.blacklist },
-        isPackageFiltered = { pkgInfo -> viewModel.isFiltered(pkgInfo) },
         onBlacklistImport = { uri ->
             viewModel.importBlacklist(uri)
             context.toast(R.string.toast_black_import_success)
@@ -91,10 +97,9 @@ fun BlacklistScreen(onNavigateUp: () -> Unit, viewModel: BlacklistViewModel = hi
 
 @Composable
 private fun ScreenContent(
-    packages: List<PackageInfo>? = null,
+    packages: List<BlacklistAppItem>? = null,
     onNavigateUp: () -> Unit = {},
     isPackageBlacklisted: (packageName: String) -> Boolean = { false },
-    isPackageFiltered: (packageInfo: PackageInfo) -> Boolean = { false },
     onBlacklistImport: (uri: Uri) -> Unit = {},
     onBlacklistExport: (uri: Uri) -> Unit = {},
     onBlacklist: (packageName: String) -> Unit = {},
@@ -119,6 +124,7 @@ private fun ScreenContent(
             }
         }
     )
+
     val docExportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument(Constants.JSON_MIME_TYPE),
         onResult = {
@@ -164,11 +170,23 @@ private fun ScreenContent(
 
     @Composable
     fun SearchBar() {
+        val interactionSource = remember { MutableInteractionSource() }
+
+        LaunchedEffect(interactionSource) {
+            interactionSource.interactions.collectLatest { interaction ->
+                if (interaction is PressInteraction.Press) {
+                    awaitFrame()
+                    focusRequester.requestFocus()
+                }
+            }
+        }
+
         val inputField = @Composable {
             SearchBarDefaults.InputField(
                 modifier = Modifier.focusRequester(focusRequester),
                 searchBarState = searchBarState,
                 textFieldState = textFieldState,
+                interactionSource = interactionSource,
                 onSearch = { query -> onRequestSearch(query) },
                 placeholder = {
                     Text(
@@ -212,11 +230,30 @@ private fun ScreenContent(
                     )
                 }
             },
-            actions = { if (!packages.isNullOrEmpty()) SetupMenu() },
+            actions = { SetupMenu() },
             colors = SearchBarDefaults.appBarWithSearchColors(
                 appBarContainerColor = Color.Transparent
             )
         )
+        ExpandedFullScreenSearchBar(state = searchBarState, inputField = inputField) {
+            if (textFieldState.text.length >= 3) {
+                packages?.take(10)?.forEach { pkg ->
+                    Text(
+                        text = pkg.displayName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onRequestSearch(pkg.displayName) }
+                            .padding(
+                                horizontal = dimensionResource(R.dimen.padding_medium),
+                                vertical = dimensionResource(R.dimen.padding_small)
+                            )
+                    )
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -228,28 +265,24 @@ private fun ScreenContent(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                state = listState,
-                verticalArrangement = Arrangement.spacedBy(
-                    dimensionResource(R.dimen.margin_xxsmall)
-                )
-            ) {
-                items(items = packages ?: emptyList(), key = { p ->
-                    p.packageName.hashCode()
-                }) { pkg ->
+            if (packages == null) {
+                ContainedLoadingIndicator()
+            } else {
+                val (selectedPackages, otherPackages) = packages.partition { pkg ->
+                    isPackageBlacklisted(pkg.packageName) || pkg.isFiltered
+                }
+
+                @Composable
+                fun BlacklistRow(pkg: BlacklistAppItem) {
                     val isBlacklisted = isPackageBlacklisted(pkg.packageName)
-                    val isFiltered = isPackageFiltered(pkg)
                     BlackListItem(
-                        icon = PackageUtil.getIconForPackage(context, pkg.packageName)!!,
-                        displayName = pkg.applicationInfo!!.loadLabel(
-                            context.packageManager
-                        ).toString(),
+                        icon = pkg.icon,
+                        displayName = pkg.displayName,
                         packageName = pkg.packageName,
-                        versionName = pkg.versionName!!,
-                        versionCode = PackageInfoCompat.getLongVersionCode(pkg),
-                        isChecked = isBlacklisted || isFiltered,
-                        isEnabled = !isFiltered,
+                        versionName = pkg.versionName,
+                        versionCode = pkg.versionCode,
+                        isChecked = isBlacklisted || pkg.isFiltered,
+                        isEnabled = !pkg.isFiltered,
                         onClick = {
                             if (isBlacklisted) {
                                 onWhitelist(pkg.packageName)
@@ -259,12 +292,50 @@ private fun ScreenContent(
                         }
                     )
                 }
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = listState,
+                    verticalArrangement = Arrangement.spacedBy(
+                        dimensionResource(R.dimen.margin_xxsmall)
+                    )
+                ) {
+                    if (selectedPackages.isNotEmpty()) {
+                        stickyHeader(key = "header_selected") {
+                            Surface(modifier = Modifier.fillMaxWidth()) {
+                                TextDividerComposable(
+                                    title = stringResource(
+                                        R.string.header_blacklist_selected
+                                    )
+                                )
+                            }
+                        }
+                        items(items = selectedPackages, key = { p ->
+                            p.packageName.hashCode()
+                        }) { pkg -> BlacklistRow(pkg) }
+                    }
+
+                    if (otherPackages.isNotEmpty()) {
+                        stickyHeader(key = "header_others") {
+                            Surface(modifier = Modifier.fillMaxWidth()) {
+                                TextDividerComposable(
+                                    title = stringResource(
+                                        R.string.header_blacklist_others
+                                    )
+                                )
+                            }
+                        }
+                        items(items = otherPackages, key = { p ->
+                            p.packageName.hashCode()
+                        }) { pkg -> BlacklistRow(pkg) }
+                    }
+                }
+                ScrollHint(
+                    listState = listState,
+                    bottomPadding = 5.dp,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
             }
-            ScrollHint(
-                listState = listState,
-                bottomPadding = 5.dp,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
         }
     }
 }
