@@ -473,4 +473,5 @@
     <string name="force_restart_snack">Neu starten, um Änderungen zu übernehmen?</string>
     <string name="preparing_to_download">Vorbereiten zum Download</string>
     <string name="verifying_downloads">Downloads werden überprüft</string>
+    <string name="action_retry">Wiederholen</string>
 </resources>
