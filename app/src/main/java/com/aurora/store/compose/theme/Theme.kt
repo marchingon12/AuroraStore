@@ -5,6 +5,9 @@
 
 package com.aurora.store.compose.theme
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialExpressiveTheme
@@ -14,8 +17,11 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
+import androidx.core.view.WindowCompat
 import com.aurora.store.R
 import com.aurora.store.util.Preferences
 
@@ -46,5 +52,41 @@ fun AuroraTheme(content: @Composable () -> Unit) {
         else -> if (isSystemInDarkTheme()) darkScheme else lightScheme
     }
 
+    val darkTheme = when (themeStyle) {
+        1 -> false
+        2 -> true
+        else -> isSystemInDarkTheme()
+    }
+
+    /**
+     * Side effect to update the system bars to be transparent and match the theme's light/dark mode.
+     * This is necessary on OEM devices that don't properly support dynamic theming and may have issues with light/dark status bar icons.
+     */
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val activity = view.context.findActivity() ?: return@SideEffect
+            val window = activity.window
+
+            // Transparent system bars
+            window.statusBarColor = android.graphics.Color.TRANSPARENT
+            window.navigationBarColor = android.graphics.Color.TRANSPARENT
+
+            // Control icon colors explicitly
+            WindowCompat
+                .getInsetsController(window, view)
+                .apply {
+                    isAppearanceLightStatusBars = !darkTheme
+                    isAppearanceLightNavigationBars = !darkTheme
+                }
+        }
+    }
+
     MaterialExpressiveTheme(colorScheme = colorScheme, content = content)
+}
+
+tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

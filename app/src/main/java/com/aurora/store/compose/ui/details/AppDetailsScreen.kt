@@ -533,7 +533,7 @@ private fun ScreenContentApp(
                 }
                 ScrollHint(
                     listState = listState,
-                    bottomPadding = 5.dp,
+                    bottomPadding = 72.dp,
                     modifier = Modifier.align(Alignment.BottomCenter)
                 )
             }

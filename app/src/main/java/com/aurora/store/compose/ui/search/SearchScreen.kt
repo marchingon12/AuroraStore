@@ -51,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
@@ -210,7 +211,13 @@ private fun ScreenContent(
             )
         }
 
-        AppBarWithSearch(state = searchBarState, inputField = inputField)
+        AppBarWithSearch(
+            state = searchBarState,
+            inputField = inputField,
+            colors = SearchBarDefaults.appBarWithSearchColors(
+                appBarContainerColor = Color.Transparent
+            )
+        )
         ExpandedDockedSearchBar(state = searchBarState, inputField = inputField) {
             suggestions.forEach { suggestion ->
                 SearchSuggestionListItem(
