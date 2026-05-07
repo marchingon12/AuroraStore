@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -234,8 +233,7 @@ private fun ScreenContent(
         // TODO: https://issuetracker.google.com/issues/445720462
         Scaffold(
             modifier = Modifier
-                .focusable()
-                .navigationBarsPadding(),
+                .focusable(),
             topBar = { SearchBar() }
         ) { paddingValues ->
             Column(

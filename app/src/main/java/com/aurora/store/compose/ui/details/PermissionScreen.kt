@@ -9,7 +9,6 @@ import android.content.pm.PermissionInfo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -82,7 +81,6 @@ private fun ScreenContent(
     val packageManager = LocalContext.current.packageManager
 
     Scaffold(
-        modifier = Modifier.navigationBarsPadding(),
         topBar = {
             TopAppBar(
                 title = topAppBarTitle,
@@ -92,10 +90,13 @@ private fun ScreenContent(
         }
     ) { paddingValues ->
         val listState = rememberLazyListState()
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             LazyColumn(
                 modifier = Modifier
-                    .padding(paddingValues)
                     .fillMaxSize()
                     .padding(horizontal = dimensionResource(R.dimen.padding_medium)),
                 state = listState,

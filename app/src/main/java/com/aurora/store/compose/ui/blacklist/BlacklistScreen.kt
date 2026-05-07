@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -221,15 +220,16 @@ private fun ScreenContent(
     }
 
     Scaffold(
-        modifier = Modifier.navigationBarsPadding(),
         topBar = { SearchBar() }
     ) { paddingValues ->
         val listState = rememberLazyListState()
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(paddingValues),
+                modifier = Modifier.fillMaxWidth(),
                 state = listState,
                 verticalArrangement = Arrangement.spacedBy(
                     dimensionResource(R.dimen.margin_xxsmall)

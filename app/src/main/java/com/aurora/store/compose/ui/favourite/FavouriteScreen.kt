@@ -10,7 +10,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -132,7 +131,6 @@ private fun ScreenContent(
     }
 
     Scaffold(
-        modifier = Modifier.navigationBarsPadding(),
         topBar = {
             TopAppBar(
                 title = stringResource(R.string.title_favourites_manager),
