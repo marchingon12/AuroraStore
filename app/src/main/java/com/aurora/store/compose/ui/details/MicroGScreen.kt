@@ -139,10 +139,13 @@ private fun ScreenContent(
             }
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             LazyColumn(
                 modifier = Modifier
-                    .padding(paddingValues)
                     .fillMaxSize()
                     .padding(horizontal = dimensionResource(R.dimen.padding_medium)),
                 state = listState

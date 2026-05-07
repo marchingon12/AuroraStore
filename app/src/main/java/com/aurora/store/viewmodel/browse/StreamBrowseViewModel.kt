@@ -28,6 +28,7 @@ import com.aurora.extensions.TAG
 import com.aurora.gplayapi.data.models.App
 import com.aurora.gplayapi.data.models.StreamCluster
 import com.aurora.gplayapi.helpers.web.WebStreamHelper
+import com.aurora.store.data.PageResult
 import com.aurora.store.data.paging.GenericPagingSource.Companion.manualPager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -61,7 +62,7 @@ class StreamBrowseViewModel @AssistedInject constructor(
         var nextPageUrl: String = streamCluster.clusterNextPageUrl
 
         manualPager { page ->
-            try {
+            val items = try {
                 when (page) {
                     1 -> streamCluster.clusterAppList
 
@@ -79,6 +80,7 @@ class StreamBrowseViewModel @AssistedInject constructor(
                 Log.e(TAG, "Failed to fetch apps for $page: $nextPageUrl", exception)
                 emptyList()
             }
+            PageResult(items)
         }.flow.distinctUntilChanged()
             .cachedIn(viewModelScope)
             .onEach { _apps.value = it }

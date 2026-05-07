@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -45,9 +46,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
@@ -58,6 +61,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -70,6 +74,7 @@ import com.aurora.gplayapi.data.models.App
 import com.aurora.store.R
 import com.aurora.store.compose.composable.ContainedLoadingIndicator
 import com.aurora.store.compose.composable.Error
+import com.aurora.store.compose.composable.ScrollHint
 import com.aurora.store.compose.composable.SearchSuggestionListItem
 import com.aurora.store.compose.composable.app.LargeAppListItem
 import com.aurora.store.compose.preview.AppPreviewProvider
@@ -205,7 +210,13 @@ private fun ScreenContent(
             )
         }
 
-        AppBarWithSearch(state = searchBarState, inputField = inputField)
+        AppBarWithSearch(
+            state = searchBarState,
+            inputField = inputField,
+            colors = SearchBarDefaults.appBarWithSearchColors(
+                appBarContainerColor = Color.Transparent
+            )
+        )
         ExpandedDockedSearchBar(state = searchBarState, inputField = inputField) {
             suggestions.forEach { suggestion ->
                 SearchSuggestionListItem(
@@ -221,7 +232,8 @@ private fun ScreenContent(
     fun ListPane() {
         // TODO: https://issuetracker.google.com/issues/445720462
         Scaffold(
-            modifier = Modifier.focusable(),
+            modifier = Modifier
+                .focusable(),
             topBar = { SearchBar() }
         ) { paddingValues ->
             Column(
@@ -255,18 +267,29 @@ private fun ScreenContent(
                                 message = stringResource(R.string.no_apps_available)
                             )
                         } else {
-                            LazyColumn {
-                                items(
-                                    count = results.itemCount,
-                                    key = { Uuid.random().toString() }
-                                ) { index ->
-                                    results[index]?.let { app ->
-                                        LargeAppListItem(
-                                            app = app,
-                                            onClick = { showDetailPane(app.packageName) }
-                                        )
+                            val listState = rememberLazyListState()
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                LazyColumn(
+                                    state = listState,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    items(
+                                        count = results.itemCount,
+                                        key = { Uuid.random().toString() }
+                                    ) { index ->
+                                        results[index]?.let { app ->
+                                            LargeAppListItem(
+                                                app = app,
+                                                onClick = { showDetailPane(app.packageName) }
+                                            )
+                                        }
                                     }
                                 }
+                                ScrollHint(
+                                    listState = listState,
+                                    bottomPadding = 5.dp,
+                                    modifier = Modifier.align(Alignment.BottomCenter)
+                                )
                             }
                         }
                     }

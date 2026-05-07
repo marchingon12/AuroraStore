@@ -5,11 +5,13 @@
 
 package com.aurora.store.compose.ui.details
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -19,6 +21,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -27,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aurora.Constants.EXODUS_REPORT_URL
@@ -38,6 +42,7 @@ import com.aurora.gplayapi.data.models.App
 import com.aurora.store.R
 import com.aurora.store.compose.composable.Error
 import com.aurora.store.compose.composable.Header
+import com.aurora.store.compose.composable.ScrollHint
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.composable.details.ExodusListItem
 import com.aurora.store.compose.preview.AppPreviewProvider
@@ -119,33 +124,45 @@ private fun ScreenContentReport(
             }
         }
     ) { paddingValues ->
-        LazyColumn(
+        val listState = rememberLazyListState()
+        Box(
             modifier = Modifier
-                .padding(paddingValues)
                 .fillMaxSize()
-                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
+                .padding(paddingValues)
         ) {
-            stickyHeader {
-                Surface(modifier = Modifier.fillMaxWidth()) {
-                    Header(
-                        title = if (report?.trackers.isNullOrEmpty()) {
-                            stringResource(R.string.exodus_no_tracker)
-                        } else {
-                            stringResource(
-                                R.string.exodus_report_trackers,
-                                report.trackers.size,
-                                report.version
-                            )
-                        },
-                        subtitle = stringResource(R.string.exodus_view_report),
-                        onClick = { context.browse(EXODUS_REPORT_URL + report!!.id) }
-                    )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = dimensionResource(R.dimen.padding_medium)),
+                state = listState
+            ) {
+                stickyHeader {
+                    Surface(modifier = Modifier.fillMaxWidth()) {
+                        Header(
+                            title = if (report?.trackers.isNullOrEmpty()) {
+                                stringResource(R.string.exodus_no_tracker)
+                            } else {
+                                stringResource(
+                                    R.string.exodus_report_trackers,
+                                    report.trackers.size,
+                                    report.version
+                                )
+                            },
+                            subtitle = stringResource(R.string.exodus_view_report),
+                            onClick = { context.browse(EXODUS_REPORT_URL + report!!.id) }
+                        )
+                    }
+                }
+
+                items(items = trackers, key = { item -> item.id }) { tracker ->
+                    ExodusListItem(tracker = tracker)
                 }
             }
-
-            items(items = trackers, key = { item -> item.id }) { tracker ->
-                ExodusListItem(tracker = tracker)
-            }
+            ScrollHint(
+                listState = listState,
+                bottomPadding = 5.dp,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 }

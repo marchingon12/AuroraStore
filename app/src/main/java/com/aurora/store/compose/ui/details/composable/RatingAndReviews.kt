@@ -87,9 +87,11 @@ fun RatingAndReviews(
     )
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(R.dimen.padding_medium)),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_small))
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_large))
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
@@ -111,7 +113,6 @@ fun RatingAndReviews(
         }
 
         Column(
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_small))
         ) {
             stars.reversed().fastForEach { star ->
@@ -127,7 +128,7 @@ fun RatingAndReviews(
         val pagerState = rememberPagerState { featuredReviews.size }
         HorizontalPager(
             state = pagerState,
-            contentPadding = PaddingValues(dimensionResource(R.dimen.padding_large)),
+            contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.padding_medium)),
             pageSpacing = dimensionResource(R.dimen.margin_medium)
         ) { page ->
             Box(

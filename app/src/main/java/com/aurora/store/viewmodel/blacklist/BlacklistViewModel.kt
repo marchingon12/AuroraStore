@@ -10,12 +10,14 @@ import android.content.pm.PackageInfo
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
+import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aurora.extensions.TAG
 import com.aurora.store.AuroraApp
 import com.aurora.store.data.event.BusEvent
 import com.aurora.store.data.helper.UpdateHelper
+import com.aurora.store.data.model.BlacklistAppItem
 import com.aurora.store.data.providers.BlacklistProvider
 import com.aurora.store.util.CertUtil
 import com.aurora.store.util.PackageUtil
@@ -44,8 +46,8 @@ class BlacklistViewModel @Inject constructor(
     private val isExtendedUpdateEnabled =
         Preferences.getBoolean(context, Preferences.PREFERENCE_UPDATES_EXTENDED)
 
-    private val packages = MutableStateFlow<List<PackageInfo>?>(null)
-    private val _filteredPackages = MutableStateFlow<List<PackageInfo>?>(null)
+    private val packages = MutableStateFlow<List<BlacklistAppItem>?>(null)
+    private val _filteredPackages = MutableStateFlow<List<BlacklistAppItem>?>(null)
     val filteredPackages = _filteredPackages.asStateFlow()
 
     val blacklist = mutableStateListOf<String>()
@@ -58,28 +60,42 @@ class BlacklistViewModel @Inject constructor(
     private fun fetchApps() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                packages.value = PackageUtil.getAllValidPackages(context).also { pkgList ->
-                    _filteredPackages.value = pkgList
-                }
+                packages.value = PackageUtil.getAllValidPackages(context)
+                    .mapNotNull { it.toBlacklistAppItem() }
+                    .also { _filteredPackages.value = it }
             } catch (exception: Exception) {
                 Log.e(TAG, "Failed to fetch apps", exception)
             }
         }
     }
 
+    private fun PackageInfo.toBlacklistAppItem(): BlacklistAppItem? {
+        val icon = PackageUtil.getIconForPackage(context, packageName) ?: return null
+        return BlacklistAppItem(
+            packageName = packageName,
+            displayName = applicationInfo!!.loadLabel(context.packageManager).toString(),
+            versionName = versionName ?: "",
+            versionCode = PackageInfoCompat.getLongVersionCode(this),
+            icon = icon,
+            isFiltered = isFiltered(this)
+        )
+    }
+
     fun search(query: String) {
-        if (query.isNotBlank()) {
-            _filteredPackages.value = packages.value!!
-                .filter {
-                    it.applicationInfo!!.loadLabel(context.packageManager).contains(query, true) ||
+        viewModelScope.launch(Dispatchers.Default) {
+            val allPackages = packages.value ?: return@launch
+            if (query.isNotBlank()) {
+                _filteredPackages.value = allPackages.filter {
+                    it.displayName.contains(query, true) ||
                         it.packageName.contains(query, true)
                 }
-        } else {
-            _filteredPackages.value = packages.value
+            } else {
+                _filteredPackages.value = allPackages
+            }
         }
     }
 
-    fun isFiltered(packageInfo: PackageInfo): Boolean = when {
+    private fun isFiltered(packageInfo: PackageInfo): Boolean = when {
         !isExtendedUpdateEnabled && !packageInfo.applicationInfo!!.enabled -> true
 
         isAuroraOnlyFilterEnabled -> !CertUtil.isAuroraStoreApp(
@@ -99,7 +115,8 @@ class BlacklistViewModel @Inject constructor(
     }
 
     fun blacklistAll() {
-        blacklistProvider.blacklist = packages.value!!.map { it.packageName }.toMutableSet()
+        val allPackages = packages.value ?: return
+        blacklistProvider.blacklist = allPackages.map { it.packageName }.toMutableSet()
         blacklist.apply {
             clear()
             addAll(blacklistProvider.blacklist)
@@ -126,7 +143,10 @@ class BlacklistViewModel @Inject constructor(
                     )
 
                     val validImportedSet = importedSet
-                        .filter { pkgName -> packages.value!!.any { it.packageName == pkgName } }
+                        .filter { pkgName ->
+                            packages.value?.any { it.packageName == pkgName } ==
+                                true
+                        }
                     blacklistProvider.blacklist.addAll(validImportedSet)
                     blacklist.apply {
                         clear()

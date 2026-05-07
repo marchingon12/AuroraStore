@@ -6,13 +6,16 @@
 package com.aurora.store.compose.ui.details
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -24,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -31,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -45,6 +50,7 @@ import com.aurora.gplayapi.data.models.Review
 import com.aurora.store.R
 import com.aurora.store.compose.composable.ContainedLoadingIndicator
 import com.aurora.store.compose.composable.Error
+import com.aurora.store.compose.composable.ScrollHint
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.composable.details.ReviewListItem
 import com.aurora.store.compose.preview.ReviewPreviewProvider
@@ -93,21 +99,21 @@ private fun ScreenContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = topAppBarTitle,
-                navigationIcon = windowAdaptiveInfo.adaptiveNavigationIcon,
-                onNavigateUp = onNavigateUp
-            )
+            Column {
+                TopAppBar(
+                    title = topAppBarTitle,
+                    navigationIcon = windowAdaptiveInfo.adaptiveNavigationIcon,
+                    onNavigateUp = onNavigateUp
+                )
+                FilterHeader { filter -> onFilter(filter) }
+            }
         }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
         ) {
-            FilterHeader { filter -> onFilter(filter) }
-
             when (reviews.loadState.refresh) {
                 is LoadState.Loading -> ContainedLoadingIndicator()
 
@@ -120,13 +126,24 @@ private fun ScreenContent(
                 }
 
                 else -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(
-                            count = reviews.itemCount,
-                            key = reviews.itemKey { it.commentId }
-                        ) { index ->
-                            reviews[index]?.let { review -> ReviewListItem(review = review) }
+                    val listState = rememberLazyListState()
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            state = listState
+                        ) {
+                            items(
+                                count = reviews.itemCount,
+                                key = reviews.itemKey { it.commentId }
+                            ) { index ->
+                                reviews[index]?.let { review -> ReviewListItem(review = review) }
+                            }
                         }
+                        ScrollHint(
+                            listState = listState,
+                            bottomPadding = 5.dp,
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                        )
                     }
                 }
             }
@@ -155,6 +172,7 @@ private fun FilterHeader(onClick: (filter: Review.Filter) -> Unit) {
 
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.margin_normal)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_normal))
     ) {
         items(items = filters.keys.toList(), key = { item -> item }) { filter ->

@@ -7,16 +7,19 @@ package com.aurora.store.compose.ui.downloads
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -25,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -38,6 +42,7 @@ import com.aurora.store.R
 import com.aurora.store.compose.composable.ContainedLoadingIndicator
 import com.aurora.store.compose.composable.DownloadListItem
 import com.aurora.store.compose.composable.Error
+import com.aurora.store.compose.composable.ScrollHint
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
@@ -153,23 +158,35 @@ private fun ScreenContent(
                             message = stringResource(R.string.download_none)
                         )
                     } else {
-                        LazyColumn {
-                            items(
-                                count = downloads.itemCount,
-                                key = downloads.itemKey { it.packageName }
-                            ) { index ->
-                                downloads[index]?.let { download ->
-                                    DownloadListItem(
-                                        modifier = Modifier.animateItem(),
-                                        download = download,
-                                        onClick = { onNavigateToAppDetails(download.packageName) },
-                                        onClear = { onClear(download) },
-                                        onCancel = { onCancel(download.packageName) },
-                                        onExport = { onExport(download) },
-                                        onInstall = { onInstall(download) }
-                                    )
+                        val listState = rememberLazyListState()
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            LazyColumn(
+                                state = listState
+                            ) {
+                                items(
+                                    count = downloads.itemCount,
+                                    key = downloads.itemKey { it.packageName }
+                                ) { index ->
+                                    downloads[index]?.let { download ->
+                                        DownloadListItem(
+                                            modifier = Modifier.animateItem(),
+                                            download = download,
+                                            onClick = {
+                                                onNavigateToAppDetails(download.packageName)
+                                            },
+                                            onClear = { onClear(download) },
+                                            onCancel = { onCancel(download.packageName) },
+                                            onExport = { onExport(download) },
+                                            onInstall = { onInstall(download) }
+                                        )
+                                    }
                                 }
                             }
+                            ScrollHint(
+                                listState = listState,
+                                bottomPadding = 5.dp,
+                                modifier = Modifier.align(Alignment.BottomCenter)
+                            )
                         }
                     }
                 }

@@ -102,6 +102,7 @@
     <string name="action_info">"App info"</string>
     <string name="action_update">"Update"</string>
     <string name="action_update_all">"Update all"</string>
+    <string name="action_view_on_play">"View on Play Store"</string>
     <string name="action_whitelist">"Whitelist"</string>
     <string name="details_beta">"Beta program"</string>
     <string name="details_beta_subscribed">"You're a beta tester"</string>
@@ -491,6 +492,10 @@
     <!-- SpoofFragment -->
     <string name="default_spoof">Default</string>
     <string name="available_spoof">Available</string>
+
+    <!-- BlacklistFragment -->
+    <string name="header_blacklist_selected">Blacklisted</string>
+    <string name="header_blacklist_others">Others</string>
 
     <!-- AppDetailsFragment -->
     <string name="no_description">No description available</string>

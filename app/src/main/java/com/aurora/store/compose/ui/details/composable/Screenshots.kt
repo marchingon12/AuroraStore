@@ -8,6 +8,7 @@ package com.aurora.store.compose.ui.details.composable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -34,7 +35,10 @@ import com.aurora.store.compose.preview.ThemePreviewProvider
  */
 @Composable
 fun Screenshots(screenshots: List<Artwork>, onNavigateToScreenshot: (index: Int) -> Unit = {}) {
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_small))) {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.padding_medium)),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.margin_small))
+    ) {
         items(items = screenshots, key = { artwork -> artwork.url }) { artwork ->
             ScreenshotListItem(
                 modifier = Modifier
