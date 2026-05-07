@@ -33,6 +33,9 @@ import com.aurora.store.util.PackageUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -46,30 +49,44 @@ class InstalledViewModel @Inject constructor(
     private val webAppDetailsHelper: WebAppDetailsHelper
 ) : ViewModel() {
 
-    private val packages = PackageUtil.getAllValidPackages(context)
     private val blacklist = blacklistProvider.blacklist
 
     private val _apps = MutableStateFlow<PagingData<App>>(PagingData.empty())
     val apps = _apps.asStateFlow()
 
+    /**
+     * Enumerating installed packages calls into PackageManager and resolves a label
+     * per app for sorting. Done lazily on [Dispatchers.IO] so the VM constructor and
+     * the main thread stay snappy; paging awaits this before fetching the first page.
+     */
+    private val pagedPackages = viewModelScope.async(
+        context = Dispatchers.IO,
+        start = CoroutineStart.LAZY
+    ) {
+        PackageUtil.getAllValidPackages(context)
+            .filterNot { it.packageName in blacklist }
+            .chunked(PAGE_SIZE)
+    }
+
     init {
         fetchApps()
     }
 
-    fun fetchApps() {
-        val pagedPackages = packages
-            .filterNot { it.packageName in blacklist }
-            .chunked(20)
-
-        manualPager { page ->
+    private fun fetchApps() {
+        manualPager(pageSize = PAGE_SIZE) { page ->
             // page is 1-indexed, but list is 0-indexed
-            val chunk = pagedPackages.getOrNull(page - 1)
+            val chunks = pagedPackages.await()
+            val chunk = chunks.getOrNull(page - 1)
                 ?: return@manualPager PageResult(emptyList<App>(), hasMore = false)
             val items = webAppDetailsHelper.getAppDetails(chunk.map { it.packageName })
-            PageResult(items, hasMore = page < pagedPackages.size)
+            PageResult(items, hasMore = page < chunks.size)
         }.flow.distinctUntilChanged()
             .cachedIn(viewModelScope)
             .onEach { _apps.value = it }
             .launchIn(viewModelScope)
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 20
     }
 }
