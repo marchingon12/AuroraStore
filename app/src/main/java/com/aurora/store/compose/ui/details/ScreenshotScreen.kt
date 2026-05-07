@@ -11,7 +11,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,7 +37,7 @@ fun ScreenshotScreen(
     index: Int,
     onNavigateUp: () -> Unit,
     viewModel: AppDetailsViewModel = hiltViewModel(key = packageName),
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
     val app by viewModel.app.collectAsStateWithLifecycle()
 
@@ -60,7 +60,7 @@ private fun ScreenContent(
     onNavigateUp: () -> Unit = {},
     screenshots: List<Artwork> = emptyList(),
     index: Int = 0,
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
     val displayMetrics = LocalContext.current.resources.displayMetrics
     val pagerState = rememberPagerState(initialPage = index) { screenshots.size }
