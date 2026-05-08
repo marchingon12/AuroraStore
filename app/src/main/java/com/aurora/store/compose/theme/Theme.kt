@@ -65,8 +65,8 @@ fun AuroraTheme(content: @Composable () -> Unit) {
     val activity = LocalActivity.current
     if (!view.isInEditMode) {
         SideEffect {
-            val activity = activity ?: return@SideEffect
-            val window = activity.window
+            val currentActivity = activity ?: return@SideEffect
+            val window = currentActivity.window
 
             // Transparent system bars
             window.statusBarColor = android.graphics.Color.TRANSPARENT
