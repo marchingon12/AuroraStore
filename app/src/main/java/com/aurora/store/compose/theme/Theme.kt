@@ -5,10 +5,8 @@
 
 package com.aurora.store.compose.theme
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.os.Build
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +29,7 @@ import com.aurora.store.util.Preferences
 @Composable
 fun AuroraTheme(content: @Composable () -> Unit) {
     val context = LocalContext.current
+
     val themeStyle = Preferences.getInteger(context, Preferences.PREFERENCE_THEME_STYLE)
     val isDynamicColorSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
@@ -63,9 +62,10 @@ fun AuroraTheme(content: @Composable () -> Unit) {
      * This is necessary on OEM devices that don't properly support dynamic theming and may have issues with light/dark status bar icons.
      */
     val view = LocalView.current
+    val activity = LocalActivity.current
     if (!view.isInEditMode) {
         SideEffect {
-            val activity = view.context.findActivity() ?: return@SideEffect
+            val activity = activity ?: return@SideEffect
             val window = activity.window
 
             // Transparent system bars
@@ -83,10 +83,4 @@ fun AuroraTheme(content: @Composable () -> Unit) {
     }
 
     MaterialExpressiveTheme(colorScheme = colorScheme, content = content)
-}
-
-tailrec fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
 }
