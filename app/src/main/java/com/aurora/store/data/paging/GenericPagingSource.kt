@@ -28,7 +28,7 @@ class GenericPagingSource<T : Any>(
 ) : PagingSource<Int, T>() {
 
     companion object {
-        private const val DEFAULT_PAGE_SIZE = 20
+        const val DEFAULT_PAGE_SIZE = 20
 
         /**
          * Method to create pager objects using [PagingSource]

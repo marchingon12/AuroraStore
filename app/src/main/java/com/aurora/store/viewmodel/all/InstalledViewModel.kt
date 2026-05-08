@@ -27,6 +27,7 @@ import androidx.paging.cachedIn
 import com.aurora.gplayapi.data.models.App
 import com.aurora.gplayapi.helpers.web.WebAppDetailsHelper
 import com.aurora.store.data.PageResult
+import com.aurora.store.data.paging.GenericPagingSource
 import com.aurora.store.data.paging.GenericPagingSource.Companion.manualPager
 import com.aurora.store.data.providers.BlacklistProvider
 import com.aurora.store.util.PackageUtil
@@ -65,7 +66,7 @@ class InstalledViewModel @Inject constructor(
     ) {
         PackageUtil.getAllValidPackages(context)
             .filterNot { it.packageName in blacklist }
-            .chunked(PAGE_SIZE)
+            .chunked(GenericPagingSource.DEFAULT_PAGE_SIZE)
     }
 
     init {
@@ -73,7 +74,7 @@ class InstalledViewModel @Inject constructor(
     }
 
     private fun fetchApps() {
-        manualPager(pageSize = PAGE_SIZE) { page ->
+        manualPager(pageSize = GenericPagingSource.DEFAULT_PAGE_SIZE) { page ->
             // page is 1-indexed, but list is 0-indexed
             val chunks = pagedPackages.await()
             val chunk = chunks.getOrNull(page - 1)
@@ -84,9 +85,5 @@ class InstalledViewModel @Inject constructor(
             .cachedIn(viewModelScope)
             .onEach { _apps.value = it }
             .launchIn(viewModelScope)
-    }
-
-    companion object {
-        private const val PAGE_SIZE = 20
     }
 }
