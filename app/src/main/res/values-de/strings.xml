@@ -474,4 +474,7 @@
     <string name="preparing_to_download">Vorbereiten zum Download</string>
     <string name="verifying_downloads">Downloads werden überprüft</string>
     <string name="action_retry">Wiederholen</string>
+    <string name="action_view_on_play">Im Play Store ansehen</string>
+    <string name="header_blacklist_selected">Auf der Sperrliste</string>
+    <string name="header_blacklist_others">Andere</string>
 </resources>
