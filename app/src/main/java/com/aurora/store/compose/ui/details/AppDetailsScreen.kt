@@ -13,14 +13,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
@@ -62,6 +59,7 @@ import com.aurora.extensions.share
 import com.aurora.extensions.toast
 import com.aurora.gplayapi.data.models.App
 import com.aurora.gplayapi.data.models.Review
+import com.aurora.gplayapi.data.models.StreamCluster
 import com.aurora.gplayapi.data.models.datasafety.Report as DataSafetyReport
 import com.aurora.store.ComposeActivity
 import com.aurora.store.R
@@ -70,7 +68,6 @@ import com.aurora.store.compose.composable.Error
 import com.aurora.store.compose.composable.Header
 import com.aurora.store.compose.composable.ScrollHint
 import com.aurora.store.compose.composable.TopAppBar
-import com.aurora.store.compose.composable.app.LargeAppListItem
 import com.aurora.store.compose.navigation.Screen
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
@@ -85,6 +82,7 @@ import com.aurora.store.compose.ui.details.composable.DeveloperDetails
 import com.aurora.store.compose.ui.details.composable.Privacy
 import com.aurora.store.compose.ui.details.composable.RatingAndReviews
 import com.aurora.store.compose.ui.details.composable.Screenshots
+import com.aurora.store.compose.ui.details.composable.Suggestions
 import com.aurora.store.compose.ui.details.composable.Tags
 import com.aurora.store.compose.ui.details.composable.Testing
 import com.aurora.store.compose.ui.details.menu.AppDetailsMenu
@@ -103,7 +101,6 @@ import com.aurora.store.util.PackageUtil
 import com.aurora.store.util.ShortcutManagerUtil
 import com.aurora.store.viewmodel.details.AppDetailsViewModel
 import com.jakewharton.processphoenix.ProcessPhoenix
-import kotlin.random.Random
 import kotlinx.coroutines.launch
 
 @Composable
@@ -123,7 +120,7 @@ fun AppDetailsScreen(
     val exodusReport by viewModel.exodusReport.collectAsStateWithLifecycle()
     val dataSafetyReport by viewModel.dataSafetyReport.collectAsStateWithLifecycle()
     val plexusScores by viewModel.plexusScores.collectAsStateWithLifecycle()
-    val suggestions by viewModel.suggestions.collectAsStateWithLifecycle()
+    val suggestionClusters by viewModel.suggestionClusters.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = packageName) { viewModel.fetchAppDetails(packageName) }
 
@@ -148,7 +145,10 @@ fun AppDetailsScreen(
                 ScreenContentApp(
                     app = loadedApp,
                     featuredReviews = featuredReviews,
-                    suggestions = suggestions,
+                    suggestionClusters = suggestionClusters,
+                    onLoadMoreCluster = { clusterId ->
+                        viewModel.loadMoreCluster(clusterId)
+                    },
                     isFavorite = favorite,
                     isAnonymous = viewModel.authProvider.isAnonymous,
                     state = currentState,
@@ -226,7 +226,7 @@ private fun ScreenContentError(onNavigateUp: () -> Unit = {}, message: String? =
 private fun ScreenContentApp(
     app: App,
     featuredReviews: List<Review> = emptyList(),
-    suggestions: List<App> = emptyList(),
+    suggestionClusters: List<StreamCluster>? = emptyList(),
     isFavorite: Boolean = false,
     isAnonymous: Boolean = true,
     state: AppState = AppState.Unavailable,
@@ -235,6 +235,7 @@ private fun ScreenContentApp(
     exodusReport: Report? = null,
     onNavigateUp: () -> Unit = {},
     onNavigateToAppDetails: (packageName: String) -> Unit = {},
+    onLoadMoreCluster: (clusterId: Int) -> Unit = {},
     onDownload: (requestedApp: App) -> Unit = {},
     onFavorite: () -> Unit = {},
     onCancelDownload: () -> Unit = {},
@@ -531,6 +532,25 @@ private fun ScreenContentApp(
                             email = app.developerEmail
                         )
                     }
+
+                    if (shouldShowMenuOnMainPane) {
+                        if (suggestionClusters == null) {
+                            item(key = "suggestions-loading") {
+                                Suggestions(cluster = null)
+                            }
+                        } else {
+                            items(
+                                items = suggestionClusters,
+                                key = { cluster -> "cluster-${cluster.id}" }
+                            ) { cluster ->
+                                Suggestions(
+                                    cluster = cluster,
+                                    onLoadMore = { onLoadMoreCluster(cluster.id) },
+                                    onNavigateToAppDetails = onNavigateToAppDetails
+                                )
+                            }
+                        }
+                    }
                 }
                 ScrollHint(
                     listState = listState,
@@ -548,33 +568,29 @@ private fun ScreenContentApp(
                 TopAppBar(actions = { if (!shouldShowMenuOnMainPane) SetupMenu() })
             }
         ) { paddingValues ->
-            if (suggestions.isNotEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(dimensionResource(R.dimen.margin_medium)),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_suggestions),
-                            contentDescription = null
-                        )
-                        Header(title = stringResource(R.string.pref_ui_similar_apps))
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(vertical = dimensionResource(R.dimen.padding_medium)),
+                verticalArrangement = Arrangement.spacedBy(
+                    dimensionResource(R.dimen.margin_medium)
+                )
+            ) {
+                if (suggestionClusters == null) {
+                    item(key = "suggestions-loading") {
+                        Suggestions(cluster = null)
                     }
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(vertical = dimensionResource(R.dimen.padding_medium))
-                    ) {
-                        items(items = suggestions, key = { item -> item.id }) { app ->
-                            LargeAppListItem(
-                                app = app,
-                                onClick = { onNavigateToAppDetails(app.packageName) }
-                            )
-                        }
+                } else {
+                    items(
+                        items = suggestionClusters,
+                        key = { cluster -> "cluster-${cluster.id}" }
+                    ) { cluster ->
+                        Suggestions(
+                            cluster = cluster,
+                            onLoadMore = { onLoadMoreCluster(cluster.id) },
+                            onNavigateToAppDetails = onNavigateToAppDetails
+                        )
                     }
                 }
             }
@@ -664,7 +680,18 @@ private fun AppDetailsScreenPreview(@PreviewParameter(AppPreviewProvider::class)
     ScreenContentApp(
         app = app,
         isAnonymous = false,
-        suggestions = List(10) { app.copy(id = Random.nextInt()) }
+        suggestionClusters = listOf(
+            StreamCluster(
+                id = 1,
+                clusterTitle = "Similar apps",
+                clusterAppList = List(8) { app.copy(id = it) }
+            ),
+            StreamCluster(
+                id = 2,
+                clusterTitle = "More by ${app.developerName}",
+                clusterAppList = List(5) { app.copy(id = 100 + it) }
+            )
+        )
     )
 }
 

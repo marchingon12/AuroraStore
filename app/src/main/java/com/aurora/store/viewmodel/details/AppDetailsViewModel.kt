@@ -16,6 +16,7 @@ import com.aurora.extensions.TAG
 import com.aurora.extensions.requiresGMS
 import com.aurora.gplayapi.data.models.App
 import com.aurora.gplayapi.data.models.Review
+import com.aurora.gplayapi.data.models.StreamCluster
 import com.aurora.gplayapi.data.models.datasafety.Report as DataSafetyReport
 import com.aurora.gplayapi.data.models.details.TestingProgramStatus
 import com.aurora.gplayapi.helpers.AppDetailsHelper
@@ -42,8 +43,10 @@ import com.aurora.store.util.Preferences
 import com.aurora.store.util.Preferences.PREFERENCE_UPDATES_EXTENDED
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.util.Collections
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -53,9 +56,15 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
+
+private const val MAX_SUGGESTION_PAGES = 2
+private const val SUGGESTION_REQUEST_DELAY_MS = 1500L
 
 @HiltViewModel
 class AppDetailsViewModel @Inject constructor(
@@ -76,8 +85,21 @@ class AppDetailsViewModel @Inject constructor(
     private val _state = MutableStateFlow<AppState>(AppState.Loading)
     val state = _state.asStateFlow()
 
-    private val _suggestions = MutableStateFlow<List<App>>(emptyList())
-    val suggestions = _suggestions.asStateFlow()
+    private val _suggestionClusters = MutableStateFlow<List<StreamCluster>?>(null)
+    val suggestionClusters = _suggestionClusters.asStateFlow()
+
+    private val loadingClusters: MutableSet<Int> = Collections.synchronizedSet(mutableSetOf())
+
+    // Serializes gplayapi calls for the suggestion stream so we don't blow past Play's
+    // request limits and trip a 429 when several clusters trigger loadMore simultaneously.
+    private val suggestionRequestThrottle = Mutex()
+
+    private suspend fun <T> throttleSuggestionRequest(block: suspend () -> T): T =
+        suggestionRequestThrottle.withLock {
+            val result = block()
+            delay(SUGGESTION_REQUEST_DELAY_MS)
+            result
+        }
 
     private val _featuredReviews = MutableStateFlow<List<Review>>(emptyList())
     val featuredReviews = _featuredReviews.asStateFlow()
@@ -308,14 +330,76 @@ class AppDetailsViewModel @Inject constructor(
     }
 
     private fun fetchSuggestions() {
-        // Bail out if we go no suggestions to offer
-        if (app.value!!.detailsStreamUrl.isNullOrBlank()) return
+        val streamUrl = app.value!!.detailsStreamUrl
+
+        // Bail out if we got no suggestions to offer
+        if (streamUrl.isNullOrBlank()) {
+            _suggestionClusters.value = emptyList()
+            return
+        }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val streamBundle = appDetailsHelper.getDetailsStream(app.value!!.detailsStreamUrl!!)
-            _suggestions.value = streamBundle.streamClusters.values
-                .flatMap { it.clusterAppList }
-                .distinctBy { it.packageName }
+            var nextUrl: String = streamUrl
+            var pagesFetched = 0
+
+            while (nextUrl.isNotBlank() && pagesFetched < MAX_SUGGESTION_PAGES) {
+                val bundle = try {
+                    throttleSuggestionRequest { appDetailsHelper.getDetailsStream(nextUrl) }
+                } catch (exception: Exception) {
+                    Log.e(TAG, "Failed to fetch suggestions stream page", exception)
+                    break
+                }
+
+                val pageClusters = bundle.streamClusters.values
+                    .filter { it.clusterTitle.isNotBlank() && it.clusterAppList.isNotEmpty() }
+
+                // Append new clusters atomically so concurrent `loadMoreCluster` updates aren't lost
+                _suggestionClusters.update { current ->
+                    val existing = current.orEmpty()
+                    val existingIds = existing.mapTo(mutableSetOf()) { it.id }
+                    existing + pageClusters.filter { it.id !in existingIds }
+                }
+
+                nextUrl = bundle.streamNextPageUrl
+                pagesFetched++
+            }
+
+            // Pagination done — flip null → empty so the shimmer disappears even if no clusters arrived
+            if (_suggestionClusters.value == null) _suggestionClusters.value = emptyList()
+        }
+    }
+
+    fun loadMoreCluster(clusterId: Int) {
+        val current = _suggestionClusters.value ?: return
+        val cluster = current.firstOrNull { it.id == clusterId } ?: return
+        if (!cluster.hasNext()) return
+        if (!loadingClusters.add(clusterId)) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val nextPage = throttleSuggestionRequest {
+                    appDetailsHelper.getNextStreamCluster(cluster.clusterNextPageUrl)
+                }
+                val seenPackages = cluster.clusterAppList.mapTo(mutableSetOf()) { it.packageName }
+                val newApps = nextPage.clusterAppList.filter { seenPackages.add(it.packageName) }
+
+                _suggestionClusters.update { list ->
+                    list?.map {
+                        if (it.id == clusterId) {
+                            it.copy(
+                                clusterAppList = it.clusterAppList + newApps,
+                                clusterNextPageUrl = nextPage.clusterNextPageUrl
+                            )
+                        } else {
+                            it
+                        }
+                    }
+                }
+            } catch (exception: Exception) {
+                Log.e(TAG, "Failed to fetch next cluster page", exception)
+            } finally {
+                loadingClusters.remove(clusterId)
+            }
         }
     }
 
