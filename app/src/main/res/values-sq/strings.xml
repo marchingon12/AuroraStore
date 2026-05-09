@@ -470,4 +470,6 @@
     <string name="action_retry">Riprovoni</string>
     <string name="preparing_to_download">Po përgatitet të shkarkojë</string>
     <string name="verifying_downloads">Po verifikohen shkarkime</string>
+    <string name="action_view_on_play">Shiheni në Play Store</string>
+    <string name="header_blacklist_others">Të tjerë</string>
 </resources>
