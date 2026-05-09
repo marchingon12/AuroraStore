@@ -478,4 +478,7 @@
     <string name="preparing_to_download">يجهز التنزيل</string>
     <string name="verifying_downloads">يتحقق من التنزيلات</string>
     <string name="action_retry">حاول مجددًا</string>
+    <string name="action_view_on_play">اعرض على متجر Play</string>
+    <string name="header_blacklist_selected">مدرج في القائمة السوداء</string>
+    <string name="header_blacklist_others">آخرون</string>
 </resources>
