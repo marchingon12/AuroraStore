@@ -475,4 +475,7 @@
     <string name="preparing_to_download">Préparation du téléchargement</string>
     <string name="verifying_downloads">Vérification des téléchargements</string>
     <string name="action_retry">Réessayer</string>
+    <string name="action_view_on_play">Voir dans le Play Store</string>
+    <string name="header_blacklist_selected">Exclue</string>
+    <string name="header_blacklist_others">Autres</string>
 </resources>
