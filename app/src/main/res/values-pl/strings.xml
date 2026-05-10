@@ -108,7 +108,7 @@
     <string name="title_language">Język</string>
     <string name="title_installer">Instalator aplikacji</string>
     <string name="title_games">Gry</string>
-    <string name="title_download_playstore">Sklep Play</string>
+    <string name="title_download_playstore">Play Store</string>
     <string name="title_download_manager">Pobrane</string>
     <string name="title_device">Urządzenie</string>
     <string name="title_blacklist_manager">Menedżer czarnej listy</string>
@@ -278,7 +278,7 @@
     <string name="app_language">Język aplikacji</string>
     <string name="check_connectivity">Sprawdź połączenie internetowe</string>
     <string name="failed_to_generate_session">Nie można wygenerować sesji</string>
-    <string name="google_play_store_desc">Google Play, znany również jako Sklep Google Play, dawniej Android Market.</string>
+    <string name="google_play_store_desc">Google Play, znany również jako Google Play Store, dawniej Android Market.</string>
     <string name="app_links_desc">Zezwól Aurora Store na otwieranie obsługiwanych linków</string>
     <string name="app_links_title">Linki aplikacji</string>
     <string name="verifying_new_session">Weryfikowanie nowej sesji</string>
@@ -476,4 +476,7 @@
     <string name="preparing_to_download">Przygotowywanie do pobrania</string>
     <string name="verifying_downloads">Weryfikowanie pobranych plików</string>
     <string name="action_retry">Ponów</string>
+    <string name="action_view_on_play">Zobacz w Play Store</string>
+    <string name="header_blacklist_others">Pozostałe</string>
+    <string name="header_blacklist_selected">Na czarnej liście</string>
 </resources>
