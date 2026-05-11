@@ -117,6 +117,14 @@ class DownloadHelper @Inject constructor(
     }
 
     /**
+     * Removes the download record from the database without deleting downloaded files.
+     * @param packageName Name of the package
+     */
+    suspend fun removeDownload(packageName: String) {
+        downloadDao.delete(packageName)
+    }
+
+    /**
      * Clears the entry & downloaded files for the given package
      * @param packageName Name of the package of the app
      * @param versionCode Version of the package
