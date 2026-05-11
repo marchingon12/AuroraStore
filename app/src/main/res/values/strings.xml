@@ -392,6 +392,7 @@
     <string name="native_installer_desc">Best suited for devices running below Android 4.4</string>
     <string name="services_installer_subtitle">Installer for background installations</string>
     <string name="services_installer_desc">Requires Aurora Services to be installed as a privileged-system app</string>
+    <string name="microg_removed_auth_warning">microG is no longer installed. Run setup again to keep things working smoothly.</string>
     <string name="microg_installer_subtitle">Requires microG companion app to be installed</string>
     <string name="microg_installer_desc">Helps you bypass App Integrity (installer only) check</string>
     <string name="am_installer_subtitle">Full-featured open source package manager</string>
