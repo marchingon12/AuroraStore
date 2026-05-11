@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="action_cancel">Semmet</string>
     <string name="action_clear">Sfeḍ</string>
     <string name="action_close">Mdel</string>
@@ -110,4 +110,13 @@
     <string name="title_download_manager">Isadaren</string>
     <string name="title_library">Tamkarḍit</string>
     <string name="app_info_downloads">Isadaren</string>
+    <string name="disable">Kkes armad</string>
+    <string name="action_retry">Ɛreḍ tikkelt nniḍen</string>
+    <string name="download_eta_sec">%1$ds d-yeggran</string>
+    <string name="download_eta_min">%1$dsd %2$dsn d-yeggran</string>
+    <string name="purchase_not_found">Asnas ur yettwaf ara</string>
+    <string name="download_eta_hrs">%1$dsr %2$dsd %3$dsn d-yeggran</string>
+    <string name="page">Astebter <xliff:g id="number">%1$d</xliff:g></string>
+    <string name="title_apps_games">Isnasen-iw d wuraren-iw</string>
+    <string name="notification_updates_available_desc_2"><xliff:g id="app_one_name">%1$s</xliff:g> akked <xliff:g id="app_two_name">%2$s</xliff:g></string>
 </resources>
