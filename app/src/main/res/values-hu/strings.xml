@@ -474,4 +474,7 @@
     <string name="preparing_to_download">Felkészülés a letöltésre</string>
     <string name="verifying_downloads">Letöltések ellenőrzése</string>
     <string name="action_retry">Újrapróbálkozás</string>
+    <string name="action_view_on_play">Megtekintés a Play Áruházban</string>
+    <string name="header_blacklist_selected">Tiltólistázva</string>
+    <string name="header_blacklist_others">Egyebek</string>
 </resources>

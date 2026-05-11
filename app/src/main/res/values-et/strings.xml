@@ -141,7 +141,7 @@
     <string name="installer_status_failure_session">Seansi loomine nurjus</string>
     <string name="installer_status_failure_conflict">Leiti vastuolus paketid</string>
     <string name="installer_status_failure_incompatible">Ühildumatu rakendus</string>
-    <string name="installer_status_failure_invalid">Vigane või rikutud APK</string>
+    <string name="installer_status_failure_invalid">Vigane või rikutud APK-fail</string>
     <string name="installer_status_failure_storage">Ebapiisav mäluruum</string>
     <string name="installer_status_success">Edukalt paigaldatud</string>
     <string name="menu_license">Litsents</string>
@@ -474,4 +474,7 @@
     <string name="preparing_to_download">Valmistun allalaadimiseks</string>
     <string name="verifying_downloads">Kontrollin allalaaditu õigsust</string>
     <string name="action_retry">Proovi uuesti</string>
+    <string name="action_view_on_play">Vaata Play Store\'is</string>
+    <string name="header_blacklist_selected">Lisatud musta nimekirja</string>
+    <string name="header_blacklist_others">Muud</string>
 </resources>

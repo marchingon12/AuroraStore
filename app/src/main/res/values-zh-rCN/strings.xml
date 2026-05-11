@@ -473,4 +473,7 @@
     <string name="preparing_to_download">正在准备下载</string>
     <string name="verifying_downloads">正在验证下载</string>
     <string name="action_retry">重试</string>
+    <string name="action_view_on_play">在 Play 商店查看</string>
+    <string name="header_blacklist_selected">已拉黑</string>
+    <string name="header_blacklist_others">其他</string>
 </resources>

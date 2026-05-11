@@ -476,4 +476,7 @@
     <string name="action_retry">Opakovat</string>
     <string name="preparing_to_download">Příprava ke stažení</string>
     <string name="verifying_downloads">Ověřování stahování</string>
+    <string name="action_view_on_play">Zobrazit v Obchodě Play</string>
+    <string name="header_blacklist_selected">Na černé listině</string>
+    <string name="header_blacklist_others">Ostatní</string>
 </resources>
