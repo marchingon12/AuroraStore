@@ -80,5 +80,6 @@ object AccountProvider {
         Preferences.remove(context, Constants.ACCOUNT_EMAIL_PLAIN)
         Preferences.remove(context, Constants.ACCOUNT_AAS_PLAIN)
         Preferences.remove(context, Constants.ACCOUNT_AUTH_PLAIN)
+        Preferences.remove(context, Preferences.PREFERENCE_AUTH_VIA_MICROG)
     }
 }

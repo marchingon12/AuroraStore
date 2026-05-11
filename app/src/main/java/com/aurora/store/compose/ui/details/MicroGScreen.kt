@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-FileCopyrightText: 2025 The Calyx Institute
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -20,7 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -58,7 +59,7 @@ fun MicroGScreen(
     onIgnore: (Boolean) -> Unit,
     appDetailsViewModel: AppDetailsViewModel = hiltViewModel(key = packageName),
     viewModel: MicroGViewModel = hiltViewModel(),
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
     val app by appDetailsViewModel.app.collectAsStateWithLifecycle()
     val topAppBarTitle = when {
@@ -84,7 +85,7 @@ private fun ScreenContent(
     onInstall: () -> Unit = {},
     onRetry: () -> Unit = {},
     onIgnore: (Boolean) -> Unit = {},
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
     val context = LocalContext.current
     val listState = rememberLazyListState()

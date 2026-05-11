@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-FileCopyrightText: 2025 The Calyx Institute
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -21,7 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,7 +72,7 @@ fun ReviewScreen(
             factory.create(appDetailsViewModel.app.value!!.packageName)
         }
     ),
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
     val app by appDetailsViewModel.app.collectAsStateWithLifecycle()
     val reviews = reviewViewModel.reviews.collectAsLazyPagingItems()
@@ -95,7 +96,7 @@ private fun ScreenContent(
     onNavigateUp: () -> Unit = {},
     reviews: LazyPagingItems<Review> = emptyPagingItems(),
     onFilter: (filter: Review.Filter) -> Unit = {},
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
     Scaffold(
         topBar = {

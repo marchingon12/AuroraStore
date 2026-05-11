@@ -35,6 +35,7 @@ import com.aurora.store.data.model.AuthState
 import com.aurora.store.data.providers.AccountProvider
 import com.aurora.store.data.providers.AuthProvider
 import com.aurora.store.util.AC2DMTask
+import com.aurora.store.util.PackageUtil
 import com.aurora.store.util.Preferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -171,12 +172,25 @@ class AuthViewModel @Inject constructor(
         _authState.value = AuthState.Verifying
         if (authData.authToken.isNotEmpty() && authData.deviceConfigToken.isNotEmpty()) {
             authProvider.saveAuthData(authData)
+            val tokenType =
+                if (authData.aasToken.isBlank()) AuthHelper.Token.AUTH else AuthHelper.Token.AAS
             AccountProvider.login(
                 context,
                 authData.email,
-                authData.aasToken.ifBlank { authData.authToken },
-                if (authData.aasToken.isBlank()) AuthHelper.Token.AUTH else AuthHelper.Token.AAS,
+                authData.aasToken.ifBlank {
+                    authData.authToken
+                },
+                tokenType,
                 accountType
+            )
+            // Record whether this Google session relies on microG's AccountManager so we
+            // can warn the user if microG is later uninstalled.
+            Preferences.putBoolean(
+                context,
+                Preferences.PREFERENCE_AUTH_VIA_MICROG,
+                accountType == AccountType.GOOGLE &&
+                    tokenType == AuthHelper.Token.AUTH &&
+                    PackageUtil.hasSupportedMicroGVariant(context)
             )
             _authState.value = AuthState.SignedIn
         } else {

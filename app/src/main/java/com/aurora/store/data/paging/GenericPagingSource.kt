@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-FileCopyrightText: 2025 The Calyx Institute
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -28,7 +29,7 @@ class GenericPagingSource<T : Any>(
 ) : PagingSource<Int, T>() {
 
     companion object {
-        private const val DEFAULT_PAGE_SIZE = 20
+        const val DEFAULT_PAGE_SIZE = 20
 
         /**
          * Method to create pager objects using [PagingSource]

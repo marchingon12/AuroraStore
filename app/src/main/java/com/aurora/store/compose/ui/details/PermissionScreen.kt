@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-FileCopyrightText: 2025 The Calyx Institute
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -15,7 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -54,7 +55,7 @@ fun PermissionScreen(
             factory.create(appDetailsViewModel.app.value!!.permissions)
         }
     ),
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
     val app by appDetailsViewModel.app.collectAsStateWithLifecycle()
     val permissionsInfo by permissionViewModel.permissionsInfo.collectAsStateWithLifecycle()
@@ -76,7 +77,7 @@ private fun ScreenContent(
     topAppBarTitle: String? = null,
     permissionsInfo: Map<String, PermissionInfo> = emptyMap(),
     onNavigateUp: () -> Unit = {},
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
     val packageManager = LocalContext.current.packageManager
 

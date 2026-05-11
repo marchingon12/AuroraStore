@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-FileCopyrightText: 2025 The Calyx Institute
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -8,7 +9,7 @@ package com.aurora.store.compose.ui.commons
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -57,7 +58,7 @@ private fun ScreenContent(
     permissions: List<Permission> = emptyList(),
     onNavigateUp: () -> Unit = {},
     onPermissionCallback: (type: PermissionType) -> Unit = {},
-    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
+    windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
     Scaffold(
         topBar = {

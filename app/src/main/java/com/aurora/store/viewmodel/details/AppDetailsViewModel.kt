@@ -155,12 +155,22 @@ class AppDetailsViewModel @Inject constructor(
                 _app.value = appDetailsHelper.getAppByPackageName(packageName).copy(
                     isInstalled = PackageUtil.isInstalled(context, packageName)
                 )
-                // Seed state from any in-flight download for this package so reopening
-                // the screen doesn't briefly flash the default install action while the
-                // download flow catches up.
-                _state.value = downloadHelper.getDownload(packageName)
-                    ?.let { stateFromDownload(it) }
-                    ?: defaultAppState
+                val existingDownload = downloadHelper.getDownload(packageName)
+
+                // A COMPLETED record for an app that is no longer installed means the app was
+                // installed then removed while Aurora held a stale record.
+                // Remove it so the live download observer doesn't lock the UI in Installing state
+                // indefinitely.
+                if (existingDownload?.status == DownloadStatus.COMPLETED && !isInstalled) {
+                    downloadHelper.removeDownload(packageName)
+                    _state.value = defaultAppState
+                } else {
+                    // Seed state from any in-flight download for this package so reopening
+                    // the screen doesn't briefly flash the default install action while the
+                    // download flow catches up.
+                    _state.value =
+                        existingDownload?.let { stateFromDownload(it) } ?: defaultAppState
+                }
             } catch (exception: Exception) {
                 Log.e(TAG, "Failed to fetch app details", exception)
                 _app.value = null
