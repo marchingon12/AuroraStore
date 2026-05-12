@@ -620,7 +620,7 @@ private fun ScreenContentApp(
         is ExtraScreen.MicroG -> MicroGScreen(
             packageName = app.packageName,
             onNavigateUp = ::onNavigateBack,
-            onIgnore = { onInstall(ignoreMicroG = it) }
+            onProceed = { onInstall(ignoreMicroG = true) }
         )
 
         is Screen.DevProfile -> DevProfileScreen(

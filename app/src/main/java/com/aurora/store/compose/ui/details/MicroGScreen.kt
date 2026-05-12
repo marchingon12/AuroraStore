@@ -56,14 +56,14 @@ import com.aurora.store.viewmodel.onboarding.MicroGViewModel
 fun MicroGScreen(
     packageName: String,
     onNavigateUp: () -> Unit,
-    onIgnore: (Boolean) -> Unit,
+    onProceed: () -> Unit,
     appDetailsViewModel: AppDetailsViewModel = hiltViewModel(key = packageName),
     viewModel: MicroGViewModel = hiltViewModel(),
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
     val app by appDetailsViewModel.app.collectAsStateWithLifecycle()
     val topAppBarTitle = when {
-        windowAdaptiveInfo.isWindowCompact -> app!!.displayName
+        windowAdaptiveInfo.isWindowCompact -> app?.displayName
         else -> stringResource(R.string.onboarding_title_gsf)
     }
 
@@ -73,7 +73,7 @@ fun MicroGScreen(
         onNavigateUp = onNavigateUp,
         onInstall = { viewModel.downloadMicroG() },
         onRetry = { viewModel.retryDownload() },
-        onIgnore = onIgnore
+        onProceed = onProceed
     )
 }
 
@@ -84,7 +84,7 @@ private fun ScreenContent(
     onNavigateUp: () -> Unit = {},
     onInstall: () -> Unit = {},
     onRetry: () -> Unit = {},
-    onIgnore: (Boolean) -> Unit = {},
+    onProceed: () -> Unit = {},
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
     val context = LocalContext.current
@@ -123,7 +123,7 @@ private fun ScreenContent(
 
                     Button(
                         modifier = Modifier.weight(1F),
-                        onClick = { onIgnore(uiState.isInstalled) },
+                        onClick = onProceed,
                         enabled = !uiState.isInProgress
                     ) {
                         Text(
