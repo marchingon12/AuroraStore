@@ -474,4 +474,8 @@
     <string name="force_restart_snack">Reiniciar para aplicar mudanças?</string>
     <string name="preparing_to_download">Preparando para baixar</string>
     <string name="verifying_downloads">Verificando downloads</string>
+    <string name="action_retry">Tentar novamente</string>
+    <string name="action_view_on_play">Ver na Play Store</string>
+    <string name="header_blacklist_selected">Bloqueados</string>
+    <string name="header_blacklist_others">Outros</string>
 </resources>

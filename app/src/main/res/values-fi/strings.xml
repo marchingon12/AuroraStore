@@ -152,7 +152,7 @@
     <string name="action_finish">Suorita loppuun</string>
     <string name="action_filter_rating">Arvostelut</string>
     <string name="action_filter_paid_apps">Maksettu</string>
-    <string name="action_filter_misc">Muut</string>
+    <string name="action_filter_misc">Sekalainen</string>
     <string name="action_filter_downloads">Lataukset</string>
     <string name="action_filter_apps_with_ads">Sovellukset mainoksilla</string>
     <string name="action_filter_apply">Käytä</string>
@@ -471,4 +471,10 @@
     <string name="force_restart_snack">Uudelleenkäynnistä muutoksien käyttöönottamiseksi?</string>
     <string name="loading">Lataus meneillään</string>
     <string name="page">Sivu <xliff:g id="number">%1$d</xliff:g></string>
+    <string name="action_retry">Yritä uudelleen</string>
+    <string name="action_view_on_play">Näytä Play Kaupassa</string>
+    <string name="header_blacklist_selected">Piilotettu</string>
+    <string name="header_blacklist_others">Muut</string>
+    <string name="preparing_to_download">Valmistaudutaan lataamaan</string>
+    <string name="verifying_downloads">Latauksia varmistetaan</string>
 </resources>
