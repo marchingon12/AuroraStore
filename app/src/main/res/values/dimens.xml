@@ -71,4 +71,6 @@
     <dimen name="radius_medium">10dp</dimen>
     <dimen name="radius_normal">12dp</dimen>
     <dimen name="radius_large">16dp</dimen>
+
+    <dimen name="scroll_hint_padding">5dp</dimen>
 </resources>

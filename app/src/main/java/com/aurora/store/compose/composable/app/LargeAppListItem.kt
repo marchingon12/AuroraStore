@@ -70,24 +70,24 @@ fun LargeAppListItem(modifier: Modifier = Modifier, app: App, onClick: () -> Uni
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(
-                horizontal = dimensionResource(R.dimen.padding_medium),
-                vertical = dimensionResource(R.dimen.padding_small)
-            )
+            .padding(horizontal = dimensionResource(R.dimen.padding_small))
     ) {
         AsyncImage(
+            modifier = Modifier
+                .requiredSize(dimensionResource(R.dimen.icon_size))
+                .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium))),
             model = ImageRequest.Builder(LocalContext.current)
                 .data(app.iconArtwork.url)
                 .crossfade(true)
                 .build(),
             contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .requiredSize(dimensionResource(R.dimen.icon_size_medium))
-                .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium)))
+            contentScale = ContentScale.Crop
         )
+
         Column(
-            modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.margin_small))
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(R.dimen.margin_small))
         ) {
             Text(
                 text = app.displayName,
